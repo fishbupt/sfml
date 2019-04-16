@@ -2,7 +2,7 @@
 if(CMAKE_SYSTEM_NAME MATCHES "Android")
     cmake_minimum_required(VERSION 3.7.2)
 else()
-    cmake_minimum_required(VERSION 3.0.2)
+    cmake_minimum_required(VERSION 3.14.0)
 endif()
 
 # define a macro that helps defining an option
@@ -278,6 +278,9 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 # add the subdirectories
 add_subdirectory(src/SFML)
+if(SFML_OS_WINDOWS)
+    add_subdirectory(chart)
+endif()
 if(SFML_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()

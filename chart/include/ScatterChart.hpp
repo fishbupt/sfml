@@ -1,0 +1,261 @@
+// Copyright (c) 2019 Keysight Technologies. All rights reserved.
+#pragma once
+
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <ScopedPtr.hpp>
+#include <PointsShape.hpp>
+#include <GridShape.hpp>
+#include <Drawable.hpp>
+
+#using "WindowsBase.dll"
+#using "PresentationFramework.dll"
+#using "PresentationCore.dll"
+//#using "System.Drawing.dll";
+
+using namespace System;
+using namespace System::Collections::Generic;
+using namespace System::Windows;
+using namespace System::Windows::Controls;
+using namespace System::Windows::Media::Imaging;
+// using namespace System::Drawing;
+
+namespace Xsa
+{
+namespace Presentation
+{
+    namespace Graph
+    {
+        // clang-format off
+        public ref class ScatterChart : public UserControl, public Drawable
+        // clang-format on
+        {
+        public:
+            ScatterChart();
+
+            /// <summary>
+            /// Draw object to the control
+            /// </summary>
+            void Draw();
+
+            virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
+
+            /// <summary>
+            /// Get the X-pixel position corresponding the passed X-axis value.
+            /// </summary>
+            /// <param name="value">The X-pixel value.</param>
+            /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid</param>
+            /// <returns>The X-pixel position.</returns>
+            int PixelAtX(double value, bool gridLimit);
+
+            /// <summary>
+            /// Get the Y-pixel position corresponding the passed Y-axis value.
+            /// </summary>
+            /// <param name="value">The Y-pixel value</param>
+            /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid.</param>
+            /// <returns>The Y-pixel position</returns>
+            int PixelAtY(double value, bool gridLimit);
+
+            /// <summary>
+            /// Get the X-axis value corresponding the passed X-pixel position.
+            /// </summary>
+            /// <param name="value">The X-pixel position.</param>
+            /// <returns>The X-axis value</returns>
+            float XAtPixel(int value);
+
+            /// <summary>
+            /// Get the Y-axis value corresponding the passed Y-pixel position.
+            /// </summary>
+            /// <param name="value">The Y-pixel position.</param>
+            /// <returns>The Y-axis value.</returns>
+            float YAtPixel(int value);
+
+#pragma region Properties
+        private:
+            GridShape ^ _grid = gcnew GridShape();
+            List<PointsShape ^> ^ _dataShapes = gcnew List<PointsShape ^>();
+
+            double _xAxisMin = 0;
+            double _xAxisMax = 1.0;
+            double _yAxisMin = 0;
+            double _yAxisMax = 1.0;
+
+            array<Color> ^ _segColors = gcnew array<Color>(0);
+            array<Color> ^ _traceColors = gcnew array<Color>(1);
+
+        public:
+            // clang-format off
+            property GridShape ^ Grid
+            {
+                GridShape ^ get()
+                {
+                    return _grid;
+                }
+            }
+
+            property List<PointsShape ^> ^ DataShapes
+            {
+                List<PointsShape ^> ^ get()
+                {
+                    return _dataShapes;
+                }
+            }
+
+            /// <summary>
+            /// For Polor Coordinate, the XAxisMin and XAxisMax are determinated by YAxisMin and YAxisMax
+            /// </summary>
+            property bool IsPolorCoordinate;
+            // clang-format on
+
+            property double XAxisMin
+            {
+                double get()
+                {
+                    return _xAxisMin;
+                }
+                void set(double value)
+                {
+                    if (IsPolorCoordinate || _xAxisMin == value || value >= _xAxisMax)
+                        return;
+                    _xAxisMin = value;
+                    UpdateTransform();
+                }
+            }
+
+            property double XAxisMax
+            {
+                double get()
+                {
+                    return _xAxisMax;
+                }
+                void set(double value)
+                {
+                    if (IsPolorCoordinate || _xAxisMax == value || value <= _xAxisMin)
+                        return;
+                    _xAxisMax = value;
+                    UpdateTransform();
+                }
+            }
+
+            property double YAxisMin
+            {
+                double get()
+                {
+                    return _yAxisMin;
+                }
+                void set(double value)
+                {
+                    if (_yAxisMin == value || value >= _yAxisMax)
+                        return;
+                    _yAxisMin = value;
+                    UpdateTransform();
+                }
+            }
+
+            property double YAxisMax
+            {
+                double get()
+                {
+                    return _yAxisMax;
+                }
+                void set(double value)
+                {
+                    if (_yAxisMax == value || value <= _yAxisMin)
+                        return;
+                    _yAxisMax = value;
+                    UpdateTransform();
+                }
+            }
+
+            property int NumberOfTraces
+            {
+                int get()
+                {
+                    return DataShapes->Count;
+                }
+                void set(int value)
+                {
+                    if (value != DataShapes->Count)
+                    {
+                        DataShapes->Clear();
+                        for (int i = 0; i < value; i++)
+                        {
+                            PointsShape ^ shape = CreateShape();
+                            int colorIndex = i < _traceColors->Length ? i : 0;
+                            shape->TraceColor = _traceColors[colorIndex];
+                            shape->SegColors = _segColors;
+                            DataShapes->Add(shape);
+                        }
+                    }
+                }
+            }
+            // clang-format off
+            property array<Color> ^ TraceColors
+            {
+                array<Color> ^ get()
+                {
+                    return _traceColors;
+                }
+                void set(array<Color> ^ value)
+                {
+                    if (_traceColors != value)
+                    {
+                        _traceColors = value;
+                        for (int i = 0; i < DataShapes->Count; i++)
+                        {
+                            int colorIndex = i < _traceColors->Length ? i : 0;
+                            DataShapes[i]->TraceColor = _traceColors[colorIndex];
+                        }
+                    }
+                }
+            }
+
+            property array<Color> ^ SegColors
+            {
+                array<Color> ^ get()
+                {
+                    return _segColors;
+                }
+                void set(array<Color> ^ value)
+                {
+                    if (_segColors != value)
+                    {
+                        for (int i = 0; i < DataShapes->Count; i++)
+                        {
+                            DataShapes[i]->SegColors = _segColors;
+                        }
+                    }
+                }
+            }
+#pragma endregion Properties
+
+            //event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers;
+        protected :
+            /// <summary>
+            /// Factory method to create different shapes
+            /// </summary>
+            /// <returns></returns>
+            virtual PointsShape ^ CreateShape();
+            // clang-format on
+
+        private:
+            void CreateRenderTexture();
+
+            void OnSizeChanged(Object ^ sender, SizeChangedEventArgs ^ e);
+
+            void OnGridRectangleChanged(Object ^ sender, EventArgs ^ e);
+
+            void UpdateTransform();
+
+        private:
+            scoped_ptr<sf::Transformable> _transform;
+            scoped_ptr<sf::RenderTexture> _renderTexture;
+            bool _renderTextureIsReady = false;
+            Image ^ _imageItem = gcnew Image();
+            WriteableBitmap ^ _drawnImage; // displaying bitmap
+
+            static int _glMajorVersion;
+        };
+    }
+}
+}
