@@ -228,7 +228,16 @@ namespace Presentation
             }
 #pragma endregion Properties
 
-            event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers;
+            #pragma region Events
+        private:
+            System::Windows::Forms::PaintEventHandler ^ _drawCustomMarkers;
+        public:
+            event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers
+            {
+                void add(System::Windows::Forms::PaintEventHandler^ p){ _drawCustomMarkers += p; }
+                void remove(System::Windows::Forms::PaintEventHandler ^p){ _drawCustomMarkers -= p; }
+            }
+        #pragma endregion Events
         protected :
             /// <summary>
             /// Factory method to create different shapes

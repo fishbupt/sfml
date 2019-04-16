@@ -51,7 +51,10 @@ namespace Presentation
             Graphics ^ renderingGraphic = Graphics::FromImage(renderingBitmap);
             try
             {
-                DrawCustomMarkers(this, gcnew System::Windows::Forms::PaintEventArgs(renderingGraphic, System::Drawing::Rectangle::Empty));
+                if (_drawCustomMarkers != nullptr)
+                {
+                    _drawCustomMarkers(this, gcnew System::Windows::Forms::PaintEventArgs(renderingGraphic, System::Drawing::Rectangle::Empty));
+                }
             }
             finally
             {
