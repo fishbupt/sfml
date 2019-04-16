@@ -11,14 +11,13 @@
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
 #using "PresentationCore.dll"
-//#using "System.Drawing.dll";
+#using "System.Windows.Forms.dll"
 
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::Windows;
 using namespace System::Windows::Controls;
 using namespace System::Windows::Media::Imaging;
-// using namespace System::Drawing;
 
 namespace Xsa
 {
@@ -229,7 +228,7 @@ namespace Presentation
             }
 #pragma endregion Properties
 
-            //event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers;
+            event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers;
         protected :
             /// <summary>
             /// Factory method to create different shapes

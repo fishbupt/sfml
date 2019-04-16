@@ -3,8 +3,12 @@
 #include <Utils.hpp>
 //#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
+#include <gl/GL.h>
 #include <SFML/Graphics/RenderStates.hpp>
 
+#using "System.Drawing.dll"
+using Bitmap = System::Drawing::Bitmap;
+using Graphics = System::Drawing::Graphics;
 
 namespace Xsa
 {
@@ -26,33 +30,38 @@ namespace Presentation
             if (!_renderTextureIsReady)
                 return;
 
-            //glCheck(glEnable(GL_POINT_SMOOTH));
-            //glCheck(glPointSize(3.0f));
+            glEnable(GL_POINT_SMOOTH);
+            glPointSize(3.0f);
 
-            //Draw(_renderTexture.get(), sf::RenderStates::Default);
-            //_renderTexture->display();
-            //const sf::Texture& texture = _renderTexture->getTexture();
-            //sf::Vector2u size = texture.getSize();
-            //int width = (int)size.x;
-            //int height = (int)size.y;
+            Draw(_renderTexture.get(), sf::RenderStates::Default);
+            _renderTexture->display();
+            const sf::Texture& texture = _renderTexture->getTexture();
+            sf::Vector2u size = texture.getSize();
+            int width = (int)size.x;
+            int height = (int)size.y;
 
-            //// use WriteableBitmap as intermediate object to store image pixels
-            //// WriteableBitmap should be locked as short as possible
-            //_drawnImage->Lock();
-            //sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
-            //glCheck(glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)_drawnImage->BackBuffer));
+            // use WriteableBitmap as intermediate object to store image pixels
+            // WriteableBitmap should be locked as short as possible
+            _drawnImage->Lock();
+            sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)_drawnImage->BackBuffer);
 
-            ////Bitmap ^ renderingBitmap = gcnew Bitmap(_drawnImage->PixelWidth, _drawnImage->PixelHeight, _drawnImage->BackBufferStride,
-            ////                                        System::Drawing::Imaging::PixelFormat::Format32bppRgb, _drawnImage->BackBuffer);
-            ////using(Graphics ^ renderingGraphic = Graphics.FromImage(renderingBitmap))
-            ////{
-            ////    DrawCustomMarker ?.Invoke(this, new PaintEventArgs(renderingGraphic, System.Drawing.Rectangle.Empty));
-            ////    // DrawCustomMarkers(renderingGraphic); rase event
-            ////}
+            Bitmap ^ renderingBitmap = gcnew Bitmap(_drawnImage->PixelWidth, _drawnImage->PixelHeight, _drawnImage->BackBufferStride,
+                                                    System::Drawing::Imaging::PixelFormat::Format32bppRgb, _drawnImage->BackBuffer);
+            Graphics ^ renderingGraphic = Graphics::FromImage(renderingBitmap);
+            try
+            {
+                DrawCustomMarkers(this, gcnew System::Windows::Forms::PaintEventArgs(renderingGraphic, System::Drawing::Rectangle::Empty));
+            }
+            finally
+            {
+                delete renderingGraphic;
+                delete renderingBitmap;
+            }
 
-            //_drawnImage->AddDirtyRect(Int32Rect(0, 0, (int)_drawnImage->Width, (int)_drawnImage->Height));
-            //_drawnImage->Unlock();
-            //_imageItem->Source = _drawnImage;
+            _drawnImage->AddDirtyRect(Int32Rect(0, 0, (int)_drawnImage->Width, (int)_drawnImage->Height));
+            _drawnImage->Unlock();
+            _imageItem->Source = _drawnImage;
         }
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
