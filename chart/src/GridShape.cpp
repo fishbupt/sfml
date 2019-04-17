@@ -16,6 +16,8 @@ namespace Presentation
             IsVisible = true;
             BackgroundColor = Colors::Black;
             GridColor = System::Windows::Media::Color::FromRgb(128, 128, 128);
+            NumberOfXAxisDivisions = 10;
+            NumberOfYAxisDivisions = 10;
         }
 
         void GridShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
@@ -68,7 +70,7 @@ namespace Presentation
 
         void GridShape::updateXAxis()
         {
-            _gridXVertices->resize((NumberOfXAxisDivisions + 1) * 2);
+            _gridXVertices->resize((_numberOfXAxisDivisions + 1) * 2);
             float xTick = (float)GridRectangle.Width / _numberOfXAxisDivisions;
             float xStart = (float)GridRectangle.X;
             float yStart = (float)GridRectangle.Y;
@@ -94,7 +96,7 @@ namespace Presentation
         void GridShape::updateYAxis()
         {
             _gridYVertices->resize((_numberOfYAxisDivisions + 1) * 2);
-            float yTick = (float)GridRectangle.Width / _numberOfYAxisDivisions;
+            float yTick = (float)GridRectangle.Height / _numberOfYAxisDivisions;
             float yStart = (float)GridRectangle.Y;
             float xStart = (float)GridRectangle.X;
             float xStop = (float)GridRectangle.Width;

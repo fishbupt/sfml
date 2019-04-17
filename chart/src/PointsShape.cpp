@@ -39,7 +39,7 @@ namespace Presentation
         {
             if (data.Length == 0 || segIndexes.Length == 0)
                 return;
-            if (data.Length % 2 != 0 || segIndexes.Length * 2 != data.Length)
+            if (data.Length % 2 != 0)
                 return throw gcnew InvalidOperationException();
 
             int pointSize = data.Length / 2;
