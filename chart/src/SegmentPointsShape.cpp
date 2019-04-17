@@ -18,8 +18,8 @@ namespace Presentation
             int pointSize = yData.Length;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = yData.ToPointer();
-            pin_ptr<short> pIdx = segIndexes.ToPointer();
+            pin_ptr<float> pData = (float*)yData.ToPointer();
+            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)

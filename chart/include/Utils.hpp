@@ -31,7 +31,7 @@ namespace Presentation
         };
 
         // clang-format off
-        template<typename T>
+        generic<typename T>
         public value struct SpanWrapper
         // clang-format on
         {
@@ -41,6 +41,7 @@ namespace Presentation
                 , _length(length)
             {
             }
+
             property int Length
             {
                 int get()
@@ -48,9 +49,9 @@ namespace Presentation
                     return _length;
                 }
             }
-            T* ToPointer()
+            void* ToPointer()
             {
-                return reinterpret_cast<T*>(_pointer.ToPointer());
+                return _pointer.ToPointer();
             }
 
         private:

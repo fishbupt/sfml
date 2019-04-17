@@ -27,13 +27,7 @@ namespace Presentation
         // clang-format on
         {
         public:
-            GridShape()
-                : _gridXVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
-                , _gridYVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
-                , _borderXVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
-                , _borderYVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
-            {
-            }
+            GridShape();
 
             event EventHandler ^ GridRectangleChanged;
 

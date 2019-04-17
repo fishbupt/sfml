@@ -26,7 +26,7 @@ source_group("" FILES ${SRC})
 
 # define the sfml-graphics target
 set(CHART_LIB sfml-charts)
-add_library(${CHART_LIB} ${SRC} )
+add_library(${CHART_LIB} SHARED ${SRC} )
 
 #set properties
 set(SIGN_KEY ${CMAKE_SOURCE_DIR}/chart/Agilent.SAD.snk)

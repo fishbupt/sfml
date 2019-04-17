@@ -25,7 +25,7 @@ namespace Presentation
             int pointSize = data.Length / 2;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = data.ToPointer();
+            pin_ptr<float> pData = (float*)data.ToPointer();
             sf::Color color = ColorUtil::ColorFrom(TraceColor);
             for (int i = 0; i < pointSize; i++)
             {
@@ -45,8 +45,8 @@ namespace Presentation
             int pointSize = data.Length / 2;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = data.ToPointer();
-            pin_ptr<short> pIdx = segIndexes.ToPointer();
+            pin_ptr<float> pData = (float*)data.ToPointer();
+            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             for (int i = 0; i < pointSize; i++)
             {
@@ -66,8 +66,8 @@ namespace Presentation
             int pointSize = yData.Length;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = yData.ToPointer();
-            pin_ptr<short> pIdx = segIndexes.ToPointer();
+            pin_ptr<float> pData = (float*)yData.ToPointer();
+            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)

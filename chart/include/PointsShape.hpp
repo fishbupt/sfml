@@ -29,6 +29,7 @@ namespace Presentation
             PointsShape()
                 : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
             {
+                IsVisible = true;
             }
 
             property bool IsVisible;

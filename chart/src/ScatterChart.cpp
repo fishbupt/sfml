@@ -24,6 +24,7 @@ namespace Presentation
             Content = _imageItem;
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
+            CreateRenderTexture();
         }
 
         void ScatterChart::Draw()
@@ -88,11 +89,11 @@ namespace Presentation
             float pixelAtX = pixelPoint.x;
             if (gridLimit)
             {
-                Rect rect = Grid->ClientRectangle;
-                if (pixelAtX < rect.Left)
-                    pixelAtX = (float)rect.Left;
-                if (pixelAtX > rect.Right)
-                    pixelAtX = (float)rect.Right;
+                Rect ^ rect = Grid->ClientRectangle;
+                if (pixelAtX < rect->Left)
+                    pixelAtX = (float)rect->Left;
+                if (pixelAtX > rect->Right)
+                    pixelAtX = (float)rect->Right;
             }
             return (int)std::round(pixelAtX);
         }
@@ -101,15 +102,15 @@ namespace Presentation
         {
             sf::Vector2f pixelPoint = _transform->getTransform().transformPoint(0.0f, (float)value);
             float pixelAtY = pixelPoint.y;
-            Rect rect = Grid->ClientRectangle;
+            Rect ^ rect = Grid->ClientRectangle;
             if (gridLimit)
             {
-                if (pixelAtY < rect.Bottom)
-                    pixelAtY = (float)rect.Bottom;
-                if (pixelAtY > rect.Top)
-                    pixelAtY = (float)rect.Top;
+                if (pixelAtY < rect->Bottom)
+                    pixelAtY = (float)rect->Bottom;
+                if (pixelAtY > rect->Top)
+                    pixelAtY = (float)rect->Top;
             }
-            return (int)std::round(rect.Height - pixelAtY);
+            return (int)std::round(rect->Height - pixelAtY);
         }
 
         float ScatterChart::XAtPixel(int value)

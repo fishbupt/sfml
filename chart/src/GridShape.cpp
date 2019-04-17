@@ -7,6 +7,16 @@ namespace Presentation
 {
     namespace Graph
     {
+        GridShape::GridShape()
+            : _gridXVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
+            , _gridYVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
+            , _borderXVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
+            , _borderYVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
+        {
+            IsVisible = true;
+            BackgroundColor = Colors::Black;
+            GridColor = System::Windows::Media::Color::FromRgb(128, 128, 128);
+        }
 
         void GridShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
@@ -27,11 +37,10 @@ namespace Presentation
             if (rect.Size.IsEmpty || rect == _windowRectangle)
                 return;
 
-            WindowRectangle = rect;
-            GridRectangle.X = WindowRectangle.X + kBorderPixelOffset;
-            GridRectangle.Y = WindowRectangle.Y + kBorderPixelOffset;
-            GridRectangle.Width = std::max(0.0, WindowRectangle.Width - 2 * kBorderPixelOffset);
-            GridRectangle.Height = std::max(0.0, WindowRectangle.Height - 2 * kBorderPixelOffset);
+            _windowRectangle = rect;
+            GridRectangle = Rect(_windowRectangle.X + kBorderPixelOffset, _windowRectangle.Y + kBorderPixelOffset,
+                                 std::max(0.0, _windowRectangle.Width - 2 * kBorderPixelOffset),
+                                 std::max(0.0, _windowRectangle.Height - 2 * kBorderPixelOffset));
             ClientRectangle = GridRectangle;
             GridRectangleChanged(this, nullptr);
 

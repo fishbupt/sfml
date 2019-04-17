@@ -25,8 +25,8 @@ namespace Presentation
 
             sf::VertexArray& vertices = *_vertices;
             sf::VertexArray& linesVertices = *_linesVertices;
-            pin_ptr<float> pData = yData.ToPointer();
-            pin_ptr<short> pIdx = segIndexes.ToPointer();
+            pin_ptr<float> pData = (float*)yData.ToPointer();
+            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
             for (int i = 0; i < SegmentCount; i++)
             {
                 linesVertices[2 * i].position.x = static_cast<float>(i);
