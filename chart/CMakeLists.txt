@@ -26,10 +26,13 @@ source_group("" FILES ${SRC})
 
 # define the sfml-graphics target
 set(CHART_LIB sfml-charts)
-sfml_add_library(${CHART_LIB} SOURCES ${SRC} )
+add_library(${CHART_LIB} ${SRC} )
 
 #set properties
+set(SIGN_KEY ${CMAKE_SOURCE_DIR}/chart/Agilent.SAD.snk)
+set(SIGN_OPTION "/KEYFILE:${SIGN_KEY}")
 target_compile_features(${CHART_LIB} PUBLIC cxx_std_14) # vs2017 has a bug to build with c++17 is enabled
+target_link_options(${CHART_LIB} PRIVATE ${SIGN_OPTION})
 
 set_target_properties(${CHART_LIB} PROPERTIES
                       COMMON_LANGUAGE_RUNTIME ""

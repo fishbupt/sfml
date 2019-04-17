@@ -1,9 +1,9 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
+#include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
+//note: put opengl headers before any other header files
 #include <ScatterChart.hpp>
 #include <Utils.hpp>
-//#include <SFML/OpenGL.hpp>
-#include <SFML/Graphics/GLCheck.hpp>
-#include <gl/GL.h>
 #include <SFML/Graphics/RenderStates.hpp>
 
 #using "System.Drawing.dll"
@@ -20,6 +20,7 @@ namespace Presentation
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
         {
+            IsPolorCoordinate = true;
             Content = _imageItem;
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
