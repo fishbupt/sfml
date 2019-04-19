@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
-//note: put opengl headers before any other header files
+// note: put opengl headers before any other header files
 #include <ScatterChart.hpp>
 #include <Utils.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -9,6 +9,14 @@
 #using "System.Drawing.dll"
 using Bitmap = System::Drawing::Bitmap;
 using Graphics = System::Drawing::Graphics;
+
+#if !defined(GL_MAJOR_VERSION)
+    #define GL_MAJOR_VERSION 0x821B
+#endif
+
+#if !defined(GL_MINOR_VERSION)
+    #define GL_MINOR_VERSION 0x821C
+#endif
 
 namespace Xsa
 {
@@ -24,7 +32,6 @@ namespace Presentation
             Content = _imageItem;
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
-            CreateRenderTexture();
         }
 
         void ScatterChart::Draw()
@@ -46,7 +53,7 @@ namespace Presentation
             // WriteableBitmap should be locked as short as possible
             _drawnImage->Lock();
             sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)_drawnImage->BackBuffer);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)_drawnImage->BackBuffer);
 
             Bitmap ^ renderingBitmap = gcnew Bitmap(_drawnImage->PixelWidth, _drawnImage->PixelHeight, _drawnImage->BackBufferStride,
                                                     System::Drawing::Imaging::PixelFormat::Format32bppRgb, _drawnImage->BackBuffer);
@@ -55,7 +62,8 @@ namespace Presentation
             {
                 if (_drawCustomMarkers != nullptr)
                 {
-                    _drawCustomMarkers(this, gcnew System::Windows::Forms::PaintEventArgs(renderingGraphic, System::Drawing::Rectangle::Empty));
+                    _drawCustomMarkers(this,
+                                       gcnew System::Windows::Forms::PaintEventArgs(renderingGraphic, System::Drawing::Rectangle::Empty));
                 }
             }
             finally
@@ -152,6 +160,13 @@ namespace Presentation
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
             Grid->WindowRectangle = Rect(0, 0, width, height);
+
+            int majorVersion;
+            glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+            const unsigned char* glVersion = glGetString(GL_VERSION);
+            const unsigned char* glVendor = glGetString(GL_VENDOR);
+            const unsigned char* glRenderer = glGetString(GL_RENDERER);
+            _glMajorVersion = majorVersion;
         }
 
         void ScatterChart::UpdateTransform()

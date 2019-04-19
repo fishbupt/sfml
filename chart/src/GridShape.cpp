@@ -74,10 +74,10 @@ namespace Presentation
             float xTick = (float)GridRectangle.Width / _numberOfXAxisDivisions;
             float xStart = (float)GridRectangle.X;
             float yStart = (float)GridRectangle.Y;
-            float yStop = (float)GridRectangle.Height;
+            float yStop = (float)GridRectangle.Height + yStart;
             sf::Color gridColor = ColorUtil::ColorFrom(GridColor);
 
-            for (int i = 0; i < _numberOfXAxisDivisions; i++)
+            for (int i = 0; i <= _numberOfXAxisDivisions; i++)
             {
                 (*_gridXVertices)[2 * i].position.x = xStart + i * xTick;
                 (*_gridXVertices)[2 * i].position.y = yStart;
@@ -99,10 +99,10 @@ namespace Presentation
             float yTick = (float)GridRectangle.Height / _numberOfYAxisDivisions;
             float yStart = (float)GridRectangle.Y;
             float xStart = (float)GridRectangle.X;
-            float xStop = (float)GridRectangle.Width;
+            float xStop = (float)GridRectangle.Width + xStart;
             sf::Color gridColor = ColorUtil::ColorFrom(GridColor);
 
-            for (int i = 0; i < _numberOfYAxisDivisions; i++)
+            for (int i = 0; i <= _numberOfYAxisDivisions; i++)
             {
                 (*_gridYVertices)[2 * i].position.x = xStart;
                 (*_gridYVertices)[2 * i].position.y = yStart + i * yTick;

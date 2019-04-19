@@ -71,7 +71,7 @@ namespace Presentation
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
         private:
-            constexpr static float kBorderPixelOffset{1.5f};
+            constexpr static float kBorderPixelOffset{1.0f};
 
             Rect _windowRectangle;
             int _numberOfXAxisDivisions;
