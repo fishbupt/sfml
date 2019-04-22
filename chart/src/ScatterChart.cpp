@@ -11,11 +11,11 @@ using Bitmap = System::Drawing::Bitmap;
 using Graphics = System::Drawing::Graphics;
 
 #if !defined(GL_MAJOR_VERSION)
-    #define GL_MAJOR_VERSION 0x821B
+#    define GL_MAJOR_VERSION 0x821B
 #endif
 
 #if !defined(GL_MINOR_VERSION)
-    #define GL_MINOR_VERSION 0x821C
+#    define GL_MINOR_VERSION 0x821C
 #endif
 
 namespace Xsa
@@ -39,7 +39,10 @@ namespace Presentation
             if (!_renderTextureIsReady)
                 return;
 
-            glEnable(GL_POINT_SMOOTH);
+            if (_glMajorVersion >= 3)
+            {
+                glEnable(GL_POINT_SMOOTH);
+            }
             glPointSize(3.0f);
 
             Draw(_renderTexture.get(), sf::RenderStates::Default);
@@ -161,11 +164,8 @@ namespace Presentation
 
             Grid->WindowRectangle = Rect(0, 0, width, height);
 
-            int majorVersion;
+            int majorVersion = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-            const unsigned char* glVersion = glGetString(GL_VERSION);
-            const unsigned char* glVendor = glGetString(GL_VENDOR);
-            const unsigned char* glRenderer = glGetString(GL_RENDERER);
             _glMajorVersion = majorVersion;
         }
 

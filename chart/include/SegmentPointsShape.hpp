@@ -22,7 +22,7 @@ namespace Presentation
 
             property int SegmentCount;
 
-            virtual void SetData(SpanWrapper<float> yData, SpanWrapper<short> segIndexes) override;
+            virtual void SetData(float* pYData, int yDataSize, short* pSeg, int segIndexesSize) override;
         };
     }
 }

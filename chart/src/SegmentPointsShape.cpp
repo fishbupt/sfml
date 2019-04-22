@@ -8,25 +8,23 @@ namespace Presentation
 {
     namespace Graph
     {
-        void SegmentPointsShape::SetData(SpanWrapper<float> yData, SpanWrapper<short> segIndexes)
+        void SegmentPointsShape::SetData(float* pYData, int yDataSize, short* pSeg, int segIndexesSize)
         {
-            if (yData.Length == 0 || segIndexes.Length == 0)
+            if (yDataSize == 0 || segIndexesSize == 0 || !pYData || !pSeg)
                 return;
-            if (segIndexes.Length != yData.Length)
+            if (yDataSize % 2 != 0)
                 return throw gcnew InvalidOperationException();
 
-            int pointSize = yData.Length;
+            int pointSize = yDataSize;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = (float*)yData.ToPointer();
-            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pIdx[i]]);
+                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
                 vertices[i].position.x = xPos;
-                vertices[i].position.y = pData[i];
+                vertices[i].position.y = pYData[i];
                 xPos++;
                 if (xPos == SegmentCount)
                     xPos = 0;

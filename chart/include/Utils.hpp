@@ -29,35 +29,6 @@ namespace Presentation
                 return sf::Color(color.R, color.G, color.B, color.A);
             }
         };
-
-        // clang-format off
-        generic<typename T>
-        public value struct SpanWrapper
-        // clang-format on
-        {
-        public:
-            SpanWrapper(System::IntPtr ptr, int length)
-                : _pointer(ptr)
-                , _length(length)
-            {
-            }
-
-            property int Length
-            {
-                int get()
-                {
-                    return _length;
-                }
-            }
-            void* ToPointer()
-            {
-                return _pointer.ToPointer();
-            }
-
-        private:
-            System::IntPtr _pointer;
-            int _length;
-        };
     }
 }
 }

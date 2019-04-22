@@ -45,7 +45,7 @@ namespace Presentation
             /// The color for trace is set by TraceColor
             /// </summary>
             /// <param name="data">The trace data.</param>
-            virtual void SetXYData(SpanWrapper<float> data);
+            virtual void SetXYData(float* pData, int dataSize);
 
             /// <summary>
             /// Set trace data in (x,y) format
@@ -53,7 +53,7 @@ namespace Presentation
             /// </summary>
             /// <param name="data">The trace data</param>
             /// <param name="segIndexes">The indexes for SegColors</param>
-            virtual void SetXYData(SpanWrapper<float> data, SpanWrapper<short> segIndexes);
+            virtual void SetXYData(float* pData, int dataSize, short* pSegIndexes, int segIndexesSize);
 
             /// <summary>
             /// Set trace data in y format. x is generated linearly from 0 to length - 1
@@ -61,7 +61,7 @@ namespace Presentation
             /// </summary>
             /// <param name="yData">The trace data for y-axis</param>
             /// <param name="segIndexes">The indexes for SegColors</param>
-            virtual void SetData(SpanWrapper<float> yData, SpanWrapper<short> segIndexes);
+            virtual void SetData(float* pYData, int yDataSize, short* pSegIndexes, int segIndexesSize);
 
         protected:
             scoped_ptr<sf::VertexArray> _vertices;

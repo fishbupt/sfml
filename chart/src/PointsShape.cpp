@@ -15,17 +15,16 @@ namespace Presentation
             }
         }
 
-        void PointsShape::SetXYData(SpanWrapper<float> data)
+        void PointsShape::SetXYData(float* pData, int dataSize)
         {
-            if (data.Length == 0)
+            if (dataSize == 0 || !pData)
                 return;
-            if (data.Length % 2 != 0)
+            if (dataSize % 2 != 0)
                 return throw gcnew InvalidOperationException();
 
-            int pointSize = data.Length / 2;
+            int pointSize = dataSize / 2;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = (float*)data.ToPointer();
             sf::Color color = ColorUtil::ColorFrom(TraceColor);
             for (int i = 0; i < pointSize; i++)
             {
@@ -35,46 +34,42 @@ namespace Presentation
             }
         }
 
-        void PointsShape::SetXYData(SpanWrapper<float> data, SpanWrapper<short> segIndexes)
+        void PointsShape::SetXYData(float* pData, int dataSize, short* pSeg, int segIndexesSize)
         {
-            if (data.Length == 0 || segIndexes.Length == 0)
+            if (dataSize == 0 || segIndexesSize == 0 || !pData || !pSeg)
                 return;
-            if (data.Length % 2 != 0)
+            if (dataSize % 2 != 0)
                 return throw gcnew InvalidOperationException();
 
-            int pointSize = data.Length / 2;
+            int pointSize = dataSize / 2;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = (float*)data.ToPointer();
-            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pIdx[i]]);
+                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
                 vertices[i].position.x = pData[2 * i];
                 vertices[i].position.y = pData[2 * i + 1];
             }
         }
 
-        void PointsShape::SetData(SpanWrapper<float> yData, SpanWrapper<short> segIndexes)
+        void PointsShape::SetData(float* pYData, int yDataSize, short* pSeg, int segIndexesSize)
         {
-            if (yData.Length == 0 || segIndexes.Length == 0)
+            if (yDataSize == 0 || segIndexesSize == 0 || !pYData || !pSeg)
                 return;
-            if (segIndexes.Length != yData.Length)
+            if (yDataSize % 2 != 0)
                 return throw gcnew InvalidOperationException();
 
-            int pointSize = yData.Length;
+            int pointSize = yDataSize;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
-            pin_ptr<float> pData = (float*)yData.ToPointer();
-            pin_ptr<short> pIdx = (short*)segIndexes.ToPointer();
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pIdx[i]]);
+                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
                 vertices[i].position.x = xPos;
-                vertices[i].position.y = pData[i];
+                vertices[i].position.y = pYData[i];
                 xPos++;
             }
         }
