@@ -37,3 +37,11 @@ There are several places to learn SFML:
 ## Contribute
 
 SFML is an open-source project, and it needs your help to go on growing and improving. If you want to get involved and suggest some additional features, file a bug report or submit a patch, please have a look at the [contribution guidelines](https://www.sfml-dev.org/contribute.php).
+## Build
+To Build C++/CLI project, make sure you have cmake > 3.14.0 and Visual Studio 2017 have been installed
+``` shell 
+cd 'to source dir'  
+mkdir build  
+cd build  
+cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF 
+start SFML.sln 
