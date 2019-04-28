@@ -61,11 +61,11 @@ namespace Presentation
 
         void SegmentMinMaxPointsShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
-            SegmentPointsShape::Draw(target, states);
             if (IsVisible && _linesVertices->getVertexCount() != 0)
             {
                 target->draw(*_linesVertices.get(), states);
             }
+            SegmentPointsShape::Draw(target, states);
         }
     }
 }
