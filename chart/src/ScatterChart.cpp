@@ -36,7 +36,7 @@ namespace Presentation
 
         void ScatterChart::Draw()
         {
-            if (!_renderTextureIsReady)
+            if (!_renderTextureIsReady || _glMajorVersion < 2)
                 return;
 
             if (_glMajorVersion >= 3)
