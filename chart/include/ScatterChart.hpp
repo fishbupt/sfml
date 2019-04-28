@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Window/Context.hpp>
 #include <ScopedPtr.hpp>
 #include <PointsShape.hpp>
 #include <GridShape.hpp>
@@ -31,6 +32,16 @@ namespace Presentation
         {
         public:
             ScatterChart();
+
+            /// <summary>
+            /// This Method do library level initialization
+            /// SFML use a shared OpenGL context to create other OpenGL context after the first context was created
+            /// call this method to create a shared OpenGL context
+            /// </summary>
+            static void Initialize()
+            {
+                sf::Context ctx;
+            }
 
             /// <summary>
             /// Draw object to the control
