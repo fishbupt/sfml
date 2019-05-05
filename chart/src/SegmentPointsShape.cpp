@@ -18,11 +18,12 @@ namespace Presentation
             int pointSize = yDataSize;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
+            sf::ColorArray& segColors = *_segColors;
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
+                vertices[i].color = segColors[pSeg[i]];
                 vertices[i].position.x = xPos;
                 vertices[i].position.y = pYData[i];
                 xPos++;

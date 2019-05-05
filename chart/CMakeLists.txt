@@ -20,6 +20,7 @@ set(SRC
     ${INCROOT}/Drawable.hpp
     ${INCROOT}/ScopedPtr.hpp
     ${INCROOT}/Utils.hpp
+    ${INCROOT}/ColorArray.hpp
 )
 source_group("" FILES ${SRC})
 

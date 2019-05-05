@@ -7,6 +7,16 @@ namespace Presentation
 {
     namespace Graph
     {
+        void PointsShape::SegColors::set(array<Color> ^ value)
+        {
+            int count = value->Length;
+            _segColors->resize(count);
+            for (int i = 0; i < count; i++)
+            {
+                (*_segColors)[i] = ColorUtil::ColorFrom(value[i]);
+            }
+        }
+
         void PointsShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
             if (IsVisible && _vertices->getVertexCount() != 0)
@@ -44,10 +54,11 @@ namespace Presentation
             int pointSize = dataSize / 2;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
+            sf::ColorArray segColors = *_segColors;
 
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
+                vertices[i].color = segColors[pSeg[i]];
                 vertices[i].position.x = pData[2 * i];
                 vertices[i].position.y = pData[2 * i + 1];
             }
@@ -63,11 +74,12 @@ namespace Presentation
             int pointSize = yDataSize;
             _vertices->resize(pointSize);
             sf::VertexArray& vertices = *_vertices;
+            sf::ColorArray& segColors = *_segColors;
 
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
+                vertices[i].color = segColors[pSeg[i]];
                 vertices[i].position.x = xPos;
                 vertices[i].position.y = pYData[i];
                 xPos++;

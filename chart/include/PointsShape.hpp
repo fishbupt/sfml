@@ -9,6 +9,7 @@
 #include "Drawable.hpp"
 #include "ScopedPtr.hpp"
 #include "Utils.hpp"
+#include "ColorArray.hpp"
 
 #using "PresentationCore.dll"
 
@@ -28,6 +29,7 @@ namespace Presentation
         public:
             PointsShape()
                 : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
+                , _segColors(new sf::ColorArray())
             {
                 IsVisible = true;
             }
@@ -36,9 +38,14 @@ namespace Presentation
 
             property Color TraceColor;
 
-            property array<Color> ^ SegColors;
+            // clang-format off
+            property array<Color> ^ SegColors
+            {
+                void set(array<Color> ^ value);
+            }
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
+            // clang-format on
 
             /// <summary>
             /// Set trace data in (x,y) format.
@@ -65,6 +72,7 @@ namespace Presentation
 
         protected:
             scoped_ptr<sf::VertexArray> _vertices;
+            scoped_ptr<sf::ColorArray> _segColors;
         };
     }
 }

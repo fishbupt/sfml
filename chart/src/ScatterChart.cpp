@@ -39,10 +39,10 @@ namespace Presentation
             if (!_renderTextureIsReady || _glMajorVersion < 2)
                 return;
 
-            if (_glMajorVersion >= 3)
-            {
-                glEnable(GL_POINT_SMOOTH);
-            }
+            //if (_glMajorVersion >= 3)
+            //{
+            //    glEnable(GL_POINT_SMOOTH);
+            //}
             glPointSize(3.0f);
 
             Draw(_renderTexture.get(), sf::RenderStates::Default);

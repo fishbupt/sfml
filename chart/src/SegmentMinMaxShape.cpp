@@ -25,6 +25,8 @@ namespace Presentation
 
             sf::VertexArray& vertices = *_vertices;
             sf::VertexArray& linesVertices = *_linesVertices;
+            sf::ColorArray& segColors = *_segColors;
+
             for (int i = 0; i < SegmentCount; i++)
             {
                 linesVertices[2 * i].position.x = static_cast<float>(i);
@@ -38,7 +40,7 @@ namespace Presentation
             int xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = ColorUtil::ColorFrom(SegColors[pSeg[i]]);
+                vertices[i].color = segColors[pSeg[i]];
                 vertices[i].position.x = static_cast<float>(xPos);
                 float yVal = pYData[i];
                 vertices[i].position.y = yVal;
