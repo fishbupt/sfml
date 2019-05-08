@@ -211,7 +211,7 @@ public:
     /// \see getPointCount
     ///
     ////////////////////////////////////////////////////////////
-    virtual Vector2f getPoint(std::size_t index) const = 0;
+    virtual Vector3f getPoint(std::size_t index) const = 0;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the local bounding rectangle of the entity
@@ -301,7 +301,7 @@ private:
     ////////////////////////////////////////////////////////////
     void updateOutlineColors();
 
-private:
+private :
 
     ////////////////////////////////////////////////////////////
     // Member data

@@ -112,10 +112,10 @@ public:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    BlendMode      blendMode; ///< Blending mode
-    Transform      transform; ///< Transform
-    const Texture* texture;   ///< Texture
-    const Shader*  shader;    ///< Shader
+    BlendMode      blendMode;      ///< Blending mode
+    Transform      transform;      ///< Transform
+    const Texture* texture;        ///< Texture
+    const Shader*  shader;         ///< Shader
 };
 
 } // namespace sf

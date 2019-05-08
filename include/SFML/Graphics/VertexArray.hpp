@@ -169,7 +169,7 @@ public:
     /// \return Bounding rectangle of the vertex array
     ///
     ////////////////////////////////////////////////////////////
-    FloatRect getBounds() const;
+    FloatBox getBounds() const;
 
 private:
 

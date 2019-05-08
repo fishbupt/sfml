@@ -106,10 +106,6 @@ void Shape::setFillColor(const Color& color)
 {
     m_fillColor = color;
     updateFillColors();
-
-    // Update the vertex buffers if they are being used
-    if (m_verticesBuffer.getVertexCount())
-        m_verticesBuffer.update(&m_vertices[0]);
 }
 
 
@@ -230,21 +226,6 @@ void Shape::update()
 
     // Outline
     updateOutline();
-
-    // Update the vertex buffers if they are being used
-    if (VertexBuffer::isAvailable())
-    {
-        if (m_verticesBuffer.getVertexCount() != m_vertices.getVertexCount())
-            m_verticesBuffer.create(m_vertices.getVertexCount());
-
-        m_verticesBuffer.update(&m_vertices[0]);
-
-        if (m_outlineVerticesBuffer.getVertexCount() != m_outlineVertices.getVertexCount())
-            m_outlineVerticesBuffer.create(m_outlineVertices.getVertexCount());
-
-        if (m_outlineVertices.getVertexCount())
-            m_outlineVerticesBuffer.update(&m_outlineVertices[0]);
-    }
 }
 
 
@@ -322,13 +303,13 @@ void Shape::updateOutline()
         std::size_t index = i + 1;
 
         // Get the two segments shared by the current point
-        Vector2f p0 = (i == 0) ? m_vertices[count].position : m_vertices[index - 1].position;
-        Vector2f p1 = m_vertices[index].position;
-        Vector2f p2 = m_vertices[index + 1].position;
+        Vector3f p0 = (i == 0) ? m_vertices[count].position : m_vertices[index - 1].position;
+        Vector3f p1 = m_vertices[index].position;
+        Vector3f p2 = m_vertices[index + 1].position;
 
         // Compute their normal
-        Vector2f n1 = computeNormal(p0, p1);
-        Vector2f n2 = computeNormal(p1, p2);
+        Vector3f n1 = computeNormal(p0, p1);
+        Vector3f n2 = computeNormal(p1, p2);
 
         // Make sure that the normals point towards the outside of the shape
         // (this depends on the order in which the points were defined)
@@ -339,7 +320,7 @@ void Shape::updateOutline()
 
         // Combine them to get the extrusion direction
         float factor = 1.f + (n1.x * n2.x + n1.y * n2.y);
-        Vector2f normal = (n1 + n2) / factor;
+        Vector3f normal = (n1 + n2) / factor;
 
         // Update the outline points
         m_outlineVertices[i * 2 + 0].position = p1;

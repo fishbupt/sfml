@@ -38,7 +38,7 @@
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/NonCopyable.hpp>
-
+#include <memory>
 
 namespace sf
 {
@@ -52,7 +52,6 @@ class VertexBuffer;
 class SFML_GRAPHICS_API RenderTarget : NonCopyable
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
     ///
@@ -71,10 +70,23 @@ public:
     void clear(const Color& color = Color(0, 0, 0, 255));
 
     ////////////////////////////////////////////////////////////
+    /// \brief Enable or disable depth testing
+    ///
+    /// Depth testing removes the need to draw in back to front
+    /// order. The graphics hardware will make sure objects
+    /// that are positioned in front of other objects will
+    /// be seen no matter when they are drawn.
+    ///
+    /// \param enable True to enable, false to disable
+    ///
+    ////////////////////////////////////////////////////////////
+    void enableDepthTest(bool enable);
+
+    ////////////////////////////////////////////////////////////
     /// \brief Change the current active view
     ///
-    /// The view is like a 2D camera, it controls which part of
-    /// the 2D scene is visible, and how it is viewed in the
+    /// The view is like a camera, it controls which part of
+    /// the scene is visible, and how it is viewed in the
     /// render target.
     /// The new view will affect everything that is drawn, until
     /// another view is set.
@@ -89,7 +101,8 @@ public:
     /// \see getView, getDefaultView
     ///
     ////////////////////////////////////////////////////////////
-    void setView(const View& view);
+    template<typename T>
+    void setView(const T& view);
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the view currently in use in the render target
@@ -198,7 +211,7 @@ public:
     /// \see mapPixelToCoords
     ///
     ////////////////////////////////////////////////////////////
-    Vector2i mapCoordsToPixel(const Vector2f& point) const;
+    Vector2i mapCoordsToPixel(const Vector3f& point) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert a point from world coordinates to target coordinates
@@ -225,7 +238,7 @@ public:
     /// \see mapPixelToCoords
     ///
     ////////////////////////////////////////////////////////////
-    Vector2i mapCoordsToPixel(const Vector2f& point, const View& view) const;
+    Vector2i mapCoordsToPixel(const Vector3f& point, const View& view) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw a drawable object to the render target
@@ -245,8 +258,7 @@ public:
     /// \param states      Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void draw(const Vertex* vertices, std::size_t vertexCount,
-              PrimitiveType type, const RenderStates& states = RenderStates::Default);
+    void draw(const Vertex* vertices, std::size_t vertexCount, PrimitiveType type, const RenderStates& states = RenderStates::Default);
 
     ////////////////////////////////////////////////////////////
     /// \brief Draw primitives defined by a vertex buffer
@@ -266,7 +278,8 @@ public:
     /// \param states       Render states to use for drawing
     ///
     ////////////////////////////////////////////////////////////
-    void draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex, std::size_t vertexCount, const RenderStates& states = RenderStates::Default);
+    void draw(const VertexBuffer& vertexBuffer, std::size_t firstVertex, std::size_t vertexCount,
+              const RenderStates& states = RenderStates::Default);
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the size of the rendering region of the target
@@ -324,7 +337,7 @@ public:
     /// It is provided for convenience, but the best results will
     /// be achieved if you handle OpenGL states yourself (because
     /// you know which states have really changed, and need to be
-    /// saved and restored). Take a look at the resetGLStates
+    /// saved and restored). Take a look at the ResetGLStates
     /// function if you do so.
     ///
     /// \see popGLStates
@@ -367,7 +380,6 @@ public:
     void resetGLStates();
 
 protected:
-
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ///
@@ -380,11 +392,11 @@ protected:
     /// The derived classes must call this function after the
     /// target is created and ready for drawing.
     ///
+    /// \param tryToSetupNonLegacyPipeline true to call setupLegacyPipeline
     ////////////////////////////////////////////////////////////
-    void initialize();
+    void initialize(bool tryToSetupNonLegacyPipeline = true);
 
 private:
-
     ////////////////////////////////////////////////////////////
     /// \brief Apply the current view
     ///
@@ -408,6 +420,12 @@ private:
     void applyTransform(const Transform& transform);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Apply the current view transform
+    ///
+    ////////////////////////////////////////////////////////////
+    void applyViewTransform();
+
+    ////////////////////////////////////////////////////////////
     /// \brief Apply a new texture
     ///
     /// \param texture Texture to apply
@@ -422,6 +440,14 @@ private:
     ///
     ////////////////////////////////////////////////////////////
     void applyShader(const Shader* shader);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Apply a new vertex buffer
+    ///
+    /// \param buffer Vertex buffer to apply
+    ///
+    ////////////////////////////////////////////////////////////
+    void applyVertexBuffer(const VertexBuffer* buffer);
 
     ////////////////////////////////////////////////////////////
     /// \brief Setup environment for drawing
@@ -451,37 +477,56 @@ private:
     void cleanupDraw(const RenderStates& states);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Try to set up the non-legacy rendering pipeline if available
+    ///
+    /// This function checks the GLSL version to see if version
+    /// 1.30 or greater is supported. If that is the case, it will
+    /// set up the default shader used for rendering that will
+    /// emulate the legacy pipeline using the non-legacy OpenGL API.
+    ///
+    ////////////////////////////////////////////////////////////
+    void setupNonLegacyPipeline();
+
+    ////////////////////////////////////////////////////////////
     /// \brief Render states cache
     ///
     ////////////////////////////////////////////////////////////
     struct StatesCache
     {
-        enum {VertexCacheSize = 4};
+        enum
+        {
+            VertexCacheSize = 4
+        };
 
-        bool      enable;         ///< Is the cache enabled?
-        bool      glStatesSet;    ///< Are our internal GL states set yet?
-        bool      viewChanged;    ///< Has the current view changed since last draw?
-        BlendMode lastBlendMode;  ///< Cached blending mode
-        Uint64    lastTextureId;  ///< Cached texture
-        bool      texCoordsArrayEnabled; ///< Is GL_TEXTURE_COORD_ARRAY client state enabled?
-        bool      useVertexCache; ///< Did we previously use the vertex cache?
-        Vertex    vertexCache[VertexCacheSize]; ///< Pre-transformed vertices cache
+        bool enable;                         ///< Is the cache enabled?
+        bool glStatesSet;                    ///< Are our internal GL states set yet?
+        bool viewChanged;                    ///< Has the current view changed since last draw?
+        BlendMode lastBlendMode;             ///< Cached blending mode
+        Uint64 lastTextureId;                ///< Cached texture
+        Uint64 lastVertexBufferId;           ///< Cached vertex buffer
+        bool texCoordsArrayEnabled;          ///< Is GL_TEXTURE_COORD_ARRAY client state enabled?
+        bool useVertexCache;                 ///< Did we previously use the vertex cache?
+        Vertex vertexCache[VertexCacheSize]; ///< Pre-transformed vertices cache
     };
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    View        m_defaultView; ///< Default view
-    View        m_view;        ///< Current view
-    StatesCache m_cache;       ///< Render states cache
-    Uint64      m_id;          ///< Unique number that identifies the RenderTarget
+    View m_defaultView;                      ///< Default view
+    std::unique_ptr<View> m_view;            ///< Current view
+    StatesCache m_cache;                     ///< Render states cache
+    Uint64 m_id;                             ///< Unique number that identifies the RenderTarget
+    bool m_depthTest;                        ///< Whether depth testing is enabled
+    std::unique_ptr<Shader> m_defaultShader; ///< Default non-legacy shader, only created if supported
+    const Shader* m_currentNonLegacyShader;  ///< Used during a draw call to set uniforms of the target shader
+    const Shader* m_lastNonLegacyShader;     ///< Ised during a draw call to check if shader changed since the last draw
 };
+
+#include <SFML/Graphics/RenderTarget.inl>
 
 } // namespace sf
 
-
 #endif // SFML_RENDERTARGET_HPP
-
 
 ////////////////////////////////////////////////////////////
 /// \class sf::RenderTarget

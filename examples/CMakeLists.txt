@@ -22,6 +22,7 @@ endif()
 
 if(SFML_BUILD_GRAPHICS)
     add_subdirectory(opengl)
+    add_subdirectory(3d)
 
     if (NOT SFML_OS_IOS)
         add_subdirectory(joystick)

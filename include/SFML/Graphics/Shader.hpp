@@ -638,6 +638,16 @@ public:
     unsigned int getNativeHandle() const;
 
     ////////////////////////////////////////////////////////////
+    /// \brief Get the location ID of a shader vertex attribute
+    ///
+    /// \param name Name of the vertex attribute to search
+    ///
+    /// \return Location ID of the vertex attribute, or -1 if not found
+    ///
+    ////////////////////////////////////////////////////////////
+    int getVertexAttributeLocation(const std::string& name);
+
+    ////////////////////////////////////////////////////////////
     /// \brief Bind a shader for rendering
     ///
     /// This function is not part of the graphics API, it mustn't be
@@ -691,6 +701,58 @@ public:
     ////////////////////////////////////////////////////////////
     static bool isGeometryAvailable();
 
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the system supports uniform buffers
+    ///
+    /// Uniform buffers are simple buffer objects, such as those
+    /// used in VertexBuffer. Uniform buffers however, store
+    /// shader uniform data instead of vertex data. They can
+    /// be used to upload large amounts of uniform data
+    /// with a single API call and that data can be shared
+    /// among multiple shaders as well.
+    ///
+    /// Because uniform buffers rely on shaders and buffer
+    /// objects being available, this will only return true
+    /// if Shader::isAvailable() and VertexBuffer::isAvailable()
+    /// both return true and uniform buffer support itself
+    /// is present.
+    ///
+    /// \return True if uniform buffers are supported, false otherwise
+    ///
+    /// \see isAvailable
+    ///
+    ////////////////////////////////////////////////////////////
+    static bool isUniformBufferAvailable();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Get the string identifying the supported GLSL version
+    ///
+    /// In the desktop implementation (not ES), the string returned
+    /// is guaranteed to begin with the version number. In the ES
+    /// implementation, the returned string is prefixed with "ES ".
+    ///
+    /// \return std::string containing the supported GLSL version or an empty string if unsupported
+    ///
+    /// \see isAvailable
+    ///
+    ////////////////////////////////////////////////////////////
+    static std::string getSupportedVersion();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Get the maximum number of uniform components supported
+    ///
+    /// A uniform component is typically a single 32-bit data type
+    /// such as float or int. Vectors of those data types take up
+    /// the corresponding multiple of space, i.e. vec4 takes up
+    /// 4 floats worth of space and counts as 4 components. To
+    /// guarantee alignment, vec3 might also be packed to take up
+    /// the same amount of space as a vec4.
+    ///
+    /// \return Maximum number of uniform components supported
+    ///
+    ////////////////////////////////////////////////////////////
+    static std::size_t getMaximumUniformComponents();
+
 private:
 
     ////////////////////////////////////////////////////////////
@@ -727,6 +789,7 @@ private:
     ////////////////////////////////////////////////////////////
     int getUniformLocation(const std::string& name);
 
+
     ////////////////////////////////////////////////////////////
     /// \brief RAII object to save and restore the program
     ///        binding while uniforms are being set
@@ -739,16 +802,18 @@ private:
     ////////////////////////////////////////////////////////////
     // Types
     ////////////////////////////////////////////////////////////
-    typedef std::map<int, const Texture*> TextureTable;
-    typedef std::map<std::string, int> UniformTable;
+    using TextureTable  = std::map<int, const Texture*>;
+    using UniformTable  = std::map<std::string, int>;
+    using LocationTable = std::map<std::string, int>;
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    unsigned int m_shaderProgram;  ///< OpenGL identifier for the program
-    int          m_currentTexture; ///< Location of the current texture in the shader
-    TextureTable m_textures;       ///< Texture variables in the shader, mapped to their location
-    UniformTable m_uniforms;       ///< Parameters location cache
+    unsigned int  m_shaderProgram;  ///< OpenGL identifier for the program
+    int           m_currentTexture; ///< Location of the current texture in the shader
+    TextureTable  m_textures;       ///< Texture variables in the shader, mapped to their location
+    UniformTable  m_uniforms;       ///< Parameters location cache
+    LocationTable m_attributes;     ///< Attributes location cache
 };
 
 } // namespace sf

@@ -318,6 +318,17 @@ public:
     ////////////////////////////////////////////////////////////
     static bool isAvailable();
 
+    ////////////////////////////////////////////////////////////
+    /// \brief Tell whether or not the system supports vertex array objects
+    ///
+    /// This function should always be called before using
+    /// any vertex array object features.
+    ///
+    /// \return True if vertex array objects are supported, false otherwise
+    ///
+    ////////////////////////////////////////////////////////////
+    static bool hasVertexArrayObjects();
+
 private:
 
     ////////////////////////////////////////////////////////////
@@ -330,14 +341,17 @@ private:
     virtual void draw(RenderTarget& target, RenderStates states) const;
 
 private:
+    friend class RenderTarget;
+    friend class Shader;
 
-    ////////////////////////////////////////////////////////////
+    /// ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
     unsigned int  m_buffer;        ///< Internal buffer identifier
     std::size_t   m_size;          ///< Size in Vertexes of the currently allocated buffer
     PrimitiveType m_primitiveType; ///< Type of primitives to draw
     Usage         m_usage;         ///< How this vertex buffer is to be used
+    Uint64        m_cacheId;       ///< Unique number that identifies the vertex buffer to the render target's cache
 };
 
 } // namespace sf

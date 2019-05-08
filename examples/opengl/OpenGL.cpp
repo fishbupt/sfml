@@ -280,9 +280,9 @@ int main()
 
             // Draw some text on top of our OpenGL object
             window.pushGLStates();
-            window.draw(text);
-            window.draw(sRgbInstructions);
-            window.draw(mipmapInstructions);
+            //window.draw(text);
+            //window.draw(sRgbInstructions);
+            //window.draw(mipmapInstructions);
             window.popGLStates();
 
             // Finally, display the rendered frame on screen

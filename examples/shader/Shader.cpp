@@ -3,6 +3,7 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include "Effect.hpp"
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
 
@@ -149,6 +150,16 @@ public:
         if (!m_shader.loadFromFile("resources/storm.vert", "resources/blink.frag"))
             return false;
 
+        // Generate a 1D texture full of random numbers
+        sf::Uint8 random_numbers[4000];
+        for (int i = 0; i < 4000; ++i)
+            random_numbers[i] = std::rand() % 255;
+
+        if (!m_random_texture.create(100, 10))
+            return false;
+        m_random_texture.update(random_numbers);
+        m_shader.setUniform("random_texture", m_random_texture);
+
         return true;
     }
 
@@ -171,6 +182,7 @@ private:
 
     sf::VertexArray m_points;
     sf::Shader m_shader;
+    sf::Texture m_random_texture;
 };
 
 

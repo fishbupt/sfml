@@ -29,10 +29,25 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
+#include <SFML/Window/Context.hpp>
 #include <SFML/System/Mutex.hpp>
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Err.hpp>
 #include <cstring>
+
+namespace
+{
+    // Thread-safe unique identifier generator,
+    // is used for states cache (see RenderTarget)
+    sf::Uint64 getUniqueId()
+    {
+        static sf::Uint64 id = 1; // start at 1, zero is "no buffer"
+        static sf::Mutex mutex;
+
+        sf::Lock lock(mutex);
+        return id++;
+    }
+}
 
 namespace
 {
@@ -57,7 +72,8 @@ VertexBuffer::VertexBuffer() :
 m_buffer       (0),
 m_size         (0),
 m_primitiveType(Points),
-m_usage        (Stream)
+m_usage        (Stream),
+m_cacheId      (getUniqueId())
 {
 }
 
@@ -67,7 +83,8 @@ VertexBuffer::VertexBuffer(PrimitiveType type) :
 m_buffer       (0),
 m_size         (0),
 m_primitiveType(type),
-m_usage        (Stream)
+m_usage        (Stream),
+m_cacheId      (getUniqueId())
 {
 }
 
@@ -77,7 +94,8 @@ VertexBuffer::VertexBuffer(VertexBuffer::Usage usage) :
 m_buffer       (0),
 m_size         (0),
 m_primitiveType(Points),
-m_usage        (usage)
+m_usage        (usage),
+m_cacheId      (getUniqueId())
 {
 }
 
@@ -87,7 +105,8 @@ VertexBuffer::VertexBuffer(PrimitiveType type, VertexBuffer::Usage usage) :
 m_buffer       (0),
 m_size         (0),
 m_primitiveType(type),
-m_usage        (usage)
+m_usage        (usage),
+m_cacheId      (getUniqueId())
 {
 }
 
@@ -97,7 +116,8 @@ VertexBuffer::VertexBuffer(const VertexBuffer& copy) :
 m_buffer       (0),
 m_size         (0),
 m_primitiveType(copy.m_primitiveType),
-m_usage        (copy.m_usage)
+m_usage        (copy.m_usage),
+m_cacheId      (getUniqueId())
 {
     if (copy.m_buffer && copy.m_size)
     {
@@ -267,6 +287,7 @@ VertexBuffer& VertexBuffer::operator =(const VertexBuffer& right)
     VertexBuffer temp(right);
 
     swap(temp);
+    m_cacheId = getUniqueId();
 
     return *this;
 }
@@ -352,6 +373,24 @@ bool VertexBuffer::isAvailable()
     return available;
 }
 
+////////////////////////////////////////////////////////////
+bool VertexBuffer::hasVertexArrayObjects()
+{
+    sf::priv::ensureExtensionsInit();
+    bool isTrue = Context::isExtensionAvailable("GL_ARB_vertex_array_object");
+
+    return isTrue;
+    static bool checked = false;
+    static bool vertexArrayObjectsSupported = false;
+    if (!checked)
+    {
+        checked = true;
+        sf::priv::ensureExtensionsInit();
+        vertexArrayObjectsSupported = Context::isExtensionAvailable("GL_ARB_vertex_array_object");
+    }
+
+    return vertexArrayObjectsSupported;
+}
 
 ////////////////////////////////////////////////////////////
 void VertexBuffer::draw(RenderTarget& target, RenderStates states) const
