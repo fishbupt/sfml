@@ -32,37 +32,29 @@ namespace sf
 {
 ////////////////////////////////////////////////////////////
 View::View()
-    : m_position()
+    : m_center()
     , m_size()
     , m_rotation(0)
     , m_viewport(0, 0, 1, 1)
     , m_transformUpdated(false)
     , m_invTransformUpdated(false)
+    , m_viewTransformUpdated(false)
+    , m_invViewTransformUpdated(false)
 {
     reset(FloatRect(0, 0, 1000, 1000));
 }
 
 ////////////////////////////////////////////////////////////
-View::View(const FloatRect& rectangle)
-    : m_position()
-    , m_size()
-    , m_rotation(0)
-    , m_viewport(0, 0, 1, 1)
-    , m_transformUpdated(false)
-    , m_invTransformUpdated(false)
+View::View(const FloatRect& rectangle) : View()
 {
     reset(rectangle);
 }
 
 ////////////////////////////////////////////////////////////
-View::View(const Vector3f& center, const Vector2f& size)
-    : m_position(center)
-    , m_size(size)
-    , m_rotation(0)
-    , m_viewport(0, 0, 1, 1)
-    , m_transformUpdated(false)
-    , m_invTransformUpdated(false)
+View::View(const Vector3f& center, const Vector2f& size) :View()
 {
+    m_center = center;
+    m_size = size;
 }
 
 ////////////////////////////////////////////////////////////
@@ -73,9 +65,9 @@ View::~View()
 ////////////////////////////////////////////////////////////
 void View::setCenter(float x, float y, float z)
 {
-    m_position.x = x;
-    m_position.y = y;
-    m_position.z = z;
+    m_center.x = x;
+    m_center.y = y;
+    m_center.z = z;
 
     m_transformUpdated = false;
     m_invTransformUpdated = false;
@@ -123,8 +115,8 @@ void View::setViewport(const FloatRect& viewport)
 ////////////////////////////////////////////////////////////
 void View::reset(const FloatRect& rectangle)
 {
-    m_position.x = rectangle.left + rectangle.width / 2.f;
-    m_position.y = rectangle.top + rectangle.height / 2.f;
+    m_center.x = rectangle.left + rectangle.width / 2.f;
+    m_center.y = rectangle.top + rectangle.height / 2.f;
     m_size.x = rectangle.width;
     m_size.y = rectangle.height;
     m_rotation = 0;
@@ -136,7 +128,7 @@ void View::reset(const FloatRect& rectangle)
 ////////////////////////////////////////////////////////////
 const Vector3f& View::getCenter() const
 {
-    return m_position;
+    return m_center;
 }
 
 ////////////////////////////////////////////////////////////
@@ -160,13 +152,13 @@ const FloatRect& View::getViewport() const
 ////////////////////////////////////////////////////////////
 void View::move(float offsetX, float offsetY, float offsetZ)
 {
-    setCenter(m_position.x + offsetX, m_position.y + offsetY, m_position.z + offsetZ);
+    setCenter(m_center.x + offsetX, m_center.y + offsetY, m_center.z + offsetZ);
 }
 
 ////////////////////////////////////////////////////////////
 void View::move(const Vector3f& offset)
 {
-    setCenter(m_position + offset);
+    setCenter(m_center + offset);
 }
 
 ////////////////////////////////////////////////////////////
@@ -192,7 +184,10 @@ const Transform& View::getTransform() const
         float b = -2.f / m_size.y;
 
         // Rebuild the projection matrix
-        m_transform = Transform(a, 0.f, 0.f, -1.f, 0.f, b, 0.f, 1.f, 0.f, 0.f, -2.f, -1.f, 0.f, 0.f, 0.f, 1.f);
+        m_transform = Transform(a,   0.f, 0.f,  -1.f,
+                                0.f, b,   0.f,  1.f,
+                                0.f, 0.f, -2.f, -1.f,
+                                0.f, 0.f, 0.f,  1.f);
 
         m_transformUpdated = true;
     }
@@ -225,11 +220,13 @@ const Transform& View::getViewTransform() const
         float sine = static_cast<float>(std::sin(angle));
 
         // Translation components
-        float x = m_size.x / 2.f - m_position.x;
-        float y = m_size.y / 2.f - m_position.y;
+        float x = m_size.x / 2.f - m_center.x;
+        float y = m_size.y / 2.f - m_center.y;
 
-        m_viewTransform = Transform(cosine, sine, 0.f, -x * cosine - y * sine, -sine, cosine, 0.f, x * sine - y * cosine, 0.f, 0.f, 1.f,
-                                    0.f, 0.f, 0.f, 0.f, 1.f);
+        m_viewTransform = Transform(cosine, sine,   0.f,  -x * cosine - y * sine,
+                                    -sine,  cosine, 0.f,  x * sine - y * cosine,
+                                    0.f,    0.f,    1.f,  0.f,
+                                    0.f,    0.f,    0.f,  1.f);
 
         m_viewTransformUpdated = true;
     }
@@ -248,12 +245,6 @@ const Transform& View::getInverseViewTransform() const
     }
 
     return m_inverseViewTransform;
-}
-
-////////////////////////////////////////////////////////////
-const Vector3f& View::getPosition() const
-{
-    return getCenter();
 }
 
 } // namespace sf

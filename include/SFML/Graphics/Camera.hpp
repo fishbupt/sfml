@@ -43,46 +43,6 @@ public :
     virtual ~Camera();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the position of the camera
-    ///
-    /// This function completely overwrites the previous position.
-    /// See the move function to apply an offset based on the previous position instead.
-    /// The default position of a camera is (0, 0, 0).
-    ///
-    /// \param x X coordinate of the new position
-    /// \param y Y coordinate of the new position
-    /// \param z Z coordinate of the new position
-    ///
-    /// \see move, getPosition
-    ///
-    ////////////////////////////////////////////////////////////
-    void setPosition(float x, float y, float z);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Set the position of the camera
-    ///
-    /// This function completely overwrites the previous position.
-    /// See the move function to apply an offset based on the previous position instead.
-    /// The default position of a camera is (0, 0).
-    ///
-    /// \param position New position
-    ///
-    /// \see move, getPosition
-    ///
-    ////////////////////////////////////////////////////////////
-    void setPosition(const Vector3f& position);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Get the position of the camera
-    ///
-    /// \return Current position
-    ///
-    /// \see setPosition
-    ///
-    ////////////////////////////////////////////////////////////
-    virtual const Vector3f& getPosition() const;
-
-    ////////////////////////////////////////////////////////////
     /// \brief Set the forward vector of the camera
     ///
     /// The direction (also called "at vector") is the vector

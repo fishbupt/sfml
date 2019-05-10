@@ -58,6 +58,14 @@ Transform::Transform(float a00, float a01, float a02, float a03,
     m_matrix[3] = a30; m_matrix[7] = a31; m_matrix[11] = a32; m_matrix[15] = a33;
 }
 
+////////////////////////////////////////////////////////////
+Transform::Transform(glm::mat4 matrix)
+{
+    m_matrix[0] = matrix[0][0]; m_matrix[4] = matrix[1][0]; m_matrix[8]  = matrix[2][0]; m_matrix[12] = matrix[3][0];
+    m_matrix[1] = matrix[0][1]; m_matrix[5] = matrix[1][1]; m_matrix[9]  = matrix[2][1]; m_matrix[13] = matrix[3][1];
+    m_matrix[2] = matrix[0][2]; m_matrix[6] = matrix[1][2]; m_matrix[10] = matrix[2][2]; m_matrix[14] = matrix[3][2];
+    m_matrix[3] = matrix[0][3]; m_matrix[7] = matrix[1][3]; m_matrix[11] = matrix[2][3]; m_matrix[15] = matrix[3][3];
+}
 
 ////////////////////////////////////////////////////////////
 const float* Transform::getMatrix() const

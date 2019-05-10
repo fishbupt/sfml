@@ -43,5 +43,6 @@ To Build C++/CLI project, make sure you have cmake > 3.14.0 and Visual Studio 20
 cd 'to source dir'  
 mkdir build  
 cd build  
+conan install ..
 cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF 
 start SFML.sln 

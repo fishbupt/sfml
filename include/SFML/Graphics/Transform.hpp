@@ -32,7 +32,7 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Box.hpp>
 #include <SFML/System/Vector3.hpp>
-
+#include <glm/mat4x4.hpp> // glm::mat4
 
 namespace sf
 {
@@ -77,6 +77,14 @@ public:
               float a10, float a11, float a12, float a13,
               float a20, float a21, float a22, float a23,
               float a30, float a31, float a32, float a33);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Construct a transform from glm matrix
+    ///
+    /// \param matrix a glm 4x4 matrix
+    ///
+    ////////////////////////////////////////////////////////////
+    Transform(glm::mat4 matrix);
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the transform as a 4x4 matrix

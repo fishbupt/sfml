@@ -294,14 +294,6 @@ public:
     ////////////////////////////////////////////////////////////
     const Transform& getInverseViewTransform() const;
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Get the position of the viewer
-    ///
-    /// \return Position of the viewer
-    ///
-    ////////////////////////////////////////////////////////////
-    virtual const Vector3f& getPosition() const;
-
 protected:
     mutable Transform m_transform;            ///< Precomputed projection transform corresponding to the view
     mutable Transform m_inverseTransform;     ///< Precomputed inverse projection transform corresponding to the view
@@ -312,11 +304,13 @@ protected:
     mutable bool m_viewTransformUpdated;      ///< Internal state telling if the view transform needs to be updated
     mutable bool m_invViewTransformUpdated;   ///< Internal state telling if the inverse view transform needs to be updated
 
-private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Vector3f m_position;  ///< Center of the view, in scene coordinates
+protected:
+    Vector3f m_center; ///< Center of the view, in scene coordinates
+
+private:
     Vector2f m_size;      ///< Size of the view, in scene coordinates
     float m_rotation;     ///< Angle of rotation of the view rectangle, in degrees
     FloatRect m_viewport; ///< Viewport rectangle, expressed as a factor of the render-target's size

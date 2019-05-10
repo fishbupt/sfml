@@ -777,8 +777,6 @@ void RenderTarget::resetGLStates()
 
         if (VertexBuffer::isAvailable())
             applyVertexBuffer(nullptr);
-        // Set the default view
-        setView(m_defaultView);
 
         m_cache.enable = true;
     }
@@ -817,7 +815,7 @@ void RenderTarget::applyCurrentView()
 
         shader->setUniform("sf_ProjectionMatrix", Glsl::Mat4(m_view->getTransform()));
         shader->setUniform("sf_ViewMatrix", Glsl::Mat4(m_view->getViewTransform()));
-        shader->setUniform("sf_ViewerPosition", m_view->getPosition());
+        shader->setUniform("sf_ViewerPosition", m_view->getCenter());
     }
     else
     {

@@ -68,6 +68,15 @@ namespace Presentation
                 void set(int value);
             }
 
+            property int NumberOfZAxisDivisions
+            {
+                int get()
+                {
+                    return _numberOfZAxisDivisions;
+                }
+                void set(int value);
+            }
+
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
         private:
@@ -76,14 +85,17 @@ namespace Presentation
             Rect _windowRectangle;
             int _numberOfXAxisDivisions;
             int _numberOfYAxisDivisions;
+            int _numberOfZAxisDivisions;
 
             scoped_ptr<sf::VertexArray> _gridXVertices;
             scoped_ptr<sf::VertexArray> _gridYVertices;
             scoped_ptr<sf::VertexArray> _borderXVertices;
             scoped_ptr<sf::VertexArray> _borderYVertices;
+            scoped_ptr<sf::VertexArray> _gridZVertices;
 
             void updateXAxis();
             void updateYAxis();
+            void updateZAxis();
         };
     }
 }

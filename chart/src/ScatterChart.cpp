@@ -27,6 +27,7 @@ namespace Presentation
         ScatterChart::ScatterChart()
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
+            , _camera(new sf::Camera(45.0f, 0.1f, 100.0f))
         {
             IsPolorCoordinate = true;
             Content = _imageItem;
@@ -39,10 +40,14 @@ namespace Presentation
             if (!_renderTextureIsReady || _glMajorVersion < 2)
                 return;
 
-            //if (_glMajorVersion >= 3)
-            //{
-            //    glEnable(GL_POINT_SMOOTH);
-            //}
+            if (_glMajorVersion >= 3)
+            {
+                glEnable(GL_POINT_SMOOTH);
+                if (_enableCamera)
+                {
+                    glEnable(GL_LINE_SMOOTH);
+                }
+            }
             glPointSize(3.0f);
 
             Draw(_renderTexture.get(), sf::RenderStates::Default);
@@ -58,9 +63,9 @@ namespace Presentation
             sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
             glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)_drawnImage->BackBuffer);
 
-            Bitmap ^ renderingBitmap = gcnew Bitmap(_drawnImage->PixelWidth, _drawnImage->PixelHeight, _drawnImage->BackBufferStride,
+            Bitmap^ renderingBitmap = gcnew Bitmap(_drawnImage->PixelWidth, _drawnImage->PixelHeight, _drawnImage->BackBufferStride,
                                                     System::Drawing::Imaging::PixelFormat::Format32bppRgb, _drawnImage->BackBuffer);
-            Graphics ^ renderingGraphic = Graphics::FromImage(renderingBitmap);
+            Graphics^ renderingGraphic = Graphics::FromImage(renderingBitmap);
             try
             {
                 if (_drawCustomMarkers != nullptr)
@@ -82,6 +87,11 @@ namespace Presentation
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
+            if (_enableCamera)
+            {
+                target->setView(*_camera);
+            }
+
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
             target->clear(backColor);
             Grid->Draw(target, states);
@@ -146,7 +156,7 @@ namespace Presentation
             return yVal;
         }
 
-        PointsShape ^ ScatterChart::CreateShape()
+        PointsShape^ ScatterChart::CreateShape()
         {
             return gcnew PointsShape();
         }
@@ -159,7 +169,10 @@ namespace Presentation
             _renderTextureIsReady = _renderTexture->create(width, height);
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
+            _renderTexture->enableDepthTest(true);
 
+            _camera->setCenter(width / 2.0f, height / 2.0f, 15.0f);
+            _camera->setScale(2.0f / width, 2.0f / height, 1.0f);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
             Grid->WindowRectangle = Rect(0, 0, width, height);
@@ -189,13 +202,13 @@ namespace Presentation
             _transform->setScale(scale);
         }
 
-        void ScatterChart::OnSizeChanged(Object ^ sender, SizeChangedEventArgs ^ e)
+        void ScatterChart::OnSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
         {
             CreateRenderTexture();
             Draw();
         }
 
-        void ScatterChart::OnGridRectangleChanged(Object ^ sender, EventArgs ^ e)
+        void ScatterChart::OnGridRectangleChanged(Object^ sender, EventArgs^ e)
         {
             UpdateTransform();
         }

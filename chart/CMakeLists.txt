@@ -1,3 +1,7 @@
+enable_language(CSharp)
+set(CMAKE_CSharp_FLAGS "/platform:x64 /langversion:latest")
+include(CSharpUtilities)
+
 set(INCROOT ./include)
 set(SRCROOT ./src)
 

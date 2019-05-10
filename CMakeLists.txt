@@ -13,6 +13,11 @@ macro(sfml_set_option var default type docstring)
     set(${var} ${${var}} CACHE ${type} ${docstring} FORCE)
 endmacro()
 
+# include conan setup
+set(CONAN_DISABLE_CHECK_COMPILER 1)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
 # these options have to be set before CMake detects/configures the toolchain
 
 # determine whether to create a debug or release build

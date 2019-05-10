@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Camera.hpp>
 #include <SFML/Window/Context.hpp>
 #include <ScopedPtr.hpp>
 #include <PointsShape.hpp>
@@ -238,6 +239,22 @@ namespace Presentation
                     }
                 }
             }
+
+            property bool Enable3D
+            {
+                bool get()
+                {
+                    return _enableCamera;
+                }
+                void set(bool value)
+                {
+                    if (_enableCamera != value)
+                        _enableCamera = value;
+                    if (!_enableCamera)
+                        _renderTexture->setView(_renderTexture->getDefaultView());
+                }
+            }
+
             #pragma endregion Properties
 
             #pragma region Events
@@ -273,8 +290,10 @@ namespace Presentation
             bool _renderTextureIsReady = false;
             Image ^ _imageItem = gcnew Image();
             WriteableBitmap ^ _drawnImage; // displaying bitmap
-
             int _glMajorVersion;
+
+            scoped_ptr<sf::Camera> _camera;
+            bool _enableCamera = false; // true to apply 3d camera
         };
     }
 }

@@ -8,8 +8,12 @@ namespace Presentation
     namespace Graph
     {
         GridShape::GridShape()
-            : _gridXVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
+            : _numberOfXAxisDivisions(0)
+            , _numberOfYAxisDivisions(0)
+            , _numberOfZAxisDivisions(0)
+            , _gridXVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _gridYVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
+            , _gridZVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _borderXVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
             , _borderYVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
         {
@@ -18,6 +22,7 @@ namespace Presentation
             GridColor = System::Windows::Media::Color::FromRgb(128, 128, 128);
             NumberOfXAxisDivisions = 10;
             NumberOfYAxisDivisions = 10;
+            NumberOfZAxisDivisions = 0;
         }
 
         void GridShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
@@ -26,6 +31,7 @@ namespace Presentation
             {
                 target->draw(*_gridXVertices, states);
                 target->draw(*_gridYVertices, states);
+                target->draw(*_gridZVertices, states);
             }
             else // draw border only
             {
@@ -48,6 +54,10 @@ namespace Presentation
 
             updateXAxis();
             updateYAxis();
+            if (_numberOfZAxisDivisions > 0) // enable 3d grid
+            {
+                updateZAxis();
+            }
         }
 
         void GridShape::NumberOfXAxisDivisions::set(int nofDivisions)
@@ -56,6 +66,10 @@ namespace Presentation
             {
                 _numberOfXAxisDivisions = nofDivisions;
                 updateXAxis();
+                if (_numberOfZAxisDivisions > 0) // enable 3d grid
+                {
+                    updateZAxis();
+                }
             }
         }
 
@@ -65,9 +79,24 @@ namespace Presentation
             {
                 _numberOfYAxisDivisions = nofDivisions;
                 updateYAxis();
+                if (_numberOfZAxisDivisions > 0) // enable 3d grid
+                {
+                    updateZAxis();
+                }
             }
         }
 
+        void GridShape::NumberOfZAxisDivisions::set(int nofDivisions)
+        {
+            if (nofDivisions != _numberOfZAxisDivisions)
+            {
+                _numberOfZAxisDivisions = nofDivisions;
+                if (_numberOfZAxisDivisions > 0) // enable 3d grid
+                {
+                    updateZAxis();
+                }
+            }
+        }
         void GridShape::updateXAxis()
         {
             _gridXVertices->resize((_numberOfXAxisDivisions + 1) * 2);
@@ -106,7 +135,6 @@ namespace Presentation
             {
                 (*_gridYVertices)[2 * i].position.x = xStart;
                 (*_gridYVertices)[2 * i].position.y = yStart + i * yTick;
-                ;
                 (*_gridYVertices)[2 * i].color = gridColor;
 
                 (*_gridYVertices)[2 * i + 1].position.x = xStop;
@@ -117,6 +145,70 @@ namespace Presentation
             (*_borderYVertices)[1] = (*_gridYVertices)[1];
             (*_borderYVertices)[2] = (*_gridYVertices)[_gridYVertices->getVertexCount() - 2];
             (*_borderYVertices)[3] = (*_gridYVertices)[_gridYVertices->getVertexCount() - 1];
+        }
+
+        void GridShape::updateZAxis()
+        {
+            const float maxZValue = 10.f;
+            const float minZValue = 0.0f;
+            _gridZVertices->resize((_numberOfZAxisDivisions + 1) * 4 + (_numberOfXAxisDivisions + 1) * 2 +
+                                   (_numberOfYAxisDivisions + 1) * 2);
+            float zTick = maxZValue / _numberOfZAxisDivisions;
+            float zStart = minZValue;
+            float zStop = maxZValue;
+            float xStart = (float)GridRectangle.X;
+            float xStop = (float)GridRectangle.Width + xStart;
+            float xTick = (float)GridRectangle.Width / _numberOfXAxisDivisions;
+            float yStart = (float)GridRectangle.Y;
+            float yStop = (float)GridRectangle.Height + yStart;
+            float yTick = (float)GridRectangle.Height / _numberOfYAxisDivisions;
+            sf::Color gridColor = ColorUtil::ColorFrom(GridColor);
+
+            for (int i = 0; i <= _numberOfZAxisDivisions; i++)
+            {
+                (*_gridZVertices)[4 * i].position.x = xStart;
+                (*_gridZVertices)[4 * i].position.y = yStop;
+                (*_gridZVertices)[4 * i].position.z = zStart + i * zTick;
+                (*_gridZVertices)[4 * i].color = gridColor;
+
+                (*_gridZVertices)[4 * i + 1].position.x = xStop;
+                (*_gridZVertices)[4 * i + 1].position.y = yStop;
+                (*_gridZVertices)[4 * i + 1].position.z = zStart + i * zTick;
+                (*_gridZVertices)[4 * i + 1].color = gridColor;
+
+                (*_gridZVertices)[4 * i + 2] = (*_gridZVertices)[4 * i];
+
+                (*_gridZVertices)[4 * i + 3].position.x = xStart;
+                (*_gridZVertices)[4 * i + 3].position.y = yStart;
+                (*_gridZVertices)[4 * i + 3].position.z = zStart + i * zTick;
+                (*_gridZVertices)[4 * i + 3].color = gridColor;
+            }
+            int offset = (_numberOfZAxisDivisions + 1) * 4;
+            for (int i = 0; i <= _numberOfXAxisDivisions; i++)
+            {
+                (*_gridZVertices)[offset + 2 * i].position.x = xStart + i * xTick;
+                (*_gridZVertices)[offset + 2 * i].position.y = yStop;
+                (*_gridZVertices)[offset + 2 * i].position.z = zStart;
+                (*_gridZVertices)[offset + 2 * i].color = gridColor;
+
+                (*_gridZVertices)[offset + 2 * i + 1].position.x = xStart + i * xTick;
+                (*_gridZVertices)[offset + 2 * i + 1].position.y = yStop;
+                (*_gridZVertices)[offset + 2 * i + 1].position.z = zStop;
+                (*_gridZVertices)[offset + 2 * i + 1].color = gridColor;
+            }
+            offset += (_numberOfXAxisDivisions + 1) * 2;
+            for (int i = 0; i <= _numberOfYAxisDivisions; i++)
+            {
+                (*_gridZVertices)[offset + 2 * i].position.x = xStart;
+                (*_gridZVertices)[offset + 2 * i].position.y = yStart + i * yTick;
+                (*_gridZVertices)[offset + 2 * i].position.z = zStart;
+                (*_gridZVertices)[offset + 2 * i].color = gridColor;
+
+                (*_gridZVertices)[offset + 2 * i + 1].position.x = xStart;
+                (*_gridZVertices)[offset + 2 * i + 1].position.y = yStart + i * yTick;
+                (*_gridZVertices)[offset + 2 * i + 1].position.z = zStop;
+                (*_gridZVertices)[offset + 2 * i + 1].color = gridColor;
+            }
         }
     }
 }

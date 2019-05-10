@@ -39,7 +39,7 @@ void Billboard::draw(RenderTarget& target, RenderStates states) const
         Vector3f pos = getPosition();
 
         // Construct the basis of our rotation matrix
-        Vector3f zAxis = m_camera->getPosition() - pos;
+        Vector3f zAxis = m_camera->getCenter() - pos;
         float zAxisNorm = std::sqrt(zAxis.x * zAxis.x +
                                     zAxis.y * zAxis.y +
                                     zAxis.z * zAxis.z);

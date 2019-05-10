@@ -1,0 +1,5 @@
+[requires]
+glm/0.9.9.4@g-truc/stable
+
+[generators]
+cmake

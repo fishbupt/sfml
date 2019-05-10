@@ -158,7 +158,7 @@ int main()
     contextSettings.depthBits = 32;
     //contextSettings.majorVersion = 4;
     //contextSettings.minorVersion = 6;
-    //contextSettings.attributeFlags |= sf::ContextSettings::Core;
+    contextSettings.attributeFlags |= sf::ContextSettings::Core;
 
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML 3D graphics", sf::Style::Default, contextSettings);
@@ -176,7 +176,7 @@ int main()
     // and scale it according to the screen aspect ratio
     sf::Camera camera(90.f, 0.001f, 1000.f);
     camera.scale(1 / aspectRatio, 1, 1);
-    camera.setPosition(0, 0, 10);
+    camera.setCenter(0, 0, 10);
 
     // Set the camera as the window's active view
     window.setView(camera);
