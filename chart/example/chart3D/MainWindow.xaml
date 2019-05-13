@@ -32,6 +32,13 @@
                 <Label Margin="2">XAxisMax</Label>
                 <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
                          Name="tbXAxisMax" KeyDown="XAxisMax_KeyDown"></TextBox>
+                <ComboBox
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="120"
+                    Loaded="ComboBox_Loaded"
+                    SelectionChanged="ComboBox_SelectionChanged"
+                    />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1" Margin="4">
@@ -39,13 +46,32 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <ComboBox
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Width="120"
-                Loaded="ComboBox_Loaded"
-                SelectionChanged="ComboBox_SelectionChanged"
-                />
+            <GroupBox Margin="0,4,373,6" Grid.Column="0" >
+                <GroupBox.Header>
+                    Camera Settings
+                </GroupBox.Header>
+                <StackPanel Margin="10" VerticalAlignment="Center">
+                    <DockPanel VerticalAlignment="Center" Margin="5">
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Z:</Label>
+                        <Label Content="{Binding ElementName=zSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
+                        <Slider Minimum="-50" Maximum="50" Name="zSlider" ValueChanged="Z_ValueChanged"
+                                IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+                    </DockPanel>
+                    <DockPanel VerticalAlignment="Center" Margin="5">
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Pitch:</Label>
+                        <Label Content="{Binding ElementName=pitchSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
+                        <Slider Minimum="-180" Maximum="180" Name="pitchSlider"  ValueChanged="Pitch_ValueChanged"
+                                IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+                    </DockPanel>
+                    <DockPanel VerticalAlignment="Center" Margin="5">
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Yaw:</Label>
+                        <Label Content="{Binding ElementName=yawSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
+                        <Slider Value="-90" Minimum="-180" Maximum="180" Name="yawSlider" ValueChanged="Yaw_ValueChanged"
+                                IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
+                    </DockPanel>
+                    <Button Content="reset" Click="Reset_Click" Margin="0,0,280,0"/>
+                </StackPanel>
+            </GroupBox>
             <Label Grid.Column="1" x:Name="FpsLabel">FPS</Label>
         </Grid>
     </Grid>

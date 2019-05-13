@@ -90,8 +90,8 @@ public:
     /// render target.
     /// The new view will affect everything that is drawn, until
     /// another view is set.
-    /// The render target keeps its own copy of the view object,
-    /// so it is not necessary to keep the original one alive
+    /// The render target only keeps pointer to the view object passed in,
+    /// so it is MUST keep the original one alive
     /// after calling this function.
     /// To restore the original view of the target, you can pass
     /// the result of getDefaultView() to this function.
@@ -513,7 +513,7 @@ private:
     // Member data
     ////////////////////////////////////////////////////////////
     View m_defaultView;                      ///< Default view
-    std::unique_ptr<View> m_view;            ///< Current view
+    const View *m_view;                      ///< Current view
     StatesCache m_cache;                     ///< Render states cache
     Uint64 m_id;                             ///< Unique number that identifies the RenderTarget
     bool m_depthTest;                        ///< Whether depth testing is enabled

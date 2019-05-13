@@ -158,5 +158,24 @@ namespace ChartExample
                 ScatterChart.Chart.XAxisMax = XAxisMax = value;
             }
         }
+
+        private void Z_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ScatterChart.Chart.SetCameraZ((float)zSlider.Value);
+        }
+        private void Pitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ScatterChart.Chart.SetCameraPitch((float)pitchSlider.Value);
+        }
+        private void Yaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ScatterChart.Chart.SetCameraYaw((float)yawSlider.Value);
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            pitchSlider.Value = 0.0;
+            yawSlider.Value = -90.0;
+        }
     }
 }

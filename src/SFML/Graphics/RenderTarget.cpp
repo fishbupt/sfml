@@ -787,7 +787,7 @@ void RenderTarget::initialize(bool tryToSetupNonLegacyPipeLine)
 {
     // Setup the default and current views
     m_defaultView.reset(FloatRect(0, 0, static_cast<float>(getSize().x), static_cast<float>(getSize().y)));
-    m_view.reset(new View(m_defaultView));
+    setView(m_defaultView);
 
     // Set GL states only on first draw, so that we don't pollute user's states
     m_cache.glStatesSet = false;

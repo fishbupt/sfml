@@ -81,6 +81,20 @@ namespace Presentation
             /// <returns>The Y-axis value.</returns>
             float YAtPixel(int value);
 
+            void SetCameraPitch(float pitch)
+            {
+                //_camera->setPitch(pitch);
+            }
+
+            void SetCameraYaw(float yaw)
+            {
+                //_camera->setYaw(yaw);
+            }
+
+            void SetCameraZ(float z)
+            {
+                //_camera->moveBackward(z / 10.0f);
+            }
 #pragma region Properties
         private:
             GridShape ^ _grid = gcnew GridShape();
