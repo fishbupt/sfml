@@ -29,6 +29,10 @@ namespace Presentation
         public:
             GridShape();
 
+            static const float kMinZValue = 0.0f;
+
+            static const float kMaxZValue = 2.0f;
+
             event EventHandler ^ GridRectangleChanged;
 
             property bool IsVisible;

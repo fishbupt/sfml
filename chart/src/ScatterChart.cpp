@@ -27,7 +27,7 @@ namespace Presentation
         ScatterChart::ScatterChart()
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
-            , _camera(new sf::Camera(45.0f, 0.1f, 100.0f))
+            , _camera(new sf::OrbitCamera(45.0f, 0.1f, 100.0f))
         {
             IsPolorCoordinate = true;
             Content = _imageItem;
@@ -171,7 +171,7 @@ namespace Presentation
             _renderTexture->setSmooth(true);
             _renderTexture->enableDepthTest(true);
 
-            _camera->setCenter(width / 2.0f, height / 2.0f, 15.0f);
+            _camera->setCenter(width / 2.0f, height / 2.0f, 1.0f);
             _camera->setScale(2.0f / width, 2.0f / height, 1.0f);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
@@ -186,6 +186,9 @@ namespace Presentation
         {
             float clientWidth = (float)Grid->WindowRectangle.Width;
             float clientHeight = (float)Grid->WindowRectangle.Height;
+            float zMinValue = Grid->kMinZValue;
+            float zMaxValue = Grid->kMaxZValue;
+            float zRange = zMaxValue - zMinValue;
             if (IsPolorCoordinate)
             {
                 double aspectRatio = clientWidth / clientHeight;
@@ -195,9 +198,13 @@ namespace Presentation
                 _xAxisMin = -xHalf;
                 _xAxisMax = xHalf;
             }
-            sf::Vector2f position(-(float)XAxisMin * clientWidth / (float)(XAxisMax - XAxisMin),
-                                  -(float)YAxisMin * clientHeight / (float)(YAxisMax - YAxisMin));
-            sf::Vector2f scale(clientWidth / (float)(XAxisMax - XAxisMin), clientHeight / (float)(YAxisMax - YAxisMin));
+            sf::Vector3f position(-(float)XAxisMin * clientWidth / (float)(XAxisMax - XAxisMin),
+                                  -(float)YAxisMin * clientHeight / (float)(YAxisMax - YAxisMin),
+                                  -(float)(ZAxisMin - zMinValue)*zRange / (float)(ZAxisMax - ZAxisMin));
+            sf::Vector3f scale(clientWidth / (float)(XAxisMax - XAxisMin),
+                               clientHeight / (float)(YAxisMax - YAxisMin),
+                               zRange / (float)(ZAxisMax - ZAxisMin));
+
             _transform->setPosition(position);
             _transform->setScale(scale);
         }

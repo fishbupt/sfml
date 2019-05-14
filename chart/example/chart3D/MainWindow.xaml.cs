@@ -22,6 +22,8 @@ namespace ChartExample
         public double XAxisMax { get; set; } = 5.0;
         public double YAxisMin { get; set; } = -3.0;
         public double YAxisMax { get; set; } = 3.0;
+        public double ZAxisMin { get; set; } = -3.0;
+        public double ZAxisMax { get; set; } = 3.0;
 
         public MainWindow()
         {
@@ -30,11 +32,15 @@ namespace ChartExample
             tbYAxisMax.Text = YAxisMax.ToString();
             tbXAxisMin.Text = XAxisMin.ToString();
             tbXAxisMax.Text = XAxisMax.ToString();
+            tbZAxisMin.Text = ZAxisMin.ToString();
+            tbZAxisMax.Text = ZAxisMax.ToString();
 
             ScatterChart.Chart.YAxisMin = YAxisMin;
             ScatterChart.Chart.YAxisMax = YAxisMax;
             ScatterChart.Chart.XAxisMin = XAxisMin;
             ScatterChart.Chart.XAxisMax = XAxisMax;
+            ScatterChart.Chart.ZAxisMin = ZAxisMin;
+            ScatterChart.Chart.ZAxisMax = ZAxisMax;
 
             var refreshRate = new TimeSpan(0, 0, 0, 0, 1);
             _timer = new DispatcherTimer { Interval = refreshRate };
@@ -52,32 +58,19 @@ namespace ChartExample
             ScatterChart.Draw();
         }
 
-        private void GenerateData1(float[] data, float[] valueRangle)
-        {
-            int len = data.Length / 2;
-            int rangeLen = valueRangle.Length;
-            var rand = new Random();
-            for (int i = 0; i < len; i++)
-            {
-                float x = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
-                float y = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
-                data[2 * i] = x;
-                data[2 * i + 1] = y;
-            }
-        }
-
-        private void GenerateData(float[] data, float[] valueRangle)
+        private void GenerateData(float[] data, float[] valueRangle, float zValue = 0.0f)
         {
             //float[] range = new float[] { 1.0f, 2.0f, -1.0f, -2.0f };
-            int len = data.Length / 2;
+            int len = data.Length / 3;
             int rangeLen = valueRangle.Length;
             var rand = new Random();
             for (int i = 0; i < len; i++)
             {
                 float x = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
                 float y = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
-                data[2 * i] = x;
-                data[2 * i + 1] = y;
+                data[3 * i] = x;
+                data[3 * i + 1] = y;
+                data[3 * i + 2] = zValue;
             }
         }
 
@@ -100,19 +93,19 @@ namespace ChartExample
             var comboBox = sender as ComboBox;
 
             int size = Convert.ToInt32(comboBox.SelectedItem);
-            float[] data = new float[size * 2];
+            float[] data = new float[size * 3];
             float[] range1 = new float[] { 1.0f, 2.0f, -1.0f, -2.0f };
             float[] range2 = new float[] { 1.5f, -1.5f };
             unsafe
             {
                 fixed (float* pData = &data[0])
                 {
-                    GenerateData1(data, range1);
+                    GenerateData(data, range1, -2.0f);
                     ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
-                    ScatterChart.Chart.DataShapes[0].SetXYData(pData, data.Length);
-                    GenerateData(data, range2);
+                    ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
+                    GenerateData(data, range2, 2.0f);
                     ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
-                    ScatterChart.Chart.DataShapes[1].SetXYData(pData, data.Length);
+                    ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
                 }
             }
         }
@@ -158,10 +151,27 @@ namespace ChartExample
                 ScatterChart.Chart.XAxisMax = XAxisMax = value;
             }
         }
-
-        private void Z_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ZAxisMin_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            ScatterChart.Chart.SetCameraZ((float)zSlider.Value);
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                float value = Convert.ToSingle(tbZAxisMin.Text);
+                ScatterChart.Chart.ZAxisMin = ZAxisMin = value;
+            }
+        }
+
+        private void ZAxisMax_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                float value = Convert.ToSingle(tbZAxisMax.Text);
+                ScatterChart.Chart.ZAxisMax = ZAxisMax = value;
+            }
+        }
+
+        private void Distance_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ScatterChart.Chart.SetCameraDistance((float)distanceSlider.Value);
         }
         private void Pitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -175,7 +185,8 @@ namespace ChartExample
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             pitchSlider.Value = 0.0;
-            yawSlider.Value = -90.0;
+            yawSlider.Value = 0.0;
+            distanceSlider.Value = 5.0;
         }
     }
 }

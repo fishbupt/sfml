@@ -87,6 +87,26 @@ namespace Presentation
                 xPos++;
             }
         }
+
+        void PointsShape::SetXYZData(float* pData, int dataSize)
+        {
+            if (dataSize == 0 || !pData)
+                return;
+            if (dataSize % 3 != 0)
+                return throw gcnew InvalidOperationException();
+
+            int pointSize = dataSize / 3;
+            _vertices->resize(pointSize);
+            sf::VertexArray& vertices = *_vertices;
+            sf::Color color = ColorUtil::ColorFrom(TraceColor);
+            for (int i = 0; i < pointSize; i++)
+            {
+                vertices[i].color = color;
+                vertices[i].position.x = pData[3 * i];
+                vertices[i].position.y = pData[3 * i + 1];
+                vertices[i].position.z = pData[3 * i + 2];
+            }
+        }
     }
 }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ChartExample"
         xmlns:graph="clr-namespace:Xsa.Presentation.Graph"
         mc:Ignorable="d"
-        Title="SFML and XAML" Height="450" Width="800">
+        Title="Chart3D Demo" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -32,6 +32,12 @@
                 <Label Margin="2">XAxisMax</Label>
                 <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
                          Name="tbXAxisMax" KeyDown="XAxisMax_KeyDown"></TextBox>
+                <Label Margin="2">ZAxisMin</Label>
+                <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
+                         Name="tbZAxisMin" KeyDown="ZAxisMin_KeyDown"></TextBox>
+                <Label Margin="2">ZAxisMax</Label>
+                <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
+                         Name="tbZAxisMax" KeyDown="ZAxisMax_KeyDown"></TextBox>
                 <ComboBox
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
@@ -52,21 +58,21 @@
                 </GroupBox.Header>
                 <StackPanel Margin="10" VerticalAlignment="Center">
                     <DockPanel VerticalAlignment="Center" Margin="5">
-                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Z:</Label>
-                        <Label Content="{Binding ElementName=zSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
-                        <Slider Minimum="-50" Maximum="50" Name="zSlider" ValueChanged="Z_ValueChanged"
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Distance:</Label>
+                        <Label Content="{Binding ElementName=distanceSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
+                        <Slider Minimum="0" Maximum="20" Value ="5" Name="distanceSlider" ValueChanged="Distance_ValueChanged"
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
                     <DockPanel VerticalAlignment="Center" Margin="5">
-                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Pitch:</Label>
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Pitch:</Label>
                         <Label Content="{Binding ElementName=pitchSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
                         <Slider Minimum="-180" Maximum="180" Name="pitchSlider"  ValueChanged="Pitch_ValueChanged"
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
                     <DockPanel VerticalAlignment="Center" Margin="5">
-                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="50">Yaw:</Label>
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Yaw:</Label>
                         <Label Content="{Binding ElementName=yawSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
-                        <Slider Value="-90" Minimum="-180" Maximum="180" Name="yawSlider" ValueChanged="Yaw_ValueChanged"
+                        <Slider Value="0" Minimum="-180" Maximum="180" Name="yawSlider" ValueChanged="Yaw_ValueChanged"
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
                     <Button Content="reset" Click="Reset_Click" Margin="0,0,280,0"/>

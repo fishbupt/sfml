@@ -328,7 +328,7 @@ public :
     /// \see getInverseTransform
     ///
     ////////////////////////////////////////////////////////////
-    virtual const Transform& getTransform() const;
+    const Transform& getTransform() const override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the view transform of the camera
@@ -340,9 +340,9 @@ public :
     /// \see getTransform, getInverseTransform
     ///
     ////////////////////////////////////////////////////////////
-    virtual const Transform& getViewTransform() const;
+    const Transform& getViewTransform() const override;
 
-private:
+protected:
 
     ////////////////////////////////////////////////////////////
     // Member data

@@ -53,9 +53,9 @@ namespace Presentation
             property double XDelta;
 
             // clang-format off
-            property array<Color> ^ SegColors
+            property array<Color>^ SegColors
             {
-                void set(array<Color> ^ value);
+                void set(array<Color>^ value);
             }
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
@@ -83,6 +83,13 @@ namespace Presentation
             /// <param name="yData">The trace data for y-axis</param>
             /// <param name="segIndexes">The indexes for SegColors</param>
             virtual void SetData(float* pYData, int yDataSize, short* pSegIndexes, int segIndexesSize);
+
+            /// <summary>
+            /// Set trace data in (x,y,z) format.
+            /// The color for trace is set by TraceColor
+            /// </summary>
+            /// <param name="data">The trace data.</param>
+            virtual void SetXYZData(float* pData, int dataSize);
 
         protected:
             scoped_ptr<sf::VertexArray> _vertices;

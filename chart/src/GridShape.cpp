@@ -7,6 +7,7 @@ namespace Presentation
 {
     namespace Graph
     {
+
         GridShape::GridShape()
             : _numberOfXAxisDivisions(0)
             , _numberOfYAxisDivisions(0)
@@ -110,10 +111,12 @@ namespace Presentation
             {
                 (*_gridXVertices)[2 * i].position.x = xStart + i * xTick;
                 (*_gridXVertices)[2 * i].position.y = yStart;
+                (*_gridXVertices)[2 * i].position.z = kMinZValue;
                 (*_gridXVertices)[2 * i].color = gridColor;
 
                 (*_gridXVertices)[2 * i + 1].position.x = xStart + i * xTick;
                 (*_gridXVertices)[2 * i + 1].position.y = yStop;
+                (*_gridXVertices)[2 * i + 1].position.z = kMinZValue;
                 (*_gridXVertices)[2 * i + 1].color = gridColor;
             }
             (*_borderXVertices)[0] = (*_gridXVertices)[0];
@@ -135,10 +138,12 @@ namespace Presentation
             {
                 (*_gridYVertices)[2 * i].position.x = xStart;
                 (*_gridYVertices)[2 * i].position.y = yStart + i * yTick;
+                (*_gridYVertices)[2 * i].position.z = kMinZValue;
                 (*_gridYVertices)[2 * i].color = gridColor;
 
                 (*_gridYVertices)[2 * i + 1].position.x = xStop;
                 (*_gridYVertices)[2 * i + 1].position.y = yStart + i * yTick;
+                (*_gridYVertices)[2 * i + 1].position.z = kMinZValue;
                 (*_gridYVertices)[2 * i + 1].color = gridColor;
             }
             (*_borderYVertices)[0] = (*_gridYVertices)[0];
@@ -149,13 +154,11 @@ namespace Presentation
 
         void GridShape::updateZAxis()
         {
-            const float maxZValue = 10.f;
-            const float minZValue = 0.0f;
             _gridZVertices->resize((_numberOfZAxisDivisions + 1) * 4 + (_numberOfXAxisDivisions + 1) * 2 +
                                    (_numberOfYAxisDivisions + 1) * 2);
-            float zTick = maxZValue / _numberOfZAxisDivisions;
-            float zStart = minZValue;
-            float zStop = maxZValue;
+            float zTick = (kMaxZValue - kMinZValue) / _numberOfZAxisDivisions;
+            float zStart = kMinZValue;
+            float zStop = kMaxZValue;
             float xStart = (float)GridRectangle.X;
             float xStop = (float)GridRectangle.Width + xStart;
             float xTick = (float)GridRectangle.Width / _numberOfXAxisDivisions;

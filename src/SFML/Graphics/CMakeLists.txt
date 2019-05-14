@@ -29,6 +29,8 @@ set(SRC
     ${SRCROOT}/ImageLoader.hpp
     ${SRCROOT}/Light.cpp
     ${INCROOT}/Light.hpp
+    ${SRCROOT}/OrbitCamera.cpp
+    ${INCROOT}/OrbitCamera.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Rect.hpp
     ${INCROOT}/Rect.inl

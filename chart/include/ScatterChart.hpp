@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/Camera.hpp>
+#include <SFML/Graphics/OrbitCamera.hpp>
 #include <SFML/Window/Context.hpp>
 #include <ScopedPtr.hpp>
 #include <PointsShape.hpp>
@@ -83,44 +83,46 @@ namespace Presentation
 
             void SetCameraPitch(float pitch)
             {
-                //_camera->setPitch(pitch);
+                _camera->setPitch(pitch);
             }
 
             void SetCameraYaw(float yaw)
             {
-                //_camera->setYaw(yaw);
+                _camera->setYaw(yaw);
             }
 
-            void SetCameraZ(float z)
+            void SetCameraDistance(float z)
             {
-                //_camera->moveBackward(z / 10.0f);
+                _camera->setDistance(z);
             }
 #pragma region Properties
         private:
-            GridShape ^ _grid = gcnew GridShape();
-            List<PointsShape ^> ^ _dataShapes = gcnew List<PointsShape ^>();
+            GridShape^ _grid = gcnew GridShape();
+            List<PointsShape^>^ _dataShapes = gcnew List<PointsShape ^>();
 
             double _xAxisMin = 0;
             double _xAxisMax = 1.0;
             double _yAxisMin = 0;
             double _yAxisMax = 1.0;
+            double _zAxisMin = 0;
+            double _zAxisMax = 1.0;
 
-            array<Color> ^ _segColors = gcnew array<Color>(0);
-            array<Color> ^ _traceColors = gcnew array<Color>(1);
+            array<Color>^ _segColors = gcnew array<Color>(0);
+            array<Color>^ _traceColors = gcnew array<Color>(1);
 
         public:
             // clang-format off
-            property GridShape ^ Grid
+            property GridShape^ Grid
             {
-                GridShape ^ get()
+                GridShape^ get()
                 {
                     return _grid;
                 }
             }
 
-            property List<PointsShape ^> ^ DataShapes
+            property List<PointsShape^>^ DataShapes
             {
-                List<PointsShape ^> ^ get()
+                List<PointsShape^>^ get()
                 {
                     return _dataShapes;
                 }
@@ -191,7 +193,35 @@ namespace Presentation
                     UpdateTransform();
                 }
             }
+            property double ZAxisMin
+            {
+                double get()
+                {
+                    return _zAxisMin;
+                }
+                void set(double value)
+                {
+                    if (_zAxisMin == value || value >= _zAxisMax)
+                        return;
+                    _zAxisMin = value;
+                    UpdateTransform();
+                }
+            }
 
+            property double ZAxisMax
+            {
+                double get()
+                {
+                    return _zAxisMax;
+                }
+                void set(double value)
+                {
+                    if (_zAxisMax == value || value <= _zAxisMin)
+                        return;
+                    _zAxisMax = value;
+                    UpdateTransform();
+                }
+            }
             property int NumberOfTraces
             {
                 int get()
@@ -215,9 +245,9 @@ namespace Presentation
                 }
             }
             // clang-format off
-            property array<Color> ^ TraceColors
+            property array<Color>^ TraceColors
             {
-                array<Color> ^ get()
+                array<Color>^ get()
                 {
                     return _traceColors;
                 }
@@ -235,9 +265,9 @@ namespace Presentation
                 }
             }
 
-            property array<Color> ^ SegColors
+            property array<Color>^ SegColors
             {
-                array<Color> ^ get()
+                array<Color>^ get()
                 {
                     return _segColors;
                 }
@@ -306,7 +336,7 @@ namespace Presentation
             WriteableBitmap ^ _drawnImage; // displaying bitmap
             int _glMajorVersion;
 
-            scoped_ptr<sf::Camera> _camera;
+            scoped_ptr<sf::OrbitCamera> _camera;
             bool _enableCamera = false; // true to apply 3d camera
         };
     }

@@ -26,6 +26,7 @@ namespace Xsa.Presentation.Graph
             Chart.Grid.NumberOfZAxisDivisions = 5;
             Chart.Grid.IsVisible = true;
             Chart.Enable3D = true;
+            Chart.IsPolorCoordinate = false;
         }
 
         #region --- Event Handlers ---

@@ -154,7 +154,7 @@ const Transform& Camera::getTransform() const
     if (!m_transformUpdated)
     {
         glm::mat4 projMat = glm::perspective(glm::radians(m_fieldOfView), 1.0f, m_nearPlane, m_farPlane);
-        projMat = glm::scale(projMat, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
+        //projMat = glm::scale(projMat, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
 
         m_transform = Transform(projMat);
         m_transformUpdated = true;
