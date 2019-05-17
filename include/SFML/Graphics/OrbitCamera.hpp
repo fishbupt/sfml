@@ -19,6 +19,10 @@ namespace sf
 /// \brief 3D camera that defines what is shown on screen
 /// OrbitCamera is a arcball camera only allowed 
 /// to turn around the target
+/// The Camera position is defined by two angles, the azimuth and
+/// elevation. 
+/// These angles are measured within a 3-D coordinate system that has its
+/// origin at the center(0, 0, 0) of the chart
 ////////////////////////////////////////////////////////////
 class SFML_GRAPHICS_API OrbitCamera : public Camera
 {
@@ -60,60 +64,67 @@ public:
     float getDistance() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the euler angle around y axis
+    /// \brief Set the Azimuth angle
+    /// The Azimuth is the angle of ratation around the y-axis,
+    /// as measured from the postive z-axis. Increasing this angle
+    /// corresponds to countclockwise rotation about y-axis
     ///
-    /// \param yaw  The yaw angle in degree
+    /// \param azimuth  The azimuth angle in degree
     ///
-    /// \see changeYaw  getYaw
+    /// \see changeYaw  getAzimuth
     /// 
     ////////////////////////////////////////////////////////////
-    void setYaw(float yaw);
+    void setAzimuth(float azimuth);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Change the eular angle around y aixs
+    /// \brief Change the angle around z axis
     ///
     /// \param angle The changed angle in degree
     ///
-    /// \see setYaw  getYaw
+    /// \see setYaw  getAzimuth
     /// 
     ////////////////////////////////////////////////////////////
-    void changeYaw(float angle);
+    void changeAzimuth(float angle);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the eular angle around y axis
+    /// \brief Get the angle around z axis
     ///
-    /// \see setYaw  changeYaw
+    /// \see setAzimuth  changeAzimuth
     /// 
     ////////////////////////////////////////////////////////////
-    float getYaw() const;
+    float getAzimuth() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the euler angle around x axis
+    /// \brief Set the Elevation angle
+    /// The Elevation is the minimum angle between the camera and
+    /// x-z plane. Increasing the elevation from -90 to 90 degree
+    /// corresponds to a rotation from the negative y-axis to
+    /// the postive y-axis
     ///
-    /// \param pitch  The pitch angle in degree
+    /// \param elevation  The elevation angle in degree
     ///
-    /// \see changePitch  getPitch
+    /// \see changeElevation  getElevation
     /// 
     ////////////////////////////////////////////////////////////
-    void setPitch(float pitch);
+    void setElevation(float elevation);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Change the eular angle around x aixs
+    /// \brief Change the angle around x-y plane
     ///
     /// \param angle The changed angle in degree
     ///
-    /// \see setPitch  getPitch
+    /// \see setElevation  getElevation
     /// 
     ////////////////////////////////////////////////////////////
-    void changePitch(float angle);
+    void changeElevation(float angle);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the eular angle around x axis
+    /// \brief Get the angle around x-y plane
     ///
-    /// \see setPitch  changePitch
+    /// \see setElevation  changeElevation
     /// 
     ////////////////////////////////////////////////////////////
-    float getPitch() const;
+    float getElevation() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the view transform of the camera
@@ -134,9 +145,9 @@ private:
     // Member data
     ////////////////////////////////////////////////////////////
     float m_distance;
-    float m_yaw;
-    float m_pitch;
-    glm::quat m_rotation;
+    float m_azimuth;        
+    float m_elevation;     
+    glm::mat4 m_rotation;
 
 };
 }

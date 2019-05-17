@@ -17,6 +17,7 @@ namespace ChartExample
     {
         private readonly DispatcherTimer _timer;
         private FPS _fps;
+        private Point _mouseStartPos;
 
         public double XAxisMin { get; set; } = -5.0;
         public double XAxisMax { get; set; } = 5.0;
@@ -48,6 +49,7 @@ namespace ChartExample
             _fps.Start();
             _timer.Tick += Timer_Tick;
             _timer.Start();
+            Reset_Click(null, null);
         }
 
 
@@ -171,22 +173,61 @@ namespace ChartExample
 
         private void Distance_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ScatterChart.Chart.SetCameraDistance((float)distanceSlider.Value);
+            ScatterChart.Chart.Camera.Distance = (float)distanceSlider.Value;
         }
-        private void Pitch_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Azimuth_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ScatterChart.Chart.SetCameraPitch((float)pitchSlider.Value);
+            ScatterChart.Chart.Camera.Azimuth = (float)azimuthSlider.Value;
         }
-        private void Yaw_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Elevation_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ScatterChart.Chart.SetCameraYaw((float)yawSlider.Value);
+            ScatterChart.Chart.Camera.Elevation = (float)elevationSlider.Value;
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            pitchSlider.Value = 0.0;
-            yawSlider.Value = 0.0;
-            distanceSlider.Value = 5.0;
+            azimuthSlider.Value = 0.0f;
+            elevationSlider.Value = 0.0f;
+            distanceSlider.Value = 5.0f;
+            ScatterChart.Chart.Camera.Azimuth = 0.0f;
+            ScatterChart.Chart.Camera.Elevation = 0.0f;
+            ScatterChart.Chart.Camera.Distance = 5.0f;
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ScatterChart.Chart.Camera.UseOrthographicCamera();
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ScatterChart.Chart.Camera.UsePerspectiveCamera();
+        }
+
+        private void ScatterChart_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            ScatterChart.Chart.Camera.ChangeScale(1.0f + e.Delta / 240.0f);
+        }
+
+        private void ScatterChart_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            _mouseStartPos = e.GetPosition(this);
+        }
+
+        private void ScatterChart_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if(e.LeftButton== System.Windows.Input.MouseButtonState.Pressed)
+            {
+                float speed = 10.0f;
+                Point currentPos = e.GetPosition(this);
+                Vector move = currentPos - _mouseStartPos;
+                double width = ScatterChart.RenderSize.Width;
+                double height = ScatterChart.RenderSize.Height;
+                ScatterChart.Chart.Camera.ChangeAzimuth((float)(move.X / width * speed));
+                ScatterChart.Chart.Camera.ChangleElevation((float)(move.Y / height * speed));
+                azimuthSlider.Value = ScatterChart.Chart.Camera.Azimuth;
+                elevationSlider.Value = ScatterChart.Chart.Camera.Elevation;
+            }
         }
     }
 }

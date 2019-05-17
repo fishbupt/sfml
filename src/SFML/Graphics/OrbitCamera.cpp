@@ -7,19 +7,19 @@
 
 namespace sf
 {
-constexpr glm::vec3 UP_AXIS(0, 1, 0);
-constexpr glm::vec3 RIGHT_AXIS(1, 0, 0);
-constexpr glm::quat DEFAULT_ROTATION(1, 0, 0, 0);
-constexpr float DEFAULT_DISTANCE = 5.0f;
+constexpr glm::vec3 kXAxis(1, 0, 0);
+constexpr glm::vec3 kZAxis(0, 0, 1);
+constexpr glm::vec3 kYAxis(0, 1, 0);
+constexpr float kDefaultDistance = 5.0f;
 
 ////////////////////////////////////////////////////////////
 OrbitCamera::OrbitCamera(float fov, float near, float far)
     : Camera{ fov, near, far }
-    , m_yaw{ 0.0f }
-    , m_pitch{ 0.0f }
-    , m_distance{ DEFAULT_DISTANCE }
-    , m_rotation{ DEFAULT_ROTATION }
+    , m_azimuth(0.0f)
+    , m_elevation(0.0f)
+    , m_distance{ kDefaultDistance }
 {
+    computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
@@ -36,50 +36,57 @@ float OrbitCamera::getDistance() const
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitCamera::setYaw(float yaw)
+void OrbitCamera::setAzimuth(float azimuth)
 {
-    m_yaw = yaw;
+    m_azimuth = azimuth;
     computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitCamera::changeYaw(float angle)
+void OrbitCamera::changeAzimuth(float angle)
 {
-    m_yaw += angle;
+    m_azimuth += angle;
     computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
-float OrbitCamera::getYaw() const
+float OrbitCamera::getAzimuth() const
 {
-    return m_yaw;
+    return m_azimuth;
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitCamera::setPitch(float pitch)
+void OrbitCamera::setElevation(float elevation)
 {
-    m_pitch = pitch;
+    m_elevation = elevation;
+    m_elevation = std::max(-90.0f, m_elevation);
+    m_elevation = std::min(90.0f, m_elevation);
     computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
-void OrbitCamera::changePitch(float angle)
+void OrbitCamera::changeElevation(float angle)
 {
-    m_pitch += angle;
+    m_elevation += angle;
+    m_elevation = std::max(-90.0f, m_elevation);
+    m_elevation = std::min(90.0f, m_elevation);
     computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
-float OrbitCamera::getPitch() const
+float OrbitCamera::getElevation() const
 {
-    return m_pitch;
+    return m_elevation;
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitCamera::computeRotation()
 {
-    m_rotation = glm::quat(glm::vec3(glm::radians(m_pitch), glm::radians(m_yaw), 0.0));
+    glm::mat4 identityMat{ 1.0f };
+    m_rotation = glm::rotate(identityMat, glm::radians(-m_elevation), kXAxis);
+    m_rotation = glm::rotate(m_rotation, glm::radians(m_azimuth), kYAxis);
     m_viewTransformUpdated = false;
+    m_invViewTransformUpdated = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -92,7 +99,7 @@ const Transform& OrbitCamera::getViewTransform() const
         glm::vec3 pos = glm::vec3(m_center.x, m_center.y, m_center.z);
         glm::vec3 scale = glm::vec3(m_scale.x, m_scale.y, m_scale.z);
         glm::vec3 target(0, 0, 0);
-        glm::mat4 viewMat = glm::translate(glm::vec3(0.0, 0.0, -m_distance)) * glm::toMat4(m_rotation) * glm::translate(-target);
+        glm::mat4 viewMat = glm::translate(glm::vec3(0.0, 0.0, -m_distance)) * m_rotation * glm::translate(-target);
 
         viewMat = glm::scale(viewMat, scale);
         viewMat = glm::translate(viewMat, -pos);

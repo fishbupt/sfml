@@ -23,7 +23,7 @@ public :
     ///
     /// This constructor creates a camera with the given
     /// field of view, near clipping plane distance and far
-    /// clipping plane distance.
+    /// clipping plane distance and width, height of render target.
     ///
     /// The camera will be positioned at (0, 0, 0) with
     /// direction (0, 0, -1) and up (0, 1, 0) and will not
@@ -32,7 +32,7 @@ public :
     /// \param fov  Field of view of the camera in degrees
     /// \param near Near clipping plane distance of the camera
     /// \param far  Far clipping plane distance of the camera
-    ///
+    /// 
     ////////////////////////////////////////////////////////////
     Camera(float fov, float near, float far);
 
@@ -198,6 +198,19 @@ public :
     ////////////////////////////////////////////////////////////
     float getFieldOfView() const;
 
+    void setPosition(const sf::Vector3f& position);
+
+    void setWidth(float width);
+
+    float getWidth() const;
+
+    void setHeight(float height);
+
+    float getHeight() const;
+
+    void useOrthographicProjection();
+
+    void usePerspectiveProjection();
     ////////////////////////////////////////////////////////////
     /// \brief Set the distance to the near clipping plane
     ///
@@ -350,6 +363,9 @@ protected:
     float    m_fieldOfView; ///< Field of view of this camera, in degrees
     float    m_nearPlane;   ///< The distance to the near clipping plane
     float    m_farPlane;    ///< The distance to the far clipping plane
+    float    m_width;       ///< Width of RenderTarget in pixel
+    float    m_height;      ///< Height of RenderTarget in pixel
+    bool     m_orthoCamera; ///< Use Orthographic projection or Perspective projection
     Vector3f m_direction;   ///< The direction the camera is facing in
     Vector3f m_upVector;    ///< The up vector of the camera
     Vector3f m_scale;       ///< The scaling that is applied after the perspective transform

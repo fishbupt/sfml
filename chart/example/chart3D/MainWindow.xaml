@@ -18,7 +18,10 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <graph:ScatterChartControl Grid.Column="0" x:Name="ScatterChart"/>
+            <graph:ScatterChartControl Grid.Column="0" x:Name="ScatterChart"
+                                       MouseWheel="ScatterChart_MouseWheel"
+                                       PreviewMouseLeftButtonDown="ScatterChart_PreviewMouseLeftButtonDown"
+                                       MouseMove="ScatterChart_MouseMove"/>
             <StackPanel Grid.Column="1">
                 <Label Margin="2">YAxisMin</Label>
                 <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
@@ -64,18 +67,21 @@
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
                     <DockPanel VerticalAlignment="Center" Margin="5">
-                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Pitch:</Label>
-                        <Label Content="{Binding ElementName=pitchSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
-                        <Slider Minimum="-180" Maximum="180" Name="pitchSlider"  ValueChanged="Pitch_ValueChanged"
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Azimuth:</Label>
+                        <TextBox Text="{Binding ElementName=azimuthSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></TextBox>
+                        <Slider Minimum="-180" Maximum="180" Name="azimuthSlider"  ValueChanged="Azimuth_ValueChanged"
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
                     <DockPanel VerticalAlignment="Center" Margin="5">
-                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Yaw:</Label>
-                        <Label Content="{Binding ElementName=yawSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></Label>
-                        <Slider Value="0" Minimum="-180" Maximum="180" Name="yawSlider" ValueChanged="Yaw_ValueChanged"
+                        <Label DockPanel.Dock="Left" FontWeight="Bold" Width="70">Elevation:</Label>
+                        <TextBox Text="{Binding ElementName=elevationSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" Width="40"></TextBox>
+                        <Slider Value="0" Minimum="-180" Maximum="180" Name="elevationSlider" ValueChanged="Elevation_ValueChanged"
                                 IsSnapToTickEnabled="True" TickFrequency="1"></Slider>
                     </DockPanel>
-                    <Button Content="reset" Click="Reset_Click" Margin="0,0,280,0"/>
+                    <DockPanel VerticalAlignment="Center" Margin="5">
+                        <CheckBox DockPanel.Dock="Left" IsChecked="False" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked">Orthographic Camera</CheckBox>
+                        <Button DockPanel.Dock="Right" Content="reset" Click="Reset_Click" Margin="100 0 0 0"/>
+                    </DockPanel>
                 </StackPanel>
             </GroupBox>
             <Label Grid.Column="1" x:Name="FpsLabel">FPS</Label>

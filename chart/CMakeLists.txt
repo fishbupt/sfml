@@ -25,6 +25,7 @@ set(SRC
     ${INCROOT}/ScopedPtr.hpp
     ${INCROOT}/Utils.hpp
     ${INCROOT}/ColorArray.hpp
+    ${INCROOT}/OrbitCamera.hpp
 )
 source_group("" FILES ${SRC})
 

@@ -27,7 +27,6 @@ namespace Presentation
         ScatterChart::ScatterChart()
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
-            , _camera(new sf::OrbitCamera(45.0f, 0.1f, 100.0f))
         {
             IsPolorCoordinate = true;
             Content = _imageItem;
@@ -89,7 +88,8 @@ namespace Presentation
         {
             if (_enableCamera)
             {
-                target->setView(*_camera);
+                target->enableDepthTest(true);
+                target->setView(*_camera->getCamera());
             }
 
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
@@ -166,13 +166,15 @@ namespace Presentation
             _renderTexture->setActive(false);
             int width = (int)std::max(10.0, ActualWidth);
             int height = (int)std::max(10.0, ActualHeight);
+            sf::ContextSettings ctxSettings{ 24, 8 };
             _renderTextureIsReady = _renderTexture->create(width, height);
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
-            _renderTexture->enableDepthTest(true);
 
-            _camera->setCenter(width / 2.0f, height / 2.0f, 1.0f);
-            _camera->setScale(2.0f / width, 2.0f / height, 1.0f);
+            _camera->Position = sf::Vector3f(width / 2.0f, height / 2.0f, 1.0f);
+            _camera->Scale = sf::Vector3f(2.0f / width, 2.0f / height, 1.0f);
+            //_camera->getCamera()->setWidth(width);
+            //_camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
             Grid->WindowRectangle = Rect(0, 0, width, height);

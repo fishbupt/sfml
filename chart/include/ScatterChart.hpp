@@ -3,12 +3,12 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/OrbitCamera.hpp>
 #include <SFML/Window/Context.hpp>
 #include <ScopedPtr.hpp>
 #include <PointsShape.hpp>
 #include <GridShape.hpp>
 #include <Drawable.hpp>
+#include <OrbitCamera.hpp>
 
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
@@ -81,20 +81,6 @@ namespace Presentation
             /// <returns>The Y-axis value.</returns>
             float YAtPixel(int value);
 
-            void SetCameraPitch(float pitch)
-            {
-                _camera->setPitch(pitch);
-            }
-
-            void SetCameraYaw(float yaw)
-            {
-                _camera->setYaw(yaw);
-            }
-
-            void SetCameraDistance(float z)
-            {
-                _camera->setDistance(z);
-            }
 #pragma region Properties
         private:
             GridShape^ _grid = gcnew GridShape();
@@ -299,6 +285,11 @@ namespace Presentation
                 }
             }
 
+            property OrbitCamera^ Camera
+            {
+                OrbitCamera^ get() { return _camera; }
+            }
+
             #pragma endregion Properties
 
             #pragma region Events
@@ -332,11 +323,11 @@ namespace Presentation
             scoped_ptr<sf::Transformable> _transform;
             scoped_ptr<sf::RenderTexture> _renderTexture;
             bool _renderTextureIsReady = false;
-            Image ^ _imageItem = gcnew Image();
-            WriteableBitmap ^ _drawnImage; // displaying bitmap
+            Image^ _imageItem = gcnew Image();
+            WriteableBitmap^ _drawnImage; // displaying bitmap
             int _glMajorVersion;
 
-            scoped_ptr<sf::OrbitCamera> _camera;
+            OrbitCamera^ _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
             bool _enableCamera = false; // true to apply 3d camera
         };
     }

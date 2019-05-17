@@ -18,6 +18,9 @@ Camera::Camera(float fov, float near, float far)
     , m_fieldOfView(fov)
     , m_nearPlane(near)
     , m_farPlane(far)
+    , m_width(1.0f)
+    , m_height(1.0f)
+    , m_orthoCamera(false)
     , m_direction(0, 0, -1)
     , m_upVector(0, 1, 0)
     , m_scale(1, 1, 1)
@@ -121,8 +124,8 @@ void Camera::setScale(float factorX, float factorY, float factorZ)
 void Camera::setScale(const Vector3f& factors)
 {
     m_scale = factors;
-    m_transformUpdated = false;
-    m_invTransformUpdated = false;
+    m_viewTransformUpdated = false;
+    m_invViewTransformUpdated = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -137,8 +140,8 @@ void Camera::scale(float factorX, float factorY, float factorZ)
     m_scale.x *= factorX;
     m_scale.y *= factorY;
     m_scale.z *= factorZ;
-    m_transformUpdated = false;
-    m_invTransformUpdated = false;
+    m_viewTransformUpdated = false;
+    m_invViewTransformUpdated = false;
 }
 
 ////////////////////////////////////////////////////////////
@@ -148,14 +151,67 @@ void Camera::scale(const Vector3f& factor)
 }
 
 ////////////////////////////////////////////////////////////
+void Camera::setPosition(const sf::Vector3f& position)
+{
+    setCenter(position);
+    m_viewTransformUpdated = false;
+    m_invViewTransformUpdated = false;
+}
+////////////////////////////////////////////////////////////
+void Camera::setWidth(float width)
+{
+    m_width = width;
+    m_transformUpdated = false;
+}
+
+////////////////////////////////////////////////////////////
+float Camera::getWidth() const
+{
+    return m_width;
+}
+
+////////////////////////////////////////////////////////////
+void Camera::setHeight(float height)
+{
+    m_height = height;
+    m_transformUpdated = false;
+}
+
+////////////////////////////////////////////////////////////
+float Camera::getHeight() const
+{
+    return m_height;
+}
+
+////////////////////////////////////////////////////////////
+void Camera::useOrthographicProjection()
+{
+    m_orthoCamera = true;
+    m_transformUpdated = false;
+}
+
+////////////////////////////////////////////////////////////
+void Camera::usePerspectiveProjection()
+{
+    m_orthoCamera = false;
+    m_transformUpdated = false;
+}
+
+////////////////////////////////////////////////////////////
 const Transform& Camera::getTransform() const
 {
     // Recompute the perspective projection matrix if needed
     if (!m_transformUpdated)
     {
-        glm::mat4 projMat = glm::perspective(glm::radians(m_fieldOfView), 1.0f, m_nearPlane, m_farPlane);
-        //projMat = glm::scale(projMat, glm::vec3(m_scale.x, m_scale.y, m_scale.z));
-
+        glm::mat4 projMat;
+        if (m_orthoCamera)
+        {
+            projMat = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, m_nearPlane, m_farPlane);
+        }
+        else
+        {
+            projMat = glm::perspective(glm::radians(m_fieldOfView), 1.0f, m_nearPlane, m_farPlane);
+        }
         m_transform = Transform(projMat);
         m_transformUpdated = true;
     }
@@ -171,9 +227,11 @@ const Transform& Camera::getViewTransform() const
     {
 
         glm::vec3 pos = glm::vec3(m_center.x, m_center.y, m_center.z);
+        glm::vec3 scale = glm::vec3(m_scale.x, m_scale.y, m_scale.z);
         glm::mat4 viewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(m_direction.x, m_direction.y, m_direction.z),
-                                     glm::vec3(m_upVector.x, m_upVector.y, m_upVector.z));
+                                        glm::vec3(m_upVector.x, m_upVector.y, m_upVector.z));
 
+        viewMat = glm::scale(viewMat, scale);
         viewMat = glm::translate(viewMat, -pos);
         m_viewTransform = Transform(viewMat);
         m_viewTransformUpdated = true;
