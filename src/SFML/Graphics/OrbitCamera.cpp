@@ -102,7 +102,7 @@ const Transform& OrbitCamera::getViewTransform() const
         glm::mat4 viewMat = glm::translate(glm::vec3(0.0, 0.0, -m_distance)) * m_rotation * glm::translate(-target);
 
         viewMat = glm::scale(viewMat, scale);
-        viewMat = glm::translate(viewMat, -pos);
+        //viewMat = glm::translate(viewMat, -pos);
         m_viewTransform = Transform(viewMat);
         m_viewTransformUpdated = true;
     }

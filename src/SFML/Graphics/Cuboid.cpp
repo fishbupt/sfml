@@ -2,12 +2,14 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Cuboid.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 
 
 namespace sf
 {
 ////////////////////////////////////////////////////////////
 Cuboid::Cuboid(const Vector3f& size)
+    :m_borderVertices(Lines, 24)
 {
     setSize(size);
 }
@@ -18,6 +20,7 @@ void Cuboid::setSize(const Vector3f& size)
 {
     m_size = size;
     update();
+    updateBorder();
     generateNormals();
 }
 
@@ -76,6 +79,76 @@ Polyhedron::Face Cuboid::getFace(unsigned int index) const
         // Bottom 2
         case 11: { Face face = {Vertex(Vector3f(left, bottom, front), color), Vertex(Vector3f(right, bottom, back), color), Vertex(Vector3f(right, bottom, front), color)}; return face; }
     }
+}
+
+////////////////////////////////////////////////////////////
+void Cuboid::setBorderColor(const Color& color)
+{
+    m_borderColor = color;
+
+    for (int i = 0; i < m_borderVertices.getVertexCount(); i++)
+    {
+        m_borderVertices[i].color = m_borderColor;
+    }
+}
+
+////////////////////////////////////////////////////////////
+const Color& Cuboid::getBorderColor() const
+{
+    return m_borderColor;
+}
+
+void Cuboid::updateBorder()
+{
+    float left = m_size.x / -2.f;
+    float top = m_size.y / 2.f;
+    float front = m_size.z / 2.f;
+    float right = m_size.x / 2.f;
+    float bottom = m_size.y / -2.f;
+    float back = m_size.z / -2.f;
+    int i = 0;
+    m_borderVertices[i++] = Vertex({ left, top, front });
+    m_borderVertices[i++] = Vertex({ right, top, front });
+
+    m_borderVertices[i++] = Vertex({ left, top, back });
+    m_borderVertices[i++] = Vertex({ right, top, back });
+
+    m_borderVertices[i++] = Vertex({ left, bottom, front });
+    m_borderVertices[i++] = Vertex({ right, bottom, front });
+
+    m_borderVertices[i++] = Vertex({ left, bottom, back });
+    m_borderVertices[i++] = Vertex({ right, bottom, back });
+
+    m_borderVertices[i++] = Vertex({ left, top, front });
+    m_borderVertices[i++] = Vertex({ left, top, back });
+
+    m_borderVertices[i++] = Vertex({ right, top, front });
+    m_borderVertices[i++] = Vertex({ right, top, back });
+
+    m_borderVertices[i++] = Vertex({ left, bottom, front });
+    m_borderVertices[i++] = Vertex({ left, bottom, back });
+
+    m_borderVertices[i++] = Vertex({ right, bottom, front });
+    m_borderVertices[i++] = Vertex({ right, bottom, back });
+
+    m_borderVertices[i++] = Vertex({ left, top, front });
+    m_borderVertices[i++] = Vertex({ left, bottom, front });
+
+    m_borderVertices[i++] = Vertex({ left, top, back });
+    m_borderVertices[i++] = Vertex({ left, bottom, back });
+
+    m_borderVertices[i++] = Vertex({ right, top, front });
+    m_borderVertices[i++] = Vertex({ right, bottom, front });
+
+    m_borderVertices[i++] = Vertex({ right, top, back });
+    m_borderVertices[i++] = Vertex({ right, bottom, back });
+}
+
+void Cuboid::draw(RenderTarget& target, RenderStates states) const 
+{
+    Polyhedron::draw(target, states);
+    states.transform *= getTransform();
+    target.draw(m_borderVertices, states);
 }
 
 } // namespace sf

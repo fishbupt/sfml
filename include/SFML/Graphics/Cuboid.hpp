@@ -67,12 +67,21 @@ public :
     ////////////////////////////////////////////////////////////
     virtual Face getFace(unsigned int index) const;
 
+    void setBorderColor(const Color& color);
+
+    const Color& getBorderColor() const;
+
+    void draw(RenderTarget& target, RenderStates states) const override;
+
+    void updateBorder();
 private :
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
     Vector3f m_size; ///< Size of the cuboid
+    Color  m_borderColor;
+    VertexArray m_borderVertices;
 };
 
 } // namespace sf

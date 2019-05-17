@@ -5,6 +5,7 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Cuboid.hpp>
 #include "Drawable.hpp"
 #include "ScopedPtr.hpp"
 
@@ -29,9 +30,9 @@ namespace Presentation
         public:
             GridShape();
 
-            static const float kMinZValue = 0.0f;
+            static const float kMinZValue = -1.0f;
 
-            static const float kMaxZValue = 2.0f;
+            static const float kMaxZValue = 1.0f;
 
             event EventHandler ^ GridRectangleChanged;
 
@@ -83,8 +84,13 @@ namespace Presentation
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
+            sf::FloatBox getBoxBounds()
+            {
+                return _plotBox->getLocalBounds();
+            }
+
         private:
-            constexpr static float kBorderPixelOffset{1.0f};
+            constexpr static float kBorderPixelOffset{0.0f};
 
             Rect _windowRectangle;
             int _numberOfXAxisDivisions;
@@ -96,7 +102,7 @@ namespace Presentation
             scoped_ptr<sf::VertexArray> _borderXVertices;
             scoped_ptr<sf::VertexArray> _borderYVertices;
             scoped_ptr<sf::VertexArray> _gridZVertices;
-
+            scoped_ptr<sf::Cuboid> _plotBox;
             void updateXAxis();
             void updateYAxis();
             void updateZAxis();

@@ -86,6 +86,13 @@ namespace Presentation
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
+            sf::FloatBox lBox{ -1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 2.0f };
+            sf::Transform transform = _camera->getCamera()->getTransform();
+            sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
+            transform.combine(viewTransform);
+
+            sf::FloatBox gBox = transform.transformBox(lBox);
+            //_camera->getCamera()->scale({ 2.0f /gBox.width, 2.0f / gBox.height, 1.0f });
             if (_enableCamera)
             {
                 target->enableDepthTest(true);
@@ -171,13 +178,18 @@ namespace Presentation
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
 
-            _camera->Position = sf::Vector3f(width / 2.0f, height / 2.0f, 1.0f);
-            _camera->Scale = sf::Vector3f(2.0f / width, 2.0f / height, 1.0f);
+            //_camera->Position = sf::Vector3f(width / 2.0f, height / 2.0f, 1.0f);
+            _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
+            //_camera->Scale = sf::Vector3f(2.0f / width, 2.0f / height, 1.0f);
             //_camera->getCamera()->setWidth(width);
             //_camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
-            Grid->WindowRectangle = Rect(0, 0, width, height);
+            if (_enableCamera)
+                Grid->WindowRectangle = Rect(-1.0f, -1.0f, 2.0f, 2.0f);
+            else
+                Grid->WindowRectangle = Rect(0, 0, width, height);
+
 
             int majorVersion = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
@@ -186,28 +198,38 @@ namespace Presentation
 
         void ScatterChart::UpdateTransform()
         {
-            float clientWidth = (float)Grid->WindowRectangle.Width;
-            float clientHeight = (float)Grid->WindowRectangle.Height;
+            float xRange = (float)Grid->WindowRectangle.Width;
+            float yRange = (float)Grid->WindowRectangle.Height;
             float zMinValue = Grid->kMinZValue;
             float zMaxValue = Grid->kMaxZValue;
             float zRange = zMaxValue - zMinValue;
             if (IsPolorCoordinate)
             {
-                double aspectRatio = clientWidth / clientHeight;
+                double aspectRatio = xRange / yRange;
                 double yWidth = YAxisMax - YAxisMin;
                 double xWidth = yWidth * aspectRatio;
                 double xHalf = xWidth / 2;
                 _xAxisMin = -xHalf;
                 _xAxisMax = xHalf;
             }
-            sf::Vector3f position(-(float)XAxisMin * clientWidth / (float)(XAxisMax - XAxisMin),
-                                  -(float)YAxisMin * clientHeight / (float)(YAxisMax - YAxisMin),
-                                  -(float)(ZAxisMin - zMinValue)*zRange / (float)(ZAxisMax - ZAxisMin));
-            sf::Vector3f scale(clientWidth / (float)(XAxisMax - XAxisMin),
-                               clientHeight / (float)(YAxisMax - YAxisMin),
+            if (_enableCamera)
+            {
+                sf::Vector3f origin((float)(XAxisMin + XAxisMax),
+                    (float)(YAxisMin + YAxisMax),
+                    (float)(ZAxisMin + ZAxisMax));
+                _transform->setOrigin(origin);
+            }
+            else
+            {
+                sf::Vector3f position(-(float)XAxisMin * xRange / (float)(XAxisMax - XAxisMin),
+                                      -(float)YAxisMin * yRange / (float)(YAxisMax - YAxisMin));
+                _transform->setPosition(position);
+            }
+            sf::Vector3f scale(xRange / (float)(XAxisMax - XAxisMin),
+                               yRange / (float)(YAxisMax - YAxisMin),
                                zRange / (float)(ZAxisMax - ZAxisMin));
 
-            _transform->setPosition(position);
+            //_transform->setPosition(position);
             _transform->setScale(scale);
         }
 

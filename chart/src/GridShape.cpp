@@ -17,6 +17,7 @@ namespace Presentation
             , _gridZVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _borderXVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
             , _borderYVertices(new sf::VertexArray(sf::PrimitiveType::Lines, 4))
+            , _plotBox(new sf::Cuboid())
         {
             IsVisible = true;
             BackgroundColor = Colors::Black;
@@ -39,6 +40,7 @@ namespace Presentation
                 target->draw(*_borderXVertices, states);
                 target->draw(*_borderYVertices, states);
             }
+            target->draw(*_plotBox, states);
         }
 
         void GridShape::WindowRectangle::set(Rect rect)
@@ -166,6 +168,12 @@ namespace Presentation
             float yStop = (float)GridRectangle.Height + yStart;
             float yTick = (float)GridRectangle.Height / _numberOfYAxisDivisions;
             sf::Color gridColor = ColorUtil::ColorFrom(GridColor);
+
+            _plotBox->setSize({ xStop - xStart, yStop - yStart, zStop - zStart });
+            //_plotBox->setOrigin({ (xStop - xStart) / 2.0f, (yStop - yStart) / 2.0f, (zStop - zStart) / 2.0f });
+            //_plotBox->setPosition({ (xStop - xStart) / 2.0f, (yStop - yStart) / 2.0f, (zStop - zStart) / 2.0f });
+            _plotBox->setColor({ 255,255,0, 40 });
+            _plotBox->setBorderColor(sf::Color::White);
 
             for (int i = 0; i <= _numberOfZAxisDivisions; i++)
             {

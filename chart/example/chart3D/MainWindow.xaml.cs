@@ -102,10 +102,10 @@ namespace ChartExample
             {
                 fixed (float* pData = &data[0])
                 {
-                    GenerateData(data, range1, -2.0f);
+                    GenerateData(data, range1, -1.0f);
                     ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
                     ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
-                    GenerateData(data, range2, 2.0f);
+                    GenerateData(data, range2, 1.0f);
                     ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
                     ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
                 }

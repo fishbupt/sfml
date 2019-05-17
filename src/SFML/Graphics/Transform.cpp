@@ -306,8 +306,18 @@ FloatBox Transform::transformBox(const FloatBox& box) const
         if      (points[i].z < front)  front  = points[i].z;
         else if (points[i].z > back)   back   = points[i].z;
     }
+    float xMin, xMax, yMin, yMax;
+    xMin = xMax = points[0].x;
+    yMin = yMax = points[0].y;
+    for (int i = 1; i < 8; i++)
+    {
+        xMin = std::min(points[i].x, xMin);
+        xMax = std::max(points[i].x, xMax);
+        yMin = std::min(points[i].y, yMin);
+        yMax = std::max(points[i].y, yMax);
 
-    return FloatBox(left, top, front, right - left, bottom - top, back - front);
+    }
+    return FloatBox(left, top, front, xMax-xMin, yMax-yMin, back - front);
 }
 
 

@@ -86,11 +86,11 @@ namespace Presentation
             GridShape^ _grid = gcnew GridShape();
             List<PointsShape^>^ _dataShapes = gcnew List<PointsShape ^>();
 
-            double _xAxisMin = 0;
+            double _xAxisMin = -1.0;
             double _xAxisMax = 1.0;
-            double _yAxisMin = 0;
+            double _yAxisMin = -1.0;
             double _yAxisMax = 1.0;
-            double _zAxisMin = 0;
+            double _zAxisMin = -1.0;
             double _zAxisMax = 1.0;
 
             array<Color>^ _segColors = gcnew array<Color>(0);
