@@ -20,7 +20,7 @@ namespace Presentation
             _vertices->resize(pointSize);
             _linesVertices->resize(SegmentCount * 2);
 
-            float minValue = std::numeric_limits<float>::min();
+            float minValue = std::numeric_limits<float>::lowest();
             float maxValue = std::numeric_limits<float>::max();
 
             sf::VertexArray& vertices = *_vertices;
@@ -29,10 +29,11 @@ namespace Presentation
 
             for (int i = 0; i < SegmentCount; i++)
             {
-                linesVertices[2 * i].position.x = static_cast<float>(i);
+                float posX = i * XDelta + XStart;
+                linesVertices[2 * i].position.x = posX;
                 linesVertices[2 * i].position.y = maxValue;
                 linesVertices[2 * i].color = ColorUtil::ColorFrom(TraceColor);
-                linesVertices[2 * i + 1].position.x = static_cast<float>(i);
+                linesVertices[2 * i + 1].position.x = posX;
                 linesVertices[2 * i + 1].position.y = minValue;
                 linesVertices[2 * i + 1].color = ColorUtil::ColorFrom(TraceColor);
             }
@@ -41,20 +42,22 @@ namespace Presentation
             for (int i = 0; i < pointSize; i++)
             {
                 vertices[i].color = segColors[pSeg[i]];
-                vertices[i].position.x = static_cast<float>(xPos);
+                vertices[i].position.x = xPos * XDelta + XStart;
                 float yVal = pYData[i];
                 vertices[i].position.y = yVal;
 
-                // set MinMax pair
-                if (yVal < linesVertices[2 * xPos].position.y)
+                // set MinMax pairmax
+                if (pSeg[i] != _invalidSegIndex)
                 {
-                    linesVertices[2 * xPos].position.y = yVal;
+                    if (yVal < linesVertices[2 * xPos].position.y)
+                    {
+                        linesVertices[2 * xPos].position.y = yVal;
+                    }
+                    if (yVal > linesVertices[2 * xPos + 1].position.y)
+                    {
+                        linesVertices[2 * xPos + 1].position.y = yVal;
+                    }
                 }
-                if (yVal > linesVertices[2 * xPos + 1].position.y)
-                {
-                    linesVertices[2 * xPos + 1].position.y = yVal;
-                }
-
                 xPos++;
                 if (xPos == SegmentCount)
                     xPos = 0;

@@ -231,8 +231,6 @@ namespace Presentation
                     if (_segColors != value)
                     {
                         _segColors = value;
-                        //note: index 0 is used to hide the point
-                        _segColors[0] = Colors::Transparent;
                         for (int i = 0; i < DataShapes->Count; i++)
                         {
                             DataShapes[i]->SegColors = _segColors;

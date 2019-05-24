@@ -24,7 +24,7 @@ namespace Presentation
             for (int i = 0; i < pointSize; i++)
             {
                 vertices[i].color = segColors[pSeg[i]];
-                vertices[i].position.x = xPos;
+                vertices[i].position.x = xPos * XDelta + XStart;
                 vertices[i].position.y = pYData[i];
                 xPos++;
                 if (xPos == SegmentCount)

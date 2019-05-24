@@ -14,6 +14,8 @@ namespace Presentation
             for (int i = 0; i < count; i++)
             {
                 (*_segColors)[i] = ColorUtil::ColorFrom(value[i]);
+                if (i == _invalidSegIndex)
+                    (*_segColors)[i] = sf::Color::Transparent;
             }
         }
 
@@ -80,7 +82,7 @@ namespace Presentation
             for (int i = 0; i < pointSize; i++)
             {
                 vertices[i].color = segColors[pSeg[i]];
-                vertices[i].position.x = xPos;
+                vertices[i].position.x = xPos * XDelta + XStart;
                 vertices[i].position.y = pYData[i];
                 xPos++;
             }

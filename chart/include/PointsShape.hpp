@@ -32,11 +32,25 @@ namespace Presentation
                 , _segColors(new sf::ColorArray())
             {
                 IsVisible = true;
+                XStart = 0.0;
+                XDelta = 1.0;
             }
 
             property bool IsVisible;
 
             property Color TraceColor;
+
+            /// <summary>
+            /// X value of the first x data value
+            /// The default value is 0
+            /// </summary>
+            property double XStart;
+
+            /// <summary>
+            /// X delta between each x data value
+            /// The default value is 1
+            /// </summary>
+            property double XDelta;
 
             // clang-format off
             property array<Color> ^ SegColors
@@ -73,6 +87,7 @@ namespace Presentation
         protected:
             scoped_ptr<sf::VertexArray> _vertices;
             scoped_ptr<sf::ColorArray> _segColors;
+            uint32_t _invalidSegIndex = 0; // The index used to indicate data will not be used
         };
     }
 }
