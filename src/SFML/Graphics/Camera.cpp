@@ -20,7 +20,7 @@ Camera::Camera(float fov, float near, float far)
     , m_farPlane(far)
     , m_width(1.0f)
     , m_height(1.0f)
-    , m_orthoCamera(false)
+    , m_orthoCamera(true)
     , m_direction(0, 0, -1)
     , m_upVector(0, 1, 0)
     , m_scale(1, 1, 1)
@@ -238,6 +238,12 @@ const Transform& Camera::getViewTransform() const
     }
 
     return m_viewTransform;
+}
+
+////////////////////////////////////////////////////////////
+bool Camera::isOrthographicProjection() const
+{
+    return m_orthoCamera;
 }
 
 } // namespace sf

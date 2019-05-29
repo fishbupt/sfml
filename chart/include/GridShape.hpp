@@ -84,9 +84,12 @@ namespace Presentation
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
-            sf::FloatBox getBoxBounds()
+            property sf::FloatBox PlotBoxBounds
             {
-                return _plotBox->getLocalBounds();
+                sf::FloatBox get()
+                {
+                    return _plotBox->getLocalBounds();
+                }
             }
 
         private:

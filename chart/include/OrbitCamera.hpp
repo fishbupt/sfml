@@ -68,6 +68,14 @@ namespace Presentation
                 sf::Vector3f get() { return _camera->getScale(); }
                 void set(sf::Vector3f value) { _camera->setScale(value); }
             }
+
+            property bool IsOrthographicProjection
+            {
+                bool get()
+                {
+                    return _camera->isOrthographicProjection();
+                }
+            }
         // clang-format on
 
             void UseOrthographicCamera()

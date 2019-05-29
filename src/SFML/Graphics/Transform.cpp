@@ -306,6 +306,25 @@ FloatBox Transform::transformBox(const FloatBox& box) const
         if      (points[i].z < front)  front  = points[i].z;
         else if (points[i].z > back)   back   = points[i].z;
     }
+    return FloatBox(left, top, front, right - left, bottom - top, back - front);
+}
+
+////////////////////////////////////////////////////////////
+FloatRect Transform::transformBoxToRect(const FloatBox& box) const
+{
+    // Transform the 8 corners of the box
+    const Vector3f points[] =
+    {
+        transformPoint(box.left, box.top, box.front),
+        transformPoint(box.left, box.top + box.height, box.front),
+        transformPoint(box.left + box.width, box.top, box.front),
+        transformPoint(box.left + box.width, box.top + box.height, box.front),
+        transformPoint(box.left, box.top, box.front + box.depth),
+        transformPoint(box.left, box.top + box.height, box.front + box.depth),
+        transformPoint(box.left + box.width, box.top, box.front + box.depth),
+        transformPoint(box.left + box.width, box.top + box.height, box.front + box.depth)
+    };
+
     float xMin, xMax, yMin, yMax;
     xMin = xMax = points[0].x;
     yMin = yMax = points[0].y;
@@ -317,9 +336,8 @@ FloatBox Transform::transformBox(const FloatBox& box) const
         yMax = std::max(points[i].y, yMax);
 
     }
-    return FloatBox(left, top, front, xMax-xMin, yMax-yMin, back - front);
+    return FloatRect(xMin, yMin, xMax - xMin, yMax - yMin);
 }
-
 
 ////////////////////////////////////////////////////////////
 Transform& Transform::combine(const Transform& transform)

@@ -177,6 +177,16 @@ public:
     FloatBox transformBox(const FloatBox& box) const;
 
     ////////////////////////////////////////////////////////////
+    /// \brief Transform a 3d box to 2d rect
+    ///
+    /// \param box Box to transform
+    ///
+    /// \return Transformed rect
+    ///
+    ////////////////////////////////////////////////////////////
+    FloatRect transformBoxToRect(const FloatBox& box) const;
+
+    ////////////////////////////////////////////////////////////
     /// \brief Combine the current transform with another one
     ///
     /// The result is a transform that is equivalent to applying

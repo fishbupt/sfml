@@ -86,15 +86,18 @@ namespace Presentation
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
-            sf::FloatBox lBox{ -1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 2.0f };
-            sf::Transform transform = _camera->getCamera()->getTransform();
-            sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
-            transform.combine(viewTransform);
-
-            sf::FloatBox gBox = transform.transformBox(lBox);
-            //_camera->getCamera()->scale({ 2.0f /gBox.width, 2.0f / gBox.height, 1.0f });
             if (_enableCamera)
             {
+                if (_camera->IsOrthographicProjection)
+                {
+                    sf::Transform transform = _camera->getCamera()->getTransform();
+                    sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
+                    transform.combine(viewTransform);
+
+                    sf::FloatRect tRect = transform.transformBoxToRect(Grid->PlotBoxBounds);
+                    float scaleFactor = 1.8f / std::max(tRect.width, tRect.height);
+                    _camera->ChangeScale(scaleFactor);
+                }
                 target->enableDepthTest(true);
                 target->setView(*_camera->getCamera());
             }
@@ -181,8 +184,8 @@ namespace Presentation
             //_camera->Position = sf::Vector3f(width / 2.0f, height / 2.0f, 1.0f);
             _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
             //_camera->Scale = sf::Vector3f(2.0f / width, 2.0f / height, 1.0f);
-            //_camera->getCamera()->setWidth(width);
-            //_camera->getCamera()->setHeight(height);
+            _camera->getCamera()->setWidth(width);
+            _camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
             if (_enableCamera)
