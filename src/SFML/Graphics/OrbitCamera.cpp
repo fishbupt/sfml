@@ -39,14 +39,15 @@ float OrbitCamera::getDistance() const
 void OrbitCamera::setAzimuth(float azimuth)
 {
     m_azimuth = azimuth;
+    if (m_azimuth >= 180.0f) m_azimuth -= 360.0f;
+    if (m_azimuth < -180.0f) m_azimuth += 360.0f;
     computeRotation();
 }
 
 ////////////////////////////////////////////////////////////
 void OrbitCamera::changeAzimuth(float angle)
 {
-    m_azimuth += angle;
-    computeRotation();
+    setAzimuth(m_azimuth + angle);
 }
 
 ////////////////////////////////////////////////////////////
@@ -67,10 +68,7 @@ void OrbitCamera::setElevation(float elevation)
 ////////////////////////////////////////////////////////////
 void OrbitCamera::changeElevation(float angle)
 {
-    m_elevation += angle;
-    m_elevation = std::max(-90.0f, m_elevation);
-    m_elevation = std::min(90.0f, m_elevation);
-    computeRotation();
+    setElevation(m_elevation + angle);
 }
 
 ////////////////////////////////////////////////////////////
@@ -83,7 +81,7 @@ float OrbitCamera::getElevation() const
 void OrbitCamera::computeRotation()
 {
     glm::mat4 identityMat{ 1.0f };
-    m_rotation = glm::rotate(identityMat, glm::radians(-m_elevation), kXAxis);
+    m_rotation = glm::rotate(identityMat, glm::radians(m_elevation), kXAxis);
     m_rotation = glm::rotate(m_rotation, glm::radians(m_azimuth), kYAxis);
     m_viewTransformUpdated = false;
     m_invViewTransformUpdated = false;

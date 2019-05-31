@@ -186,11 +186,11 @@ namespace ChartExample
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            azimuthSlider.Value = 0.0f;
-            elevationSlider.Value = 0.0f;
+            azimuthSlider.Value = -37.5f;
+            elevationSlider.Value = 30.0f;
             distanceSlider.Value = 5.0f;
-            ScatterChart.Chart.Camera.Azimuth = 0.0f;
-            ScatterChart.Chart.Camera.Elevation = 0.0f;
+            ScatterChart.Chart.Camera.Azimuth = -37.5f;
+            ScatterChart.Chart.Camera.Elevation = 30.0f;
             ScatterChart.Chart.Camera.Distance = 5.0f;
         }
 

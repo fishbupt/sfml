@@ -4,6 +4,8 @@
 // note: put opengl headers before any other header files
 #include <ScatterChart.hpp>
 #include <Utils.hpp>
+#include <sstream>
+#include <iomanip>
 #include <SFML/Graphics/RenderStates.hpp>
 
 #using "System.Drawing.dll"
@@ -24,12 +26,30 @@ namespace Presentation
 {
     namespace Graph
     {
+        /// <summary>
+        /// Check value is in range [low, high)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="low"></param>
+        /// <param name="hight"></param>
+        /// <returns></returns>
+        bool IsInRange(float value, float low, float hight)
+        {
+            return (value >= low) && (value < hight);
+        }
+
         ScatterChart::ScatterChart()
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
         {
             IsPolorCoordinate = true;
             Content = _imageItem;
+            // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
+            _imageItem->RenderTransformOrigin = Point(0.5, 0.5);
+            ScaleTransform^ flipTrans = gcnew ScaleTransform();
+            flipTrans->ScaleY = -1;
+            _imageItem->RenderTransform = flipTrans;
+
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
         }
@@ -100,6 +120,10 @@ namespace Presentation
                 }
                 target->enableDepthTest(true);
                 target->setView(*_camera->getCamera());
+
+                Grid->ShowTopPlane(!(_camera->Elevation > 0));
+                Grid->ShowFrontPlane(!IsInRange(_camera->Azimuth, -90.0f, 90.0f));
+                Grid->ShowRightPlane(!IsInRange(_camera->Azimuth, -180.0f, 0.0f));
             }
 
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
@@ -112,8 +136,20 @@ namespace Presentation
                 shape->Draw(target, states);
             }
             // clang-format on
+            DrawAnnotations(target, states);
         }
 
+        void ScatterChart::DrawAnnotations(sf::RenderTarget* target, sf::RenderStates states)
+        {
+            sf::Transform cameraTransform = _camera->getCamera()->getTransform();
+            sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
+            cameraTransform.combine(viewTransform);
+            sf::Transform screenTransform = target->getDefaultView().getInverseTransform();
+
+            target->setView(target->getDefaultView());
+            sf::Vector2f pos = cameraTransform.transformPoint(-1, -1, -1);
+            sf::Vector2f screenPos = screenTransform.transformPoint(pos);
+        }
         int ScatterChart::PixelAtX(double value, bool gridLimit)
         {
             sf::Vector2f pixelPoint = _transform->getTransform().transformPoint((float)value, 0.0f);
@@ -180,10 +216,7 @@ namespace Presentation
             _renderTextureIsReady = _renderTexture->create(width, height);
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
-
-            //_camera->Position = sf::Vector3f(width / 2.0f, height / 2.0f, 1.0f);
             _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
-            //_camera->Scale = sf::Vector3f(2.0f / width, 2.0f / height, 1.0f);
             _camera->getCamera()->setWidth(width);
             _camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
@@ -192,7 +225,6 @@ namespace Presentation
                 Grid->WindowRectangle = Rect(-1.0f, -1.0f, 2.0f, 2.0f);
             else
                 Grid->WindowRectangle = Rect(0, 0, width, height);
-
 
             int majorVersion = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
@@ -234,6 +266,7 @@ namespace Presentation
 
             //_transform->setPosition(position);
             _transform->setScale(scale);
+
         }
 
         void ScatterChart::OnSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
@@ -246,6 +279,7 @@ namespace Presentation
         {
             UpdateTransform();
         }
+
     }
 }
 }

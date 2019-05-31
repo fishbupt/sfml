@@ -171,6 +171,29 @@ public:
     ////////////////////////////////////////////////////////////
     FloatBox getBounds() const;
 
+    ////////////////////////////////////////////////////////////
+    /// \brief Returns pointer to the underlying array
+    ///
+    /// This function returns pointer to the underlying array,
+    /// The pointer is such that range(data(); data()+getVertexCount())
+    /// is aways a valid range.
+    ///
+    /// \return pointer to the underlying array
+    ///
+    ////////////////////////////////////////////////////////////
+    Vertex* data() noexcept;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Returns pointer to the underlying array
+    ///
+    /// This function returns pointer to the underlying array,
+    /// The pointer is such that range(data(); data()+getVertexCount())
+    /// is aways a valid range.
+    ///
+    /// \return pointer to the underlying array
+    ///
+    ////////////////////////////////////////////////////////////
+    const Vertex* data() const noexcept;
 private:
 
     ////////////////////////////////////////////////////////////

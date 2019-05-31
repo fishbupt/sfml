@@ -92,6 +92,12 @@ namespace Presentation
                 }
             }
 
+            void ShowTopPlane(bool showTop);
+
+            void ShowFrontPlane(bool showFront);
+
+            void ShowRightPlane(bool showRight);
+
         private:
             constexpr static float kBorderPixelOffset{0.0f};
 
@@ -100,15 +106,30 @@ namespace Presentation
             int _numberOfYAxisDivisions;
             int _numberOfZAxisDivisions;
 
-            scoped_ptr<sf::VertexArray> _gridXVertices;
-            scoped_ptr<sf::VertexArray> _gridYVertices;
-            scoped_ptr<sf::VertexArray> _borderXVertices;
-            scoped_ptr<sf::VertexArray> _borderYVertices;
-            scoped_ptr<sf::VertexArray> _gridZVertices;
             scoped_ptr<sf::Cuboid> _plotBox;
-            void updateXAxis();
-            void updateYAxis();
-            void updateZAxis();
+
+            scoped_ptr<sf::VertexArray> _xyPlaneGrid;
+            scoped_ptr<sf::VertexArray> _xyPlaneBorder;
+            bool _xyPlaneGridUpdated;
+            bool _showFrontPlane; // True -- display grid on Front plane. False -- display grid on back plane
+            scoped_ptr<sf::VertexArray> _xzPlaneGrid;
+            scoped_ptr<sf::VertexArray> _xzPlaneBorder;
+            bool _xzPlaneGridUpdated;
+            bool _showTopPlane; // True -- display grid on Top plane. False -- display grid on Bottom plane
+            scoped_ptr<sf::VertexArray> _yzPlaneGrid;
+            scoped_ptr<sf::VertexArray> _yzPlaneBorder;
+            bool _yzPlaneGridUpdated;
+            bool _showRightPlane; // True -- display grid on Right plane. False -- display grid on Left plane
+
+            void UpdateXYPlaneGrid();
+            void UpdateXZPlaneGrid();
+            void UpdateYZPlaneGrid();
+
+            property bool Is3DEnabled
+            {
+                bool get();
+            }
+
         };
     }
 }

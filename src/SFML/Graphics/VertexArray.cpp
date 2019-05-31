@@ -155,4 +155,16 @@ void VertexArray::draw(RenderTarget& target, RenderStates states) const
         target.draw(&m_vertices[0], m_vertices.size(), m_primitiveType, states);
 }
 
+////////////////////////////////////////////////////////////
+Vertex* VertexArray::data() noexcept
+{
+    return m_vertices.data();
+}
+
+////////////////////////////////////////////////////////////
+const Vertex* VertexArray::data() const noexcept
+{
+    return m_vertices.data();
+}
+
 } // namespace sf

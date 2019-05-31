@@ -51,6 +51,8 @@ namespace Presentation
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
+            void DrawAnnotations(sf::RenderTarget *target, sf::RenderStates states);
+
             /// <summary>
             /// Get the X-pixel position corresponding the passed X-axis value.
             /// </summary>
