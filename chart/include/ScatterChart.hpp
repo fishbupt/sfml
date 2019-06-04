@@ -284,7 +284,14 @@ namespace Presentation
                     if (_enableCamera != value)
                         _enableCamera = value;
                     if (!_enableCamera)
+                    {
                         _renderTexture->setView(_renderTexture->getDefaultView());
+                        ((ScaleTransform^)_imageItem->RenderTransform)->ScaleY = 1;
+                    }
+                    else
+                    {
+                        ((ScaleTransform^)_imageItem->RenderTransform)->ScaleY = -1;
+                    }
                 }
             }
 

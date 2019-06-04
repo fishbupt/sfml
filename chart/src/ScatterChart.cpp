@@ -44,7 +44,7 @@ namespace Presentation
             // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
             _imageItem->RenderTransformOrigin = Point(0.5, 0.5);
             ScaleTransform^ flipTrans = gcnew ScaleTransform();
-            flipTrans->ScaleY = -1;
+            flipTrans->ScaleY = 1;
             _imageItem->RenderTransform = flipTrans;
 
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
