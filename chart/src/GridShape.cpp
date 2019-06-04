@@ -1,3 +1,4 @@
+// Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #include "GridShape.hpp"
 #include "Utils.hpp"
 
@@ -42,7 +43,6 @@ namespace Presentation
             UpdateXYPlaneGrid();
             if (IsVisible) // draw grid lines
             {
-                //target->draw(*_gridZVertices, states);
                 target->draw(*_xyPlaneGrid, states);
             }
             else // draw border only

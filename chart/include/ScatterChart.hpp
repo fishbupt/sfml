@@ -9,6 +9,7 @@
 #include <GridShape.hpp>
 #include <Drawable.hpp>
 #include <OrbitCamera.hpp>
+#include <Annotation.hpp>
 
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
@@ -329,8 +330,10 @@ namespace Presentation
             WriteableBitmap^ _drawnImage; // displaying bitmap
             int _glMajorVersion;
 
-            OrbitCamera^ _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
+            OrbitCamera^ _camera;
             bool _enableCamera = false; // true to apply 3d camera
+            Annotation^ _annotation;
+
         };
     }
 }

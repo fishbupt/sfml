@@ -26,22 +26,19 @@ namespace Presentation
 {
     namespace Graph
     {
-        /// <summary>
-        /// Check value is in range [low, high)
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="low"></param>
-        /// <param name="hight"></param>
-        /// <returns></returns>
-        bool IsInRange(float value, float low, float hight)
-        {
-            return (value >= low) && (value < hight);
-        }
 
         ScatterChart::ScatterChart()
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
         {
+             _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
+             _annotation = gcnew Annotation(this);
+             _annotation->XAxisUnit = "xUnit";
+             _annotation->YAxisUnit = "yUnit";
+             _annotation->ZAxisUnit = "zUnit";
+             _annotation->FontSize = 14;
+             _annotation->Color = System::Windows::Media::Colors::Red;
+
             IsPolorCoordinate = true;
             Content = _imageItem;
             // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
@@ -122,8 +119,10 @@ namespace Presentation
                 target->setView(*_camera->getCamera());
 
                 Grid->ShowTopPlane(!(_camera->Elevation > 0));
-                Grid->ShowFrontPlane(!IsInRange(_camera->Azimuth, -90.0f, 90.0f));
-                Grid->ShowRightPlane(!IsInRange(_camera->Azimuth, -180.0f, 0.0f));
+                Grid->ShowFrontPlane(!MathUtil::IsInRange(_camera->Azimuth, -90.0f, 90.0f));
+                Grid->ShowRightPlane(!MathUtil::IsInRange(_camera->Azimuth, -180.0f, 0.0f));
+
+
             }
 
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
@@ -136,11 +135,14 @@ namespace Presentation
                 shape->Draw(target, states);
             }
             // clang-format on
-            DrawAnnotations(target, states);
+            if(_enableCamera)
+                DrawAnnotations(target, sf::RenderStates::Default);
         }
 
         void ScatterChart::DrawAnnotations(sf::RenderTarget* target, sf::RenderStates states)
         {
+            _annotation->Draw(target, states);
+
             sf::Transform cameraTransform = _camera->getCamera()->getTransform();
             sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
             cameraTransform.combine(viewTransform);

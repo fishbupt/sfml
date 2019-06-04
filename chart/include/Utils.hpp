@@ -29,6 +29,22 @@ namespace Presentation
                 return sf::Color(color.R, color.G, color.B, color.A);
             }
         };
+
+        ref class MathUtil
+        {
+        public:
+            /// <summary>
+            /// Check value is in range [low, high)
+            /// </summary>
+            /// <param name="value"></param>
+            /// <param name="low"></param>
+            /// <param name="high"></param>
+            /// <returns></returns>
+            static bool IsInRange(const float& value,  const float& low, const float& high)
+            {
+                return !(value < low) && (value < high);
+            }
+        };
     }
 }
 }

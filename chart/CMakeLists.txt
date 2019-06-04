@@ -7,6 +7,7 @@ set(SRCROOT ./src)
 
 # all source files
 set(SRC
+    ${SRCROOT}/Annotation.cpp
     ${SRCROOT}/PointsShape.cpp
     ${SRCROOT}/GridShape.cpp
     ${SRCROOT}/SegmentPointsShape.cpp
@@ -14,6 +15,7 @@ set(SRC
     ${SRCROOT}/ScatterChart.cpp
     ${SRCROOT}/SegmentChart.cpp
     ${SRCROOT}/SegmentMinMaxChart.cpp
+    ${INCROOT}/Annotation.hpp
     ${INCROOT}/PointsShape.hpp
     ${INCROOT}/GridShape.hpp
     ${INCROOT}/SegmentPointsShape.hpp

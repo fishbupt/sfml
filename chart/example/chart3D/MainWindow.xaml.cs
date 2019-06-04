@@ -72,7 +72,7 @@ namespace ChartExample
                 float y = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
                 data[3 * i] = x;
                 data[3 * i + 1] = y;
-                data[3 * i + 2] = zValue;
+                data[3 * i + 2] = zValue + ((float)rand.NextDouble() - 0.5f) * 0.1f;
             }
         }
 
