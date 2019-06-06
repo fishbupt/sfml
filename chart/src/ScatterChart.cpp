@@ -232,8 +232,8 @@ namespace Presentation
 
         void ScatterChart::UpdateTransform()
         {
-            float xRange = (float)Grid->WindowRectangle.Width;
-            float yRange = (float)Grid->WindowRectangle.Height;
+            float xRange = (float)Grid->GridRectangle.Width;
+            float yRange = (float)Grid->GridRectangle.Height;
             float zMinValue = Grid->kMinZValue;
             float zMaxValue = Grid->kMaxZValue;
             float zRange = zMaxValue - zMinValue;
