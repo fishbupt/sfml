@@ -32,7 +32,7 @@ namespace Presentation
             , _renderTexture(new sf::RenderTexture())
         {
              _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
-             _annotation = gcnew Annotation(this);
+             _annotation = gcnew Graph::Annotation(this);
              _annotation->XAxisUnit = "xUnit";
              _annotation->YAxisUnit = "yUnit";
              _annotation->ZAxisUnit = "zUnit";
@@ -59,7 +59,7 @@ namespace Presentation
             if (_glMajorVersion >= 3)
             {
                 glEnable(GL_POINT_SMOOTH);
-                if (_enableCamera)
+                if (Is3DEnabled)
                 {
                     glEnable(GL_LINE_SMOOTH);
                 }
@@ -103,7 +103,7 @@ namespace Presentation
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
-            if (_enableCamera)
+            if (Is3DEnabled)
             {
                 if (_camera->IsOrthographicProjection)
                 {
@@ -135,7 +135,7 @@ namespace Presentation
                 shape->Draw(target, states);
             }
             // clang-format on
-            if(_enableCamera)
+            if(Is3DEnabled)
                 DrawAnnotations(target, sf::RenderStates::Default);
         }
 
@@ -223,10 +223,7 @@ namespace Presentation
             _camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
-            if (_enableCamera)
-                Grid->WindowRectangle = Rect(-1.0f, -1.0f, 2.0f, 2.0f);
-            else
-                Grid->WindowRectangle = Rect(0, 0, width, height);
+            Grid->WindowRectangle = Rect(0, 0, width, height);
 
             int majorVersion = 0;
             glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
@@ -249,7 +246,7 @@ namespace Presentation
                 _xAxisMin = -xHalf;
                 _xAxisMax = xHalf;
             }
-            if (_enableCamera)
+            if (Is3DEnabled)
             {
                 sf::Vector3f origin((float)(XAxisMin + XAxisMax),
                     (float)(YAxisMin + YAxisMax),

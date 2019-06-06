@@ -99,7 +99,7 @@ namespace Presentation
             void ShowRightPlane(bool showRight);
 
         private:
-            constexpr static float kBorderPixelOffset{0.0f};
+            constexpr static float kBorderPixelOffset{1.0f};
 
             Rect _windowRectangle;
             int _numberOfXAxisDivisions;

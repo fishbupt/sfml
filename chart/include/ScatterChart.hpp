@@ -117,6 +117,14 @@ namespace Presentation
                 }
             }
 
+            property Annotation^ Annotation
+            {
+                Graph::Annotation^ get()
+                {
+                    return _annotation;
+                }
+            }
+
             /// <summary>
             /// For Polor Coordinate, the XAxisMin and XAxisMax are determinated by YAxisMin and YAxisMax
             /// </summary>
@@ -273,7 +281,7 @@ namespace Presentation
                 }
             }
 
-            property bool Enable3D
+            property bool Is3DEnabled
             {
                 bool get()
                 {
@@ -339,7 +347,7 @@ namespace Presentation
 
             OrbitCamera^ _camera;
             bool _enableCamera = false; // true to apply 3d camera
-            Annotation^ _annotation;
+            Graph::Annotation^ _annotation;
 
         };
     }

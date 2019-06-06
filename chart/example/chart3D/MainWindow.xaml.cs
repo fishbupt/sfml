@@ -224,7 +224,7 @@ namespace ChartExample
                 double width = ScatterChart.RenderSize.Width;
                 double height = ScatterChart.RenderSize.Height;
                 ScatterChart.Chart.Camera.ChangeAzimuth((float)(move.X / width * speed));
-                ScatterChart.Chart.Camera.ChangleElevation((float)(move.Y / height * speed));
+                ScatterChart.Chart.Camera.ChangeElevation((float)(move.Y / height * speed));
                 azimuthSlider.Value = ScatterChart.Chart.Camera.Azimuth;
                 elevationSlider.Value = ScatterChart.Chart.Camera.Elevation;
             }

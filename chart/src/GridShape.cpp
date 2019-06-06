@@ -76,6 +76,10 @@ namespace Presentation
             GridRectangle = Rect(_windowRectangle.X + kBorderPixelOffset, _windowRectangle.Y + kBorderPixelOffset,
                                  std::max(0.0, _windowRectangle.Width - 2 * kBorderPixelOffset),
                                  std::max(0.0, _windowRectangle.Height - 2 * kBorderPixelOffset));
+            if (Is3DEnabled)
+            {
+                GridRectangle = Rect(-1.0f, -1.0f, 2.0f, 2.0f);
+            }
             ClientRectangle = GridRectangle;
             GridRectangleChanged(this, nullptr);
 

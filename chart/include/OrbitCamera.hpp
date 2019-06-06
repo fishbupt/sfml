@@ -93,7 +93,7 @@ namespace Presentation
                 _camera->changeAzimuth(angle);
             }
 
-            void ChangleElevation(float angle)
+            void ChangeElevation(float angle)
             {
                 _camera->changeElevation(angle);
             }

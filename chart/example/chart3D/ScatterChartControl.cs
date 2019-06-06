@@ -25,7 +25,7 @@ namespace Xsa.Presentation.Graph
             Chart.Grid.NumberOfYAxisDivisions = 5;
             Chart.Grid.NumberOfZAxisDivisions = 5;
             Chart.Grid.IsVisible = true;
-            Chart.Enable3D = true;
+            Chart.Is3DEnabled = true;
             Chart.IsPolorCoordinate = false;
         }
 
