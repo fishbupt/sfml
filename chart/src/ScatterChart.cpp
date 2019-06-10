@@ -219,8 +219,6 @@ namespace Presentation
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
             _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
-            _camera->getCamera()->setWidth(width);
-            _camera->getCamera()->setHeight(height);
             _drawnImage = gcnew WriteableBitmap(width, height, 96, 96, PixelFormats::Pbgra32, BitmapPalettes::WebPalette);
 
             Grid->WindowRectangle = Rect(0, 0, width, height);

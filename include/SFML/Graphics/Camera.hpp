@@ -200,14 +200,6 @@ public :
 
     void setPosition(const sf::Vector3f& position);
 
-    void setWidth(float width);
-
-    float getWidth() const;
-
-    void setHeight(float height);
-
-    float getHeight() const;
-
     void useOrthographicProjection();
 
     void usePerspectiveProjection();
@@ -365,8 +357,6 @@ protected:
     float    m_fieldOfView; ///< Field of view of this camera, in degrees
     float    m_nearPlane;   ///< The distance to the near clipping plane
     float    m_farPlane;    ///< The distance to the far clipping plane
-    float    m_width;       ///< Width of RenderTarget in pixel
-    float    m_height;      ///< Height of RenderTarget in pixel
     bool     m_orthoCamera; ///< Use Orthographic projection or Perspective projection
     Vector3f m_direction;   ///< The direction the camera is facing in
     Vector3f m_upVector;    ///< The up vector of the camera

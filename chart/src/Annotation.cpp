@@ -128,32 +128,56 @@ namespace Presentation
         {
             text.setString(axis);
             text.setPosition(pos);
-            if (MathUtil::IsInRange(angle, -90.0f, -45.0f))
-                text.move(-text.getLocalBounds().width - FontSize, FontSize);
+            float textWidth = text.getLocalBounds().width;
+            float textHeight = (float)FontSize;
+
             if (MathUtil::IsInRange(angle, -45.0f, 0))
-                text.move(0, FontSize);
-            else if (MathUtil::IsInRange(angle, -180.0f, -90.0f))
-                text.move(text.getLocalBounds().width, FontSize);
-            else if (MathUtil::IsInRange(angle, 0, 90.f))
-                text.move(text.getLocalBounds().width + FontSize, 0);
-            else if (MathUtil::IsInRange(angle, 90.0f, 180.0f))
-                text.move(-text.getLocalBounds().width - FontSize, FontSize);
+                text.move(-textHeight, textHeight);
+            else if (MathUtil::IsInRange(angle, -90.0f, -45.0f))
+                text.move(-textWidth - textHeight, textHeight);
+            else if (MathUtil::IsInRange(angle, 90.0f, 135.0f))
+                text.move(-textWidth - textHeight, 0);
+            else if (MathUtil::IsInRange(angle, 135.0f, 180.0f))
+                text.move(-textWidth, textHeight);
+
+            else if (MathUtil::IsInRange(angle, 0, 45.0f))
+                text.move(textWidth, textHeight);
+            else if (MathUtil::IsInRange(angle, 45.0f, 90.0f))
+                text.move(textWidth + textHeight, 0);
+            else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
+                text.move(textWidth + textHeight, 0);
+            else if (MathUtil::IsInRange(angle, -180.0f, -135.f))
+                text.move(0, textHeight);
+
         }
+
         void Annotation::PlotAxisMax(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle)
         {
             text.setString(axis);
             text.setPosition(pos);
-            if (MathUtil::IsInRange(angle, -90.0f, 0))
-                text.move(-text.getLocalBounds().width - FontSize, FontSize);
-            else if (MathUtil::IsInRange(angle, -180.0f, -90.0f))
-                text.move(text.getLocalBounds().width + FontSize, 0);
-            else if (MathUtil::IsInRange(angle, 0, 90.f))
-                text.move(text.getGlobalBounds().width, FontSize);
+            float textWidth = text.getLocalBounds().width;
+            float textHeight = (float)FontSize;
+
+            if (MathUtil::IsInRange(angle, -45.0f, 0))
+                text.move(-textWidth, textHeight);
+            else if (MathUtil::IsInRange(angle, -90.0f, -45.0f))
+                text.move(-textWidth - textHeight, 0);
             else if (MathUtil::IsInRange(angle, 90.0f, 135.0f))
-                text.move(-text.getLocalBounds().width - FontSize, FontSize);
+                text.move(-textWidth - textHeight, textHeight);
             else if (MathUtil::IsInRange(angle, 135.0f, 180.0f))
-                text.move(0, FontSize);
+                text.move(-textHeight, textHeight);
+
+            else if (MathUtil::IsInRange(angle, 0, 45.0f))
+                text.move(0, textHeight);
+            else if (MathUtil::IsInRange(angle, 45.0f, 90.0f))
+                text.move(textWidth + textHeight, 0);
+            else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
+                text.move(textWidth + textHeight, 0);
+            else if (MathUtil::IsInRange(angle, -180.0f, -135.0f))
+                text.move(textWidth, textHeight);
+
         }
+
         void Annotation::PlotXAnnotation(const sf::Transform& transform)
         {
             float zVal = -1.0f;

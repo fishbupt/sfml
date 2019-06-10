@@ -18,8 +18,6 @@ Camera::Camera(float fov, float near, float far)
     , m_fieldOfView(fov)
     , m_nearPlane(near)
     , m_farPlane(far)
-    , m_width(1.0f)
-    , m_height(1.0f)
     , m_orthoCamera(true)
     , m_direction(0, 0, -1)
     , m_upVector(0, 1, 0)
@@ -156,31 +154,6 @@ void Camera::setPosition(const sf::Vector3f& position)
     setCenter(position);
     m_viewTransformUpdated = false;
     m_invViewTransformUpdated = false;
-}
-////////////////////////////////////////////////////////////
-void Camera::setWidth(float width)
-{
-    m_width = width;
-    m_transformUpdated = false;
-}
-
-////////////////////////////////////////////////////////////
-float Camera::getWidth() const
-{
-    return m_width;
-}
-
-////////////////////////////////////////////////////////////
-void Camera::setHeight(float height)
-{
-    m_height = height;
-    m_transformUpdated = false;
-}
-
-////////////////////////////////////////////////////////////
-float Camera::getHeight() const
-{
-    return m_height;
 }
 
 ////////////////////////////////////////////////////////////
