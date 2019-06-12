@@ -62,6 +62,12 @@ namespace Presentation
                 if (Is3DEnabled)
                 {
                     glEnable(GL_LINE_SMOOTH);
+                    glLineWidth(1.1f);
+                }
+                else
+                {
+                    glDisable(GL_LINE_SMOOTH);
+                    glLineWidth(1.0f);
                 }
             }
             glPointSize(3.0f);
@@ -121,9 +127,9 @@ namespace Presentation
                 Grid->ShowTopPlane(!(_camera->Elevation > 0));
                 Grid->ShowFrontPlane(!MathUtil::IsInRange(_camera->Azimuth, -90.0f, 90.0f));
                 Grid->ShowRightPlane(!MathUtil::IsInRange(_camera->Azimuth, -180.0f, 0.0f));
-
-
             }
+            else
+                target->enableDepthTest(false);
 
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
             target->clear(backColor);
@@ -214,8 +220,10 @@ namespace Presentation
             _renderTexture->setActive(false);
             int width = (int)std::max(10.0, ActualWidth);
             int height = (int)std::max(10.0, ActualHeight);
-            sf::ContextSettings ctxSettings{ 24, 8 };
-            _renderTextureIsReady = _renderTexture->create(width, height);
+            sf::ContextSettings ctxSettings{ 24, 0};
+            if (Is3DEnabled)
+                ctxSettings.antialiasingLevel = 8;
+            _renderTextureIsReady = _renderTexture->create(width, height, ctxSettings);
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
             _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
