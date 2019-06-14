@@ -60,7 +60,7 @@ namespace Presentation
 
         Annotation::Annotation(ScatterChart ^ chart)
             : _font(new sf::Font())
-            , _texts(new std::vector<sf::Text>(TextIndexSize))
+            , _texts(new VectorOfPair(TextIndexSize))
         {
             _chart = chart;
             _camera = _chart->Camera;
@@ -73,26 +73,30 @@ namespace Presentation
         {
             // draw text to 2D view
             target->setView(target->getDefaultView());
-
-            for (auto& text : *_texts)
-            {
-                text.setCharacterSize(FontSize);
-                text.setFillColor(ColorUtil::ColorFrom(Color));
-                text.setStyle((int)FontStyle);
-            }
+            target->enableDepthTest(false);
 
             const sf::Transform& cameraTransform = _camera->getCamera()->getTransform();
             const sf::Transform& viewTransform = _camera->getCamera()->getViewTransform();
             sf::Transform screenTransform = target->getDefaultView().getInverseTransform();
             screenTransform.combine(cameraTransform).combine(viewTransform);
 
+            for (auto& iter : *_texts)
+                iter.first = true;
+
             PlotXAnnotation(screenTransform);
             PlotYAnnotation(screenTransform);
             PlotZAnnotation(screenTransform);
 
-            for (auto& text : *_texts)
+            for (auto& iter : *_texts)
             {
-                target->draw(text, states);
+                if (iter.first)
+                {
+                    auto& text = iter.second;
+                    text.setCharacterSize(FontSize);
+                    text.setFillColor(ColorUtil::ColorFrom(Color));
+                    text.setStyle((int)FontStyle);
+                    target->draw(text, states);
+                }
             }
         }
 
@@ -190,21 +194,21 @@ namespace Presentation
             Line screenX{transform.transformPoint(xAxis[0]), transform.transformPoint(xAxis[1])};
             if (getLength(screenX) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextXAxisUnit].setString("");
-                (*_texts)[TextXAxisMin].setString("");
-                (*_texts)[TextXAxisMax].setString("");
+                (*_texts)[TextXAxisUnit].first = false;
+                (*_texts)[TextXAxisMin].first = false;
+                (*_texts)[TextXAxisMax].first = false;
                 return;
             }
             float angle = getAngle(screenX);
 
             sf::Vector2f unitPos = getMiddlePoint(screenX);
-            auto& textUnit = (*_texts)[TextXAxisUnit];
+            auto& textUnit = (*_texts)[TextXAxisUnit].second;
             PlotUnit(textUnit, getMiddlePoint(screenX), FromManagedString(XAxisUnit), angle);
 
-            auto& textMin = (*_texts)[TextXAxisMin];
+            auto& textMin = (*_texts)[TextXAxisMin].second;
             PlotAxisMin(textMin, screenX[0], FormatAxisValue(_chart->XAxisMin), angle);
 
-            auto& textMax = (*_texts)[TextXAxisMax];
+            auto& textMax = (*_texts)[TextXAxisMax].second;
             PlotAxisMax(textMax, screenX[1], FormatAxisValue(_chart->XAxisMax), angle);
         }
 
@@ -223,20 +227,20 @@ namespace Presentation
             Line screenY{transform.transformPoint(yAxis[0]), transform.transformPoint(yAxis[1])};
             if (getLength(screenY) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextYAxisUnit].setString("");
-                (*_texts)[TextYAxisMin].setString("");
-                (*_texts)[TextYAxisMax].setString("");
+                (*_texts)[TextYAxisUnit].first = false;
+                (*_texts)[TextYAxisMin].first = false;
+                (*_texts)[TextYAxisMax].first = false;
                 return;
             }
 
-            auto& textUnit = (*_texts)[TextYAxisUnit];
+            auto& textUnit = (*_texts)[TextYAxisUnit].second;
             PlotUnit(textUnit, getMiddlePoint(screenY), FromManagedString(YAxisUnit), -90.0f);
 
-            auto& textMin = (*_texts)[TextYAxisMin];
+            auto& textMin = (*_texts)[TextYAxisMin].second;
             textMin.setString(FormatAxisValue(_chart->YAxisMin));
             textMin.setPosition(screenY[0].x - 2 * FontSize, screenY[0].y - FontSize);
 
-            auto& textMax = (*_texts)[TextYAxisMax];
+            auto& textMax = (*_texts)[TextYAxisMax].second;
             textMax.setString(FormatAxisValue(_chart->YAxisMax));
             textMax.setPosition(screenY[1].x - 2 * FontSize, screenY[1].y);
         }
@@ -253,21 +257,21 @@ namespace Presentation
             Line screenZ{transform.transformPoint(zAxis[0]), transform.transformPoint(zAxis[1])};
             if (getLength(screenZ) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextZAxisUnit].setString("");
-                (*_texts)[TextZAxisMin].setString("");
-                (*_texts)[TextZAxisMax].setString("");
+                (*_texts)[TextZAxisUnit].first = false;
+                (*_texts)[TextZAxisMin].first = false;
+                (*_texts)[TextZAxisMax].first = false;
                 return;
             }
             float angle = getAngle(screenZ);
 
             sf::Vector2f unitPos = getMiddlePoint(screenZ);
-            auto& textUnit = (*_texts)[TextZAxisUnit];
+            auto& textUnit = (*_texts)[TextZAxisUnit].second;
             PlotUnit(textUnit, getMiddlePoint(screenZ), FromManagedString(ZAxisUnit), angle);
 
-            auto& textMin = (*_texts)[TextZAxisMin];
+            auto& textMin = (*_texts)[TextZAxisMin].second;
             PlotAxisMin(textMin, screenZ[0], FormatAxisValue(_chart->ZAxisMin), angle);
 
-            auto& textMax = (*_texts)[TextZAxisMax];
+            auto& textMax = (*_texts)[TextZAxisMax].second;
             PlotAxisMax(textMax, screenZ[1], FormatAxisValue(_chart->ZAxisMax), angle);
         }
 
@@ -292,9 +296,9 @@ namespace Presentation
 
                 std::string filename = FromManagedString(fontPath);
                 _font->loadFromFile(filename);
-                for (auto& text : *_texts)
+                for (auto& iter : *_texts)
                 {
-                    text.setFont(*_font);
+                    iter.second.setFont(*_font);
                 }
             }
         }

@@ -7,6 +7,7 @@
 #include <ScopedPtr.hpp>
 #include <OrbitCamera.hpp>
 #include <vector>
+#include <utility>
 
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
@@ -100,10 +101,12 @@ namespace Presentation
             void PlotAxisMin(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle);
             void PlotAxisMax(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle);
         private:
+            using VectorOfPair = std::vector<std::pair<bool, sf::Text>>;
+
             OrbitCamera^ _camera;
             System::String^ _fontName = gcnew System::String("");
             scoped_ptr<sf::Font> _font;
-            scoped_ptr < std::vector<sf::Text>> _texts;
+            scoped_ptr<VectorOfPair> _texts;
             ScatterChart^ _chart;
 
             static const float kMinAxisLenghtInPixelToDisplay = 50.0f;

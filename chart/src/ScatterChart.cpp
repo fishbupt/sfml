@@ -33,10 +33,10 @@ namespace Presentation
         {
              _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
              _annotation = gcnew Graph::Annotation(this);
-             _annotation->XAxisUnit = "xUnit";
-             _annotation->YAxisUnit = "yUnit";
-             _annotation->ZAxisUnit = "zUnit";
-             _annotation->FontSize = 14;
+             _annotation->XAxisUnit = "sym";
+             _annotation->YAxisUnit = "dBm";
+             _annotation->ZAxisUnit = "carr";
+             _annotation->FontSize = 13;
              _annotation->Color = System::Windows::Media::Colors::Red;
 
             IsPolorCoordinate = true;
