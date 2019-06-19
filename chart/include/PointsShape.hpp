@@ -27,14 +27,11 @@ namespace Presentation
         // clang-format on
         {
         public:
-            PointsShape()
-                : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
-                , _segColors(new sf::ColorArray())
-            {
-                IsVisible = true;
-                XStart = 0.0;
-                XDelta = 1.0;
-            }
+            PointsShape();
+
+            virtual ~PointsShape();
+
+            !PointsShape();
 
             property bool IsVisible;
 

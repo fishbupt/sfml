@@ -69,6 +69,15 @@ namespace Presentation
             FontStyle = TextStyle::Regular;
         }
 
+        Annotation::~Annotation()
+        {
+            this->!Annotation();
+        }
+
+        Annotation::!Annotation()
+        {
+        }
+
         void Annotation::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
             // draw text to 2D view

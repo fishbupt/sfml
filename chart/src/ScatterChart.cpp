@@ -51,6 +51,25 @@ namespace Presentation
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
         }
 
+        ScatterChart::~ScatterChart()
+        {
+            delete _grid;
+            // clang-format off
+            for each(PointsShape ^ shape in DataShapes)
+            {
+                delete shape;
+            }
+            // clang-format on
+            delete _dataShapes;
+            delete _annotation;
+            delete _camera;
+            this->!ScatterChart();
+        }
+
+        ScatterChart::!ScatterChart()
+        {
+        }
+
         void ScatterChart::Draw()
         {
             if (!_renderTextureIsReady || _glMajorVersion < 2)
@@ -220,10 +239,11 @@ namespace Presentation
             _renderTexture->setActive(false);
             int width = (int)std::max(10.0, ActualWidth);
             int height = (int)std::max(10.0, ActualHeight);
-            sf::ContextSettings ctxSettings{ 24, 0};
             if (Is3DEnabled)
-                ctxSettings.antialiasingLevel = 8;
-            _renderTextureIsReady = _renderTexture->create(width, height, ctxSettings);
+                _renderTextureIsReady = _renderTexture->create(width, height, sf::ContextSettings{ 24, 0, 8 });
+            else
+                _renderTextureIsReady = _renderTexture->create(width, height);
+
             _renderTexture->setActive(true);
             _renderTexture->setSmooth(true);
             _camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);

@@ -84,6 +84,9 @@ sfml_set_option(SFML_BUILD_NETWORK TRUE BOOL "TRUE to build SFML's Network modul
 # add an option for building the API documentation
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
 
+# add an option for building the benchmark
+sfml_set_option(SFML_BUILD_BENCHMARK FALSE BOOL "TRUE to build the chart benchmark, FALSE to ignore it")
+
 # add an option for choosing the OpenGL implementation
 if(SFML_BUILD_WINDOW)
     sfml_set_option(SFML_OPENGL_ES ${OPENGL_ES} BOOL "TRUE to use an OpenGL ES implementation, FALSE to use a desktop OpenGL implementation")

@@ -7,6 +7,23 @@ namespace Presentation
 {
     namespace Graph
     {
+            PointsShape::PointsShape()
+                : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
+                , _segColors(new sf::ColorArray())
+            {
+                IsVisible = true;
+                XStart = 0.0;
+                XDelta = 1.0;
+            }
+
+            PointsShape::~PointsShape()
+            {
+                this->!PointsShape();
+            }
+
+            PointsShape::!PointsShape()
+            {}
+
         void PointsShape::SegColors::set(array<Color> ^ value)
         {
             int count = value->Length;
@@ -40,9 +57,10 @@ namespace Presentation
             sf::Color color = ColorUtil::ColorFrom(TraceColor);
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = color;
-                vertices[i].position.x = pData[2 * i];
-                vertices[i].position.y = pData[2 * i + 1];
+                auto& vertex = vertices[i];
+                vertex.color = color;
+                vertex.position.x = pData[2 * i];
+                vertex.position.y = pData[2 * i + 1];
             }
         }
 
@@ -60,9 +78,10 @@ namespace Presentation
 
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = segColors[pSeg[i]];
-                vertices[i].position.x = pData[2 * i];
-                vertices[i].position.y = pData[2 * i + 1];
+                auto& vertex = vertices[i];
+                vertex.color = segColors[pSeg[i]];
+                vertex.position.x = pData[2 * i];
+                vertex.position.y = pData[2 * i + 1];
             }
         }
 
@@ -81,9 +100,10 @@ namespace Presentation
             float xPos = 0;
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = segColors[pSeg[i]];
-                vertices[i].position.x = xPos * XDelta + XStart;
-                vertices[i].position.y = pYData[i];
+                auto& vertex = vertices[i];
+                vertex.color = segColors[pSeg[i]];
+                vertex.position.x = xPos * XDelta + XStart;
+                vertex.position.y = pYData[i];
                 xPos++;
             }
         }
@@ -101,10 +121,11 @@ namespace Presentation
             sf::Color color = ColorUtil::ColorFrom(TraceColor);
             for (int i = 0; i < pointSize; i++)
             {
-                vertices[i].color = color;
-                vertices[i].position.x = pData[3 * i];
-                vertices[i].position.y = pData[3 * i + 1];
-                vertices[i].position.z = pData[3 * i + 2];
+                auto& vertex = vertices[i];
+                vertex.color = color;
+                vertex.position.x = pData[3 * i];
+                vertex.position.y = pData[3 * i + 1];
+                vertex.position.z = pData[3 * i + 2];
             }
         }
     }

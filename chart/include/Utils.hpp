@@ -16,6 +16,7 @@ namespace Presentation
 {
     namespace Graph
     {
+
         ref class ColorUtil
         {
         public:

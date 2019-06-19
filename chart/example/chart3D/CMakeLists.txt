@@ -32,7 +32,7 @@ target_compile_options(${EX_TARGET} PRIVATE "/unsafe")
 set_source_files_properties(App.xaml PROPERTIES VS_XAML_TYPE "ApplicationDefinition")
 # target properties
 set_target_properties(${EX_TARGET} PROPERTIES 
-                      DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
+                      DOTNET_TARGET_FRAMEWORK_VERSION ${DotNetVersion})
 set_property(TARGET ${EX_TARGET} PROPERTY VS_DOTNET_PLATFORM "x64")
 set_property(TARGET ${EX_TARGET} PROPERTY
                       VS_DOTNET_REFERENCES

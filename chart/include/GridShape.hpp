@@ -30,6 +30,10 @@ namespace Presentation
         public:
             GridShape();
 
+            ~GridShape();
+
+            !GridShape();
+
             static const float kMinZValue = -1.0f;
 
             static const float kMaxZValue = 1.0f;

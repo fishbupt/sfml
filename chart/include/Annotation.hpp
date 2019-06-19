@@ -45,6 +45,9 @@ namespace Presentation
         public:
             Annotation(ScatterChart^ chart);
 
+            virtual ~Annotation();
+
+            !Annotation();
             /// <summary>
             /// Name of font
             /// SFML Font needs to load font from a ttf file.

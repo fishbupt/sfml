@@ -38,6 +38,14 @@ namespace Presentation
             _plotBox->setBorderColor(sf::Color::White);
         }
 
+        GridShape::~GridShape()
+        {
+            this->!GridShape();
+        }
+
+        GridShape::!GridShape()
+        {}
+
         void GridShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
             UpdateXYPlaneGrid();

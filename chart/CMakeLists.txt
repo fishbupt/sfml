@@ -1,5 +1,6 @@
 enable_language(CSharp)
 set(CMAKE_CSharp_FLAGS "/platform:x64 /langversion:latest")
+set(DotNetVersion "4.6.2")
 include(CSharpUtilities)
 
 set(INCROOT ./include)
@@ -44,7 +45,7 @@ target_link_options(${CHART_LIB} PRIVATE ${SIGN_OPTION} "$<$<CONFIG:Debug>:/ASSE
 
 set_target_properties(${CHART_LIB} PROPERTIES
                       COMMON_LANGUAGE_RUNTIME ""
-                      DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+                      DOTNET_TARGET_FRAMEWORK_VERSION ${DotNetVersion}
                       VS_DOTNET_REFERENCES "System" "WindowsBase" "PresentationCore" "PresentationFramework" "System.Drawing")
 
 target_include_directories(${CHART_LIB} PRIVATE include)
@@ -52,5 +53,8 @@ target_include_directories(${CHART_LIB} PRIVATE include)
 target_link_libraries(${CHART_LIB} PUBLIC sfml-graphics opengl32)
 add_dependencies(${CHART_LIB} fonts2bin)
 
-add_subdirectory(example)
 add_subdirectory(fonts)
+add_subdirectory(example)
+if(SFML_BUILD_BENCHMARK)
+    add_subdirectory(benchmark)
+endif()
