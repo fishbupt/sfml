@@ -58,7 +58,7 @@ cd 'to source dir'
 mkdir build  
 cd build  
 conan install ..
-cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF 
+cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=OFF -DSFML_BUILD_BENCHMARK=ON  
 start SFML.sln 
 ```
 After open SFML solution, select ChartBenchmark project, and open Package Manager Console by using the **Tools** > **NuGet Package Manager** > **Package Manager Console** command. Then run following command
