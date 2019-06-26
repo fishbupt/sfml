@@ -274,9 +274,9 @@ namespace Presentation
             }
             if (Is3DEnabled)
             {
-                sf::Vector3f origin((float)(XAxisMin + XAxisMax),
-                    (float)(YAxisMin + YAxisMax),
-                    (float)(ZAxisMin + ZAxisMax));
+                sf::Vector3f origin((float)(XAxisMin + XAxisMax) / 2.0f,
+                    (float)(YAxisMin + YAxisMax) / 2.0f,
+                    (float)(ZAxisMin + ZAxisMax) / 2.0f);
                 _transform->setOrigin(origin);
             }
             else

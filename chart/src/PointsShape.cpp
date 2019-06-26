@@ -7,22 +7,22 @@ namespace Presentation
 {
     namespace Graph
     {
-            PointsShape::PointsShape()
-                : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
-                , _segColors(new sf::ColorArray())
-            {
-                IsVisible = true;
-                XStart = 0.0;
-                XDelta = 1.0;
-            }
+        PointsShape::PointsShape()
+            : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
+            , _segColors(new sf::ColorArray())
+        {
+            IsVisible = true;
+            XStart = 0.0;
+            XDelta = 1.0;
+        }
 
-            PointsShape::~PointsShape()
-            {
-                this->!PointsShape();
-            }
+        PointsShape::~PointsShape()
+        {
+            this->!PointsShape();
+        }
 
-            PointsShape::!PointsShape()
-            {}
+        PointsShape::!PointsShape()
+        {}
 
         void PointsShape::SegColors::set(array<Color> ^ value)
         {
@@ -123,6 +123,28 @@ namespace Presentation
             {
                 auto& vertex = vertices[i];
                 vertex.color = color;
+                vertex.position.x = pData[3 * i];
+                vertex.position.y = pData[3 * i + 1];
+                vertex.position.z = pData[3 * i + 2];
+            }
+        }
+
+        void PointsShape::SetXYZData(float* pData, int dataSize, short* pSeg, int segIndexesSize)
+        {
+            if (dataSize == 0 || segIndexesSize == 0 || !pData || !pSeg)
+                return;
+            if (dataSize % 3 != 0)
+                return throw gcnew InvalidOperationException();
+
+            int pointSize = dataSize / 3;
+            _vertices->resize(pointSize);
+            sf::VertexArray& vertices = *_vertices;
+            sf::ColorArray segColors = *_segColors;
+
+            for (int i = 0; i < pointSize; i++)
+            {
+                auto& vertex = vertices[i];
+                vertex.color = segColors[pSeg[i]];
                 vertex.position.x = pData[3 * i];
                 vertex.position.y = pData[3 * i + 1];
                 vertex.position.z = pData[3 * i + 2];

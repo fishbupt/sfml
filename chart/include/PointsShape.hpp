@@ -88,6 +88,13 @@ namespace Presentation
             /// <param name="data">The trace data.</param>
             virtual void SetXYZData(float* pData, int dataSize);
 
+            /// Set trace data in (x,y,z) format
+            /// The color for trace is set by SegColors
+            /// </summary>
+            /// <param name="data">The trace data</param>
+            /// <param name="segIndexes">The indexes for SegColors</param>
+            virtual void SetXYZData(float* pData, int dataSize, short* pSegIndexes, int segIndexesSize);
+
         protected:
             scoped_ptr<sf::VertexArray> _vertices;
             scoped_ptr<sf::ColorArray> _segColors;
