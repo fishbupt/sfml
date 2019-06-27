@@ -1,11 +1,7 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
-#include <msclr\marshal_cppstd.h>
 #include "Annotation.hpp"
 #include "Utils.hpp"
 #include "ScatterChart.hpp"
-#include <string>
-#include <sstream>
-#include <iomanip>
 #include <array>
 #include <cmath>
 
@@ -46,149 +42,174 @@ namespace Presentation
             return std::hypot(std::fabsf(line[0].x - line[1].x), std::fabsf(line[0].y - line[1].y));
         }
 
-        std::string FromManagedString(System::String ^ managedStr)
-        {
-            return msclr::interop::marshal_as<std::string>(managedStr);
-        }
-
-        std::string FormatAxisValue(double value, int precision = 2)
-        {
-            std::ostringstream oss;
-            oss << std::setprecision(precision) << value;
-            return oss.str();
-        }
 
         Annotation::Annotation(ScatterChart ^ chart)
-            : _font(new sf::Font())
-            , _texts(new VectorOfPair(TextIndexSize))
         {
             _chart = chart;
             _camera = _chart->Camera;
-            FontName = "arial";
-            FontSize = 16;
-            FontStyle = TextStyle::Regular;
-        }
-
-        Annotation::~Annotation()
-        {
-            this->!Annotation();
-        }
-
-        Annotation::!Annotation()
-        {
+            FontSize = 13;
+            _textBlocks = gcnew array<TextBlock ^>(TextIndexSize);
+            for (int i = 0; i < TextIndexSize; i++)
+            {
+                _textBlocks[i] = gcnew TextBlock();
+                _textBlocks[i]->RenderTransform = gcnew RotateTransform();
+                _textBlocks[i]->Foreground = gcnew SolidColorBrush(Color);
+                _textBlocks[i]->FontSize = FontSize;
+                _textBlocks[i]->FontStyle = FontStyle;
+                _textBlocks[i]->FontWeight = FontWeight;
+                _chart->_canvas->Children->Add(_textBlocks[i]);
+            }
         }
 
         void Annotation::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
-            // draw text to 2D view
-            target->setView(target->getDefaultView());
-            target->enableDepthTest(false);
 
             const sf::Transform& cameraTransform = _camera->getCamera()->getTransform();
             const sf::Transform& viewTransform = _camera->getCamera()->getViewTransform();
             sf::Transform screenTransform = target->getDefaultView().getInverseTransform();
             screenTransform.combine(cameraTransform).combine(viewTransform);
 
-            for (auto& iter : *_texts)
-                iter.first = true;
+            for each(TextBlock ^ text in _textBlocks)
+            {
+                text->Foreground = gcnew SolidColorBrush(Color);
+                text->FontSize = FontSize;
+                text->FontFamily = FontFamily;
+                text->FontStyle = FontStyle;
+                text->FontWeight = FontWeight;
+                text->Visibility = Visibility::Visible;
+            }
 
             PlotXAnnotation(screenTransform);
             PlotYAnnotation(screenTransform);
             PlotZAnnotation(screenTransform);
-
-            for (auto& iter : *_texts)
-            {
-                if (iter.first)
-                {
-                    auto& text = iter.second;
-                    text.setCharacterSize(FontSize);
-                    text.setFillColor(ColorUtil::ColorFrom(Color));
-                    text.setStyle((int)FontStyle);
-                    target->draw(text, states);
-                }
-            }
         }
 
-        void Annotation::PlotUnit(sf::Text& text, const sf::Vector2f& pos, const std::string& unit, float angle)
+        void Annotation::PlotUnit(TextBlock ^ text, const sf::Vector2f& pos, String ^ unit, float angle)
         {
-            text.setString(unit);
-            float textWidth = text.getLocalBounds().width;
-            float textHeight = text.getLocalBounds().height;
-            text.setOrigin(textWidth / 2.0f, textHeight / 2.0f);
-            if (MathUtil::IsInRange(angle, -90.0f, -70.0f)||MathUtil::IsInRange(angle, 90.0f, 110.f))
+            text->Text = unit;
+            float textWidth = text->DesiredSize.Width;
+            text->RenderTransformOrigin = Point(0.5, 0.5);
+            RotateTransform ^ textTransform = (RotateTransform ^) text->RenderTransform;
+            if (MathUtil::IsInRange(angle, -90.0f, -70.0f) || MathUtil::IsInRange(angle, 90.0f, 110.f))
             {
-                text.setPosition(pos.x - 2 * FontSize, pos.y);
-                text.setRotation(-90.f);
+                Canvas::SetLeft(text, pos.x - 2 * FontSize);
+                Canvas::SetTop(text, pos.y);
+                textTransform->Angle = -90.0;
             }
-            else if (MathUtil::IsInRange(angle, -110.0f, -90.0f)||MathUtil::IsInRange(angle, 70.0f, 90.0f))
+            else if (MathUtil::IsInRange(angle, -110.0f, -90.0f) || MathUtil::IsInRange(angle, 70.0f, 90.0f))
             {
-                text.setPosition(pos.x + 2 * FontSize, pos.y);
-                text.setRotation(-90.f);
-            } 
-            else if (MathUtil::IsInRange(angle, 0, 70.0f)||MathUtil::IsInRange(angle, -180.0f, -110.0f))
+                Canvas::SetLeft(text, pos.x + 2 * FontSize);
+                Canvas::SetTop(text, pos.y);
+                textTransform->Angle = -90.0;
+            }
+            else if (MathUtil::IsInRange(angle, 0, 70.0f) || MathUtil::IsInRange(angle, -180.0f, -110.0f))
             {
-                text.setPosition(pos.x + textWidth / 2.0f, pos.y + FontSize);
-                text.setRotation(0);
+                Canvas::SetLeft(text, pos.x + textWidth / 2.0);
+                Canvas::SetTop(text, pos.y + FontSize);
+                textTransform->Angle = 0;
             }
             else
             {
-                text.setPosition(pos.x - textWidth / 2.0f, pos.y + FontSize);
-                text.setRotation(0);
+                Canvas::SetLeft(text, pos.x - textWidth / 2.0);
+                Canvas::SetTop(text, pos.y + FontSize);
+                textTransform->Angle = 0;
             }
         }
 
-        void Annotation::PlotAxisMin(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle)
+        void Annotation::PlotAxisMin(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
-            text.setString(axis);
-            text.setPosition(pos);
-            float textWidth = text.getLocalBounds().width;
+            text->Text = String::Format("{0}", axis);
+            float textWidth = text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
             if (MathUtil::IsInRange(angle, -45.0f, 0))
-                text.move(-textHeight, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x - textHeight);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, -90.0f, -45.0f))
-                text.move(-textWidth - textHeight, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x - textWidth - textHeight);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 90.0f, 135.0f))
-                text.move(-textWidth - textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x - textWidth - textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, 135.0f, 180.0f))
-                text.move(-textWidth, textHeight);
-
+            {
+                Canvas::SetLeft(text, pos.x - textWidth);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 0, 45.0f))
-                text.move(textWidth, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x + textWidth);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 45.0f, 90.0f))
-                text.move(textWidth + textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
-                text.move(textWidth + textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, -180.0f, -135.f))
-                text.move(0, textHeight);
-
+            {
+                Canvas::SetLeft(text, pos.x);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
         }
 
-        void Annotation::PlotAxisMax(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle)
+        void Annotation::PlotAxisMax(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
-            text.setString(axis);
-            text.setPosition(pos);
-            float textWidth = text.getLocalBounds().width;
+            text->Text = String::Format("{0}", axis);
+            float textWidth = text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
             if (MathUtil::IsInRange(angle, -45.0f, 0))
-                text.move(-textWidth, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x - textWidth);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, -90.0f, -45.0f))
-                text.move(-textWidth - textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x - textWidth - textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, 90.0f, 135.0f))
-                text.move(-textWidth - textHeight, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x - textWidth - textHeight);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 135.0f, 180.0f))
-                text.move(-textHeight, textHeight);
-
+            {
+                Canvas::SetLeft(text, pos.x - textHeight);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 0, 45.0f))
-                text.move(0, textHeight);
+            {
+                Canvas::SetLeft(text, pos.x);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
             else if (MathUtil::IsInRange(angle, 45.0f, 90.0f))
-                text.move(textWidth + textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
-                text.move(textWidth + textHeight, 0);
+            {
+                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetTop(text, pos.y);
+            }
             else if (MathUtil::IsInRange(angle, -180.0f, -135.0f))
-                text.move(textWidth, textHeight);
-
+            {
+                Canvas::SetLeft(text, pos.x + textWidth);
+                Canvas::SetTop(text, pos.y + textHeight);
+            }
         }
 
         void Annotation::PlotXAnnotation(const sf::Transform& transform)
@@ -203,22 +224,18 @@ namespace Presentation
             Line screenX{transform.transformPoint(xAxis[0]), transform.transformPoint(xAxis[1])};
             if (getLength(screenX) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextXAxisUnit].first = false;
-                (*_texts)[TextXAxisMin].first = false;
-                (*_texts)[TextXAxisMax].first = false;
+                _textBlocks[TextXAxisUnit]->Visibility = Visibility::Hidden;
+                _textBlocks[TextXAxisMin]->Visibility = Visibility::Hidden;
+                _textBlocks[TextXAxisMax]->Visibility = Visibility::Hidden;
                 return;
             }
             float angle = getAngle(screenX);
 
-            sf::Vector2f unitPos = getMiddlePoint(screenX);
-            auto& textUnit = (*_texts)[TextXAxisUnit].second;
-            PlotUnit(textUnit, getMiddlePoint(screenX), FromManagedString(XAxisUnit), angle);
+            PlotUnit(_textBlocks[TextXAxisUnit], getMiddlePoint(screenX), XAxisUnit, angle);
 
-            auto& textMin = (*_texts)[TextXAxisMin].second;
-            PlotAxisMin(textMin, screenX[0], FormatAxisValue(_chart->XAxisMin), angle);
+            PlotAxisMin(_textBlocks[TextXAxisMin], screenX[0], _chart->XAxisMin, angle);
 
-            auto& textMax = (*_texts)[TextXAxisMax].second;
-            PlotAxisMax(textMax, screenX[1], FormatAxisValue(_chart->XAxisMax), angle);
+            PlotAxisMax(_textBlocks[TextXAxisMax], screenX[1], _chart->XAxisMax, angle);
         }
 
         void Annotation::PlotYAnnotation(const sf::Transform& transform)
@@ -236,22 +253,23 @@ namespace Presentation
             Line screenY{transform.transformPoint(yAxis[0]), transform.transformPoint(yAxis[1])};
             if (getLength(screenY) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextYAxisUnit].first = false;
-                (*_texts)[TextYAxisMin].first = false;
-                (*_texts)[TextYAxisMax].first = false;
+                _textBlocks[TextYAxisUnit]->Visibility = Visibility::Hidden;
+                _textBlocks[TextYAxisMin]->Visibility = Visibility::Hidden;
+                _textBlocks[TextYAxisMax]->Visibility = Visibility::Hidden;
                 return;
             }
 
-            auto& textUnit = (*_texts)[TextYAxisUnit].second;
-            PlotUnit(textUnit, getMiddlePoint(screenY), FromManagedString(YAxisUnit), -90.0f);
+            PlotUnit(_textBlocks[TextYAxisUnit], getMiddlePoint(screenY), YAxisUnit, -90.0f);
 
-            auto& textMin = (*_texts)[TextYAxisMin].second;
-            textMin.setString(FormatAxisValue(_chart->YAxisMin));
-            textMin.setPosition(screenY[0].x - 2 * FontSize, screenY[0].y - FontSize);
+            TextBlock ^ minText = _textBlocks[TextYAxisMin];
+            minText->Text = String::Format("{0}", _chart->YAxisMin);
+            Canvas::SetLeft(minText, screenY[0].x - 2 * FontSize);
+            Canvas::SetTop(minText, screenY[0].y - FontSize);
 
-            auto& textMax = (*_texts)[TextYAxisMax].second;
-            textMax.setString(FormatAxisValue(_chart->YAxisMax));
-            textMax.setPosition(screenY[1].x - 2 * FontSize, screenY[1].y);
+            TextBlock ^ maxText = _textBlocks[TextYAxisMax];
+            maxText->Text = String::Format("{0}", _chart->YAxisMax);
+            Canvas::SetLeft(maxText, screenY[1].x - 2 * FontSize);
+            Canvas::SetTop(maxText, screenY[1].y);
         }
 
         void Annotation::PlotZAnnotation(const sf::Transform& transform)
@@ -266,50 +284,18 @@ namespace Presentation
             Line screenZ{transform.transformPoint(zAxis[0]), transform.transformPoint(zAxis[1])};
             if (getLength(screenZ) < kMinAxisLenghtInPixelToDisplay)
             {
-                (*_texts)[TextZAxisUnit].first = false;
-                (*_texts)[TextZAxisMin].first = false;
-                (*_texts)[TextZAxisMax].first = false;
+                _textBlocks[TextZAxisUnit]->Visibility = Visibility::Hidden;
+                _textBlocks[TextZAxisMin]->Visibility = Visibility::Hidden;
+                _textBlocks[TextZAxisMax]->Visibility = Visibility::Hidden;
                 return;
             }
             float angle = getAngle(screenZ);
 
-            sf::Vector2f unitPos = getMiddlePoint(screenZ);
-            auto& textUnit = (*_texts)[TextZAxisUnit].second;
-            PlotUnit(textUnit, getMiddlePoint(screenZ), FromManagedString(ZAxisUnit), angle);
+            PlotUnit(_textBlocks[TextZAxisUnit], getMiddlePoint(screenZ), ZAxisUnit, angle);
 
-            auto& textMin = (*_texts)[TextZAxisMin].second;
-            PlotAxisMin(textMin, screenZ[0], FormatAxisValue(_chart->ZAxisMin), angle);
+            PlotAxisMin(_textBlocks[TextZAxisMin], screenZ[0], _chart->ZAxisMin, angle);
 
-            auto& textMax = (*_texts)[TextZAxisMax].second;
-            PlotAxisMax(textMax, screenZ[1], FormatAxisValue(_chart->ZAxisMax), angle);
-        }
-
-        System::String ^ Annotation::FontName::get()
-        {
-            return _fontName;
-        }
-
-        void Annotation::FontName::set(System::String ^ value)
-        {
-            array<System::String ^> ^ availableFontNames =
-                gcnew array<System::String ^>{"arial", "consola", "lucon", "roboto", "wqy-microhei"};
-
-            if (Array::IndexOf(availableFontNames, value) < 0)
-                value = "arail";
-
-            if (_fontName != value)
-            {
-                _fontName = value;
-
-                System::String ^ fontPath = "fonts/" + _fontName + ".ttf";
-
-                std::string filename = FromManagedString(fontPath);
-                _font->loadFromFile(filename);
-                for (auto& iter : *_texts)
-                {
-                    iter.second.setFont(*_font);
-                }
-            }
+            PlotAxisMax(_textBlocks[TextZAxisMax], screenZ[1], _chart->ZAxisMax, angle);
         }
     }
 }

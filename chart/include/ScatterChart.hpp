@@ -297,11 +297,11 @@ namespace Presentation
                     if (!_enableCamera)
                     {
                         _renderTexture->setView(_renderTexture->getDefaultView());
-                        ((ScaleTransform^)_imageItem->RenderTransform)->ScaleY = 1;
+                        ((ScaleTransform^)_image->RenderTransform)->ScaleY = 1;
                     }
                     else
                     {
-                        ((ScaleTransform^)_imageItem->RenderTransform)->ScaleY = -1;
+                        ((ScaleTransform^)_image->RenderTransform)->ScaleY = -1;
                     }
                 }
             }
@@ -340,11 +340,13 @@ namespace Presentation
 
             void UpdateTransform();
 
+        public:
+            Canvas^ _canvas;
         private:
             scoped_ptr<sf::Transformable> _transform;
             scoped_ptr<sf::RenderTexture> _renderTexture;
             bool _renderTextureIsReady = false;
-            Image^ _imageItem = gcnew Image();
+            Image^ _image;
             WriteableBitmap^ _drawnImage; // displaying bitmap
             int _glMajorVersion;
 

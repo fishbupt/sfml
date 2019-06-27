@@ -16,6 +16,7 @@
 using namespace System;
 using namespace System::Windows;
 using namespace System::Windows::Media;
+using namespace System::Windows::Controls;
 
 namespace Xsa
 {
@@ -45,32 +46,27 @@ namespace Presentation
         public:
             Annotation(ScatterChart^ chart);
 
-            virtual ~Annotation();
-
-            !Annotation();
             /// <summary>
-            /// Name of font
-            /// SFML Font needs to load font from a ttf file.
-            /// The following fonts are shipped "aria.ttf", "consola.ttf", "lucon.ttf", "roboto.ttf", "wqy-microhei.ttc"
-            /// If the sepecified FontName is not found in the list, the default font "aria" will be used
+            /// Family of Font
             /// </summary>
-            property System::String^ FontName
-            {
-                System::String^ get();
-                void set(System::String ^ value);
-            }
-
+            property FontFamily^ FontFamily;
             /// <summary>
             /// FontSize in pixels
             /// The default value is 16
             /// </summary>
-            property int FontSize;
+            property double FontSize;
 
             /// <summary>
             /// Style of Font
-            /// The default style is TextStyle::Regular
+            /// The default style is Normal
             /// </summary>
-            property TextStyle FontStyle;
+            property FontStyle FontStyle;
+
+            /// <summary>
+            /// Weight of Font
+            /// The default value is Normal
+            /// </summary>
+            property FontWeight FontWeight;
 
             /// <summary>
             /// Color of the annotation text
@@ -100,16 +96,13 @@ namespace Presentation
             void PlotXAnnotation(const sf::Transform& transform);
             void PlotYAnnotation(const sf::Transform& transform);
             void PlotZAnnotation(const sf::Transform& transform);
-            void PlotUnit(sf::Text& text, const sf::Vector2f& pos, const std::string& unit, float angle);
-            void PlotAxisMin(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle);
-            void PlotAxisMax(sf::Text& text, const sf::Vector2f& pos, const std::string& axis, float angle);
+            void PlotUnit(TextBlock^ text, const sf::Vector2f& pos, String^ unit, float angle);
+            void PlotAxisMin(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
+            void PlotAxisMax(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
         private:
-            using VectorOfPair = std::vector<std::pair<bool, sf::Text>>;
 
             OrbitCamera^ _camera;
-            System::String^ _fontName = gcnew System::String("");
-            scoped_ptr<sf::Font> _font;
-            scoped_ptr<VectorOfPair> _texts;
+            array<TextBlock^>^ _textBlocks;
             ScatterChart^ _chart;
 
             static const float kMinAxisLenghtInPixelToDisplay = 50.0f;

@@ -31,21 +31,27 @@ namespace Presentation
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
         {
-             _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
-             _annotation = gcnew Graph::Annotation(this);
-             _annotation->XAxisUnit = "sym";
-             _annotation->YAxisUnit = "dBm";
-             _annotation->ZAxisUnit = "carr";
-             _annotation->FontSize = 13;
-             _annotation->Color = System::Windows::Media::Colors::Red;
+            _canvas = gcnew Canvas();
+            _image = gcnew Image();
+            _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
+            Content = _canvas;
+            _canvas->Children->Add(_image);
+
+            _annotation = gcnew Graph::Annotation(this);
+            _annotation->XAxisUnit = "sym";
+            _annotation->YAxisUnit = "dBm";
+            _annotation->ZAxisUnit = "carr";
+            _annotation->FontSize = 13;
+            _annotation->FontFamily = gcnew System::Windows::Media::FontFamily("Arial");
+            _annotation->Color = System::Windows::Media::Colors::Red;
 
             IsPolorCoordinate = true;
-            Content = _imageItem;
+
             // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
-            _imageItem->RenderTransformOrigin = Point(0.5, 0.5);
+            _image->RenderTransformOrigin = Point(0.5, 0.5);
             ScaleTransform^ flipTrans = gcnew ScaleTransform();
             flipTrans->ScaleY = 1;
-            _imageItem->RenderTransform = flipTrans;
+            _image->RenderTransform = flipTrans;
 
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
             SizeChanged += gcnew SizeChangedEventHandler(this, &ScatterChart::OnSizeChanged);
@@ -53,6 +59,8 @@ namespace Presentation
 
         ScatterChart::~ScatterChart()
         {
+            delete _canvas;
+            delete _image;
             delete _grid;
             // clang-format off
             for each(PointsShape ^ shape in DataShapes)
@@ -123,7 +131,7 @@ namespace Presentation
 
             _drawnImage->AddDirtyRect(Int32Rect(0, 0, (int)_drawnImage->Width, (int)_drawnImage->Height));
             _drawnImage->Unlock();
-            _imageItem->Source = _drawnImage;
+            _image->Source = _drawnImage;
         }
 
         void ScatterChart::Draw(sf::RenderTarget* target, sf::RenderStates states)
@@ -289,7 +297,6 @@ namespace Presentation
                                yRange / (float)(YAxisMax - YAxisMin),
                                zRange / (float)(ZAxisMax - ZAxisMin));
 
-            //_transform->setPosition(position);
             _transform->setScale(scale);
 
         }
