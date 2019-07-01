@@ -102,9 +102,6 @@ namespace Presentation
             Draw(_renderTexture.get(), sf::RenderStates::Default);
             _renderTexture->display();
             const sf::Texture& texture = _renderTexture->getTexture();
-            sf::Vector2u size = texture.getSize();
-            int width = (int)size.x;
-            int height = (int)size.y;
 
             // use WriteableBitmap as intermediate object to store image pixels
             // WriteableBitmap should be locked as short as possible
@@ -145,7 +142,9 @@ namespace Presentation
                     transform.combine(viewTransform);
 
                     sf::FloatRect tRect = transform.transformBoxToRect(Grid->PlotBoxBounds);
-                    float scaleFactor = 1.8f / std::max(tRect.width, tRect.height);
+                    float minSide = std::min(ActualWidth, ActualHeight);
+                    float scaleRatio = (minSide - 5 * _annotation->FontSize) / minSide * 2;
+                    float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
                     _camera->ChangeScale(scaleFactor);
                 }
                 target->enableDepthTest(true);
@@ -175,15 +174,6 @@ namespace Presentation
         void ScatterChart::DrawAnnotations(sf::RenderTarget* target, sf::RenderStates states)
         {
             _annotation->Draw(target, states);
-
-            sf::Transform cameraTransform = _camera->getCamera()->getTransform();
-            sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
-            cameraTransform.combine(viewTransform);
-            sf::Transform screenTransform = target->getDefaultView().getInverseTransform();
-
-            target->setView(target->getDefaultView());
-            sf::Vector2f pos = cameraTransform.transformPoint(-1, -1, -1);
-            sf::Vector2f screenPos = screenTransform.transformPoint(pos);
         }
         int ScatterChart::PixelAtX(double value, bool gridLimit)
         {

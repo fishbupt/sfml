@@ -51,9 +51,7 @@ set_target_properties(${CHART_LIB} PROPERTIES
 target_include_directories(${CHART_LIB} PRIVATE include)
 # setup dependencies
 target_link_libraries(${CHART_LIB} PUBLIC sfml-graphics opengl32)
-add_dependencies(${CHART_LIB} fonts2bin)
 
-add_subdirectory(fonts)
 add_subdirectory(example)
 if(SFML_BUILD_BENCHMARK)
     add_subdirectory(benchmark)

@@ -13,8 +13,8 @@ set(SRC
     ${SRCROOT}/Color.cpp
     ${INCROOT}/Color.hpp
     ${INCROOT}/Export.hpp
-    ${SRCROOT}/Font.cpp
-    ${INCROOT}/Font.hpp
+    #${SRCROOT}/Font.cpp
+    #${INCROOT}/Font.hpp
     ${SRCROOT}/Glsl.cpp
     ${INCROOT}/Glsl.hpp
     ${INCROOT}/Glsl.inl
@@ -89,8 +89,8 @@ set(DRAWABLES_SRC
     ${INCROOT}/Model.hpp
     ${SRCROOT}/Sprite.cpp
     ${INCROOT}/Sprite.hpp
-    ${SRCROOT}/Text.cpp
-    ${INCROOT}/Text.hpp
+    #${SRCROOT}/Text.cpp
+    #${INCROOT}/Text.hpp
     ${SRCROOT}/VertexArray.cpp
     ${INCROOT}/VertexArray.hpp
     ${SRCROOT}/VertexBuffer.cpp
@@ -121,16 +121,16 @@ target_link_libraries(sfml-graphics PUBLIC sfml-window)
 target_include_directories(sfml-graphics PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
 
 # let CMake know about our additional graphics libraries paths
-if(SFML_OS_WINDOWS)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
-elseif(SFML_OS_MACOSX)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
-    set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
-elseif(SFML_OS_IOS)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
-elseif(SFML_OS_ANDROID)
-    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
-endif()
+#if(SFML_OS_WINDOWS)
+#    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
+#elseif(SFML_OS_MACOSX)
+#    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
+#    set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
+#elseif(SFML_OS_IOS)
+#    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
+#elseif(SFML_OS_ANDROID)
+#    set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${PROJECT_SOURCE_DIR}/extlibs/headers/freetype2")
+#endif()
 
 # find external libraries
 if(SFML_OPENGL_ES)
