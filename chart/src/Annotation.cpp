@@ -61,6 +61,15 @@ namespace Presentation
             }
         }
 
+        void Annotation::Disable()
+        {
+            for each(TextBlock ^ text in _textBlocks)
+            {
+                text->Visibility = Visibility::Hidden;
+            }
+
+        }
+
         void Annotation::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
 

@@ -88,6 +88,10 @@ namespace Presentation
             /// </summary>
             property System::String^ ZAxisUnit;
 
+            /// <summary>
+            /// Disable drawing annotations
+            /// </summary>
+            void Disable();
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 

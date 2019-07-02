@@ -121,8 +121,13 @@ namespace Presentation
             if (nofDivisions != _numberOfZAxisDivisions)
             {
                 _numberOfZAxisDivisions = nofDivisions;
-                _xzPlaneGridUpdated = false;
-                _yzPlaneGridUpdated = false;
+                if (Is3DEnabled)
+                {
+                    GridRectangle = Rect(-1.0f, -1.0f, 2.0f, 2.0f);
+                    _xyPlaneGridUpdated = false;
+                    _xzPlaneGridUpdated = false;
+                    _yzPlaneGridUpdated = false;
+                }
             }
         }
 

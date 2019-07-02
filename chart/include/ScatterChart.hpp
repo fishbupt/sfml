@@ -296,6 +296,7 @@ namespace Presentation
                         _enableCamera = value;
                     if (!_enableCamera)
                     {
+                        _annotation->Disable();
                         _renderTexture->setView(_renderTexture->getDefaultView());
                         ((ScaleTransform^)_image->RenderTransform)->ScaleY = 1;
                     }

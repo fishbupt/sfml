@@ -23,6 +23,7 @@ namespace Xsa.Presentation.Graph
             Chart.NumberOfTraces = 2;
             Chart.Grid.NumberOfXAxisDivisions = 10;
             Chart.Grid.NumberOfYAxisDivisions = 10;
+            Chart.Is3DEnabled = false;
             Chart.Grid.IsVisible = true;
         }
 

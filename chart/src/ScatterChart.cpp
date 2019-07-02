@@ -50,7 +50,7 @@ namespace Presentation
             // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
             _image->RenderTransformOrigin = Point(0.5, 0.5);
             ScaleTransform^ flipTrans = gcnew ScaleTransform();
-            flipTrans->ScaleY = 1;
+            flipTrans->ScaleY = Is3DEnabled ? -1 : 1;
             _image->RenderTransform = flipTrans;
 
             Grid->GridRectangleChanged += gcnew EventHandler(this, &ScatterChart::OnGridRectangleChanged);
@@ -143,9 +143,12 @@ namespace Presentation
 
                     sf::FloatRect tRect = transform.transformBoxToRect(Grid->PlotBoxBounds);
                     float minSide = std::min(ActualWidth, ActualHeight);
-                    float scaleRatio = (minSide - 5 * _annotation->FontSize) / minSide * 2;
-                    float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
-                    _camera->ChangeScale(scaleFactor);
+                    if (minSide > 0)
+                    {
+                        float scaleRatio = (minSide - 5 * _annotation->FontSize) / minSide * 2;
+                        float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
+                        _camera->ChangeScale(scaleFactor);
+                    }
                 }
                 target->enableDepthTest(true);
                 target->setView(*_camera->getCamera());
@@ -275,12 +278,14 @@ namespace Presentation
                 sf::Vector3f origin((float)(XAxisMin + XAxisMax) / 2.0f,
                     (float)(YAxisMin + YAxisMax) / 2.0f,
                     (float)(ZAxisMin + ZAxisMax) / 2.0f);
+                _transform->setPosition({ 0,0,0 });
                 _transform->setOrigin(origin);
             }
             else
             {
                 sf::Vector3f position(-(float)XAxisMin * xRange / (float)(XAxisMax - XAxisMin),
                                       -(float)YAxisMin * yRange / (float)(YAxisMax - YAxisMin));
+                _transform->setOrigin({ 0, 0, 0 });
                 _transform->setPosition(position);
             }
             sf::Vector3f scale(xRange / (float)(XAxisMax - XAxisMin),
