@@ -304,6 +304,7 @@ namespace Presentation
                     {
                         ((ScaleTransform^)_image->RenderTransform)->ScaleY = -1;
                     }
+                    UpdateTransform();
                 }
             }
 

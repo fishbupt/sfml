@@ -1019,15 +1019,15 @@ void RenderTarget::setupNonLegacyPipeline()
                               "    sf_FrontColor = sf_Color;\n"
                               "\n"
                               "    // Texture data\n"
-                              "    if (sf_TextureEnabled == 1)\n"
-                              "        sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
+                              "    //if (sf_TextureEnabled == 1)\n"
+                              "    //    sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
                               "\n"
                               "    // Lighting data\n"
-                              "    if (sf_LightingEnabled > 0)\n"
-                              "    {\n"
-                              "        sf_FragNormal = sf_Normal;\n"
-                              "        sf_FragWorldPosition = vec3(sf_ModelMatrix * vec4(sf_Vertex, 1.0));\n"
-                              "    }\n"
+                              "    //if (sf_LightingEnabled > 0)\n"
+                              "    //{\n"
+                              "    //    sf_FragNormal = sf_Normal;\n"
+                              "    //    sf_FragWorldPosition = vec3(sf_ModelMatrix * vec4(sf_Vertex, 1.0));\n"
+                              "    //}\n"
                               "}\n";
 
         std::stringstream fragmentShaderSource;
@@ -1134,7 +1134,11 @@ void RenderTarget::setupNonLegacyPipeline()
                                 "void main()\n"
                                 "{\n"
                                 "    // Fragment color\n"
-                                "    sf_FragColor = sf_FrontColor * computeTexture() * computeLighting();\n"
+                                "    //vec4 color = sf_FrontColor * computeTexture() * computeLighting();\n"
+                                "    //if(color.a == 0)\n"
+                                "    if(sf_FrontColor.a == 0)\n"
+                                "      discard;\n"
+                                "    sf_FragColor = sf_FrontColor;\n"
                                 "}\n";
 
         if (!m_defaultShader->loadFromMemory(vertexShaderSource.str(), fragmentShaderSource.str()))

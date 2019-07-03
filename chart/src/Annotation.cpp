@@ -125,9 +125,17 @@ namespace Presentation
             }
         }
 
+        System::String^ Annotation::FormatAxisValue(double axis)
+        {
+            if (FormatProvider != nullptr)
+                return String::Format(FormatProvider, "{0:A4}", axis);
+            else
+                return String::Format("{0}", axis);
+            
+        }
         void Annotation::PlotAxisMin(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
-            text->Text = String::Format("{0}", axis);
+            text->Text = FormatAxisValue(axis);
             float textWidth = text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
@@ -175,7 +183,7 @@ namespace Presentation
 
         void Annotation::PlotAxisMax(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
-            text->Text = String::Format("{0}", axis);
+            text->Text = FormatAxisValue(axis);
             float textWidth = text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
@@ -271,12 +279,12 @@ namespace Presentation
             PlotUnit(_textBlocks[TextYAxisUnit], getMiddlePoint(screenY), YAxisUnit, -90.0f);
 
             TextBlock ^ minText = _textBlocks[TextYAxisMin];
-            minText->Text = String::Format("{0}", _chart->YAxisMin);
+            minText->Text = FormatAxisValue(_chart->YAxisMin);
             Canvas::SetLeft(minText, screenY[0].x - 2 * FontSize);
             Canvas::SetTop(minText, screenY[0].y - FontSize);
 
             TextBlock ^ maxText = _textBlocks[TextYAxisMax];
-            maxText->Text = String::Format("{0}", _chart->YAxisMax);
+            maxText->Text = FormatAxisValue(_chart->YAxisMax);
             Canvas::SetLeft(maxText, screenY[1].x - 2 * FontSize);
             Canvas::SetTop(maxText, screenY[1].y);
         }

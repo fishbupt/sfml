@@ -89,9 +89,15 @@ namespace Presentation
             property System::String^ ZAxisUnit;
 
             /// <summary>
+            /// Set this property to "EngineeringFormatter" if you want more readable format value
+            /// </summary>
+            property IFormatProvider^ FormatProvider;
+
+            /// <summary>
             /// Disable drawing annotations
             /// </summary>
             void Disable();
+
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
@@ -103,6 +109,8 @@ namespace Presentation
             void PlotUnit(TextBlock^ text, const sf::Vector2f& pos, String^ unit, float angle);
             void PlotAxisMin(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
             void PlotAxisMax(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
+
+            System::String^ FormatAxisValue(double axis);
         private:
 
             OrbitCamera^ _camera;
