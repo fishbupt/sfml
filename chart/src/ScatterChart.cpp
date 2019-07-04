@@ -147,7 +147,7 @@ namespace Presentation
                     {
                         float scaleRatio = (minSide - 5 * _annotation->FontSize) / minSide * 2;
                         float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
-                        _camera->ChangeScale(scaleFactor);
+                        _camera->ChangeScale(scaleFactor, scaleFactor, 1.0f);
                     }
                 }
                 target->enableDepthTest(true);

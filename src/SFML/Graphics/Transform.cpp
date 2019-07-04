@@ -28,6 +28,24 @@
 #include <SFML/Graphics/Transform.hpp>
 #include <cmath>
 
+namespace 
+{
+    float dot(const sf::Vector3f& a, const sf::Vector3f& b)
+    {
+        return a.x*b.x + a.y*b.y + a.z*b.z;
+    }
+
+    sf::Vector3f cross(const sf::Vector3f& a, const sf::Vector3f& b)
+    {
+        return sf::Vector3f(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
+    }
+
+    sf::Vector3f normalize(const sf::Vector3f& v)
+    {
+        float length = std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+        return sf::Vector3f(v.x / length, v.y / length, v.z / length);
+    }
+}
 
 namespace sf
 {
@@ -56,15 +74,6 @@ Transform::Transform(float a00, float a01, float a02, float a03,
     m_matrix[1] = a10; m_matrix[5] = a11; m_matrix[9]  = a12; m_matrix[13] = a13;
     m_matrix[2] = a20; m_matrix[6] = a21; m_matrix[10] = a22; m_matrix[14] = a23;
     m_matrix[3] = a30; m_matrix[7] = a31; m_matrix[11] = a32; m_matrix[15] = a33;
-}
-
-////////////////////////////////////////////////////////////
-Transform::Transform(glm::mat4 matrix)
-{
-    m_matrix[0] = matrix[0][0]; m_matrix[4] = matrix[1][0]; m_matrix[8]  = matrix[2][0]; m_matrix[12] = matrix[3][0];
-    m_matrix[1] = matrix[0][1]; m_matrix[5] = matrix[1][1]; m_matrix[9]  = matrix[2][1]; m_matrix[13] = matrix[3][1];
-    m_matrix[2] = matrix[0][2]; m_matrix[6] = matrix[1][2]; m_matrix[10] = matrix[2][2]; m_matrix[14] = matrix[3][2];
-    m_matrix[3] = matrix[0][3]; m_matrix[7] = matrix[1][3]; m_matrix[11] = matrix[2][3]; m_matrix[15] = matrix[3][3];
 }
 
 ////////////////////////////////////////////////////////////
@@ -497,6 +506,61 @@ Transform& Transform::scale(const Vector3f& factors)
 Transform& Transform::scale(const Vector3f& factors, const Vector3f& center)
 {
     return scale(factors.x, factors.y, factors.z, center.x, center.y, center.z);
+}
+
+////////////////////////////////////////////////////////////
+Transform Transform::ortho(float left, float right, float bottom, float top, float near, float far)
+{
+    Transform tran;
+    float* mat = const_cast<float*>(tran.getMatrix());
+    mat[0] = 2.0f / (right - left);
+    mat[5] = 2.0f / (top - bottom);
+    mat[10] = -2.0f / (far - near);
+    mat[12] = -(right + left) / (right - left);
+    mat[13] = -(top + bottom) / (top - bottom);
+    mat[14] = -(far + near) / (far - near);
+
+    return tran;
+}
+
+////////////////////////////////////////////////////////////
+Transform Transform::perspective(float fov, float aspect, float near, float far)
+{
+    Transform tran;
+    float* mat = const_cast<float*>(tran.getMatrix());
+    float tanHalfFov = std::tan(fov / 2.0f);
+    mat[0] = 1.0f / (aspect*tanHalfFov);
+    mat[5] = 1.0f / (tanHalfFov);
+    mat[10] = -(far + near) / (far - near);
+    mat[15] = 0.0f;
+    mat[11] = -1.0f;
+    mat[14] = -(2.0f*far*near) / (far - near);
+
+    return tran;
+}
+
+////////////////////////////////////////////////////////////
+Transform Transform::lookAt(Vector3f position, Vector3f target, Vector3f up)
+{
+    const sf::Vector3f f = normalize(target - position);
+    const sf::Vector3f s = normalize(cross(f, up));
+    const sf::Vector3f u = cross(s, f);
+
+    Transform tran;
+    float* mat = const_cast<float*>(tran.getMatrix());
+    mat[0] = s.x;
+    mat[4] = s.y;
+    mat[8] = s.z;
+    mat[1] = u.x;
+    mat[5] = u.y;
+    mat[9] = u.z;
+    mat[2] = -f.x;
+    mat[6] = -f.y;
+    mat[10] = -f.z;
+    mat[12] = -dot(s, position);
+    mat[13] = -dot(u, position);
+    mat[14] = dot(f, position);
+    return tran;
 }
 
 

@@ -206,7 +206,7 @@ namespace ChartExample
 
         private void ScatterChart_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            ScatterChart.Chart.Camera.ChangeScale(1.0f + e.Delta / 240.0f);
+            //ScatterChart.Chart.Camera.ChangeScale(1.0f + e.Delta / 240.0f);
         }
 
         private void ScatterChart_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

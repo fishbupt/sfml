@@ -6,12 +6,6 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Camera.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/rotate_vector.hpp>
 
 namespace sf
 {
@@ -147,7 +141,7 @@ private:
     float m_distance;
     float m_azimuth;        
     float m_elevation;     
-    glm::mat4 m_rotation;
+    Transform m_rotation;
 
 };
 }

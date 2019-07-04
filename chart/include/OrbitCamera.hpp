@@ -98,9 +98,9 @@ namespace Presentation
                 _camera->changeElevation(angle);
             }
 
-            void ChangeScale(float factor)
+            void ChangeScale(float factorX, float factorY, float factorZ)
             {
-                _camera->scale(factor, factor, factor);
+                _camera->scale(factorX, factorY, factorZ);
             }
 
             sf::OrbitCamera* getCamera()

@@ -2,13 +2,8 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/Camera.hpp>
-#include <cmath>
-
-#include <glm/vec3.hpp>                  // glm::vec3
-#include <glm/vec4.hpp>                  // glm::vec4
-#include <glm/mat4x4.hpp>                // glm::mat4
-#include <glm/ext/matrix_transform.hpp>  // glm::translate, glm::rotate, glm::scale
-#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace sf
 {
@@ -176,16 +171,14 @@ const Transform& Camera::getTransform() const
     // Recompute the perspective projection matrix if needed
     if (!m_transformUpdated)
     {
-        glm::mat4 projMat;
         if (m_orthoCamera)
         {
-            projMat = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, m_nearPlane, m_farPlane);
+            m_transform = Transform::ortho(-2.0f, 2.0f, -2.0f, 2.0f, m_nearPlane, m_farPlane);
         }
         else
         {
-            projMat = glm::perspective(glm::radians(m_fieldOfView), 1.0f, m_nearPlane, m_farPlane);
+            m_transform = Transform::perspective(m_fieldOfView*M_PI / 180.0f, 1.0f, m_nearPlane, m_farPlane);
         }
-        m_transform = Transform(projMat);
         m_transformUpdated = true;
     }
 
@@ -198,15 +191,9 @@ const Transform& Camera::getViewTransform() const
     // Recompute the view matrix if needed
     if (!m_viewTransformUpdated)
     {
-
-        glm::vec3 pos = glm::vec3(m_center.x, m_center.y, m_center.z);
-        glm::vec3 scale = glm::vec3(m_scale.x, m_scale.y, m_scale.z);
-        glm::mat4 viewMat = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(m_direction.x, m_direction.y, m_direction.z),
-                                        glm::vec3(m_upVector.x, m_upVector.y, m_upVector.z));
-
-        viewMat = glm::scale(viewMat, scale);
-        viewMat = glm::translate(viewMat, -pos);
-        m_viewTransform = Transform(viewMat);
+        m_viewTransform = Transform::lookAt({ 0,0,0 }, m_direction, m_upVector);
+        m_viewTransform.scale(m_scale);
+        m_viewTransform.translate(-m_center);
         m_viewTransformUpdated = true;
     }
 

@@ -3,13 +3,12 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics/OrbitCamera.hpp>
 #include <cmath>
-#include <glm/gtx/quaternion.hpp>
 
 namespace sf
 {
-constexpr glm::vec3 kXAxis(1, 0, 0);
-constexpr glm::vec3 kZAxis(0, 0, 1);
-constexpr glm::vec3 kYAxis(0, 1, 0);
+const static Vector3f kXAxis(1, 0, 0);
+const static Vector3f kZAxis(0, 0, 1);
+const static Vector3f kYAxis(0, 1, 0);
 constexpr float kDefaultDistance = 5.0f;
 
 ////////////////////////////////////////////////////////////
@@ -80,9 +79,11 @@ float OrbitCamera::getElevation() const
 ////////////////////////////////////////////////////////////
 void OrbitCamera::computeRotation()
 {
-    glm::mat4 identityMat{ 1.0f };
-    m_rotation = glm::rotate(identityMat, glm::radians(m_elevation), kXAxis);
-    m_rotation = glm::rotate(m_rotation, glm::radians(m_azimuth), kYAxis);
+
+    m_rotation = Transform::Identity;
+    m_rotation.rotate(m_elevation, kXAxis);
+    m_rotation.rotate(m_azimuth, kYAxis);
+
     m_viewTransformUpdated = false;
     m_invViewTransformUpdated = false;
 }
@@ -93,15 +94,11 @@ const Transform& OrbitCamera::getViewTransform() const
     // Recompute the view matrix if needed
     if (!m_viewTransformUpdated)
     {
+        m_viewTransform = Transform::Identity;
+        m_viewTransform.translate(0, 0, -m_distance);
+        m_viewTransform.combine(m_rotation);
+        m_viewTransform.scale(m_scale);
 
-        glm::vec3 pos = glm::vec3(m_center.x, m_center.y, m_center.z);
-        glm::vec3 scale = glm::vec3(m_scale.x, m_scale.y, m_scale.z);
-        glm::vec3 target(0, 0, 0);
-        glm::mat4 viewMat = glm::translate(glm::vec3(0.0, 0.0, -m_distance)) * m_rotation * glm::translate(-target);
-
-        viewMat = glm::scale(viewMat, scale);
-        //viewMat = glm::translate(viewMat, -pos);
-        m_viewTransform = Transform(viewMat);
         m_viewTransformUpdated = true;
     }
 

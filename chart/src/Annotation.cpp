@@ -3,7 +3,8 @@
 #include "Utils.hpp"
 #include "ScatterChart.hpp"
 #include <array>
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace Xsa
 {
@@ -34,7 +35,7 @@ namespace Presentation
 
         float getAngle(const Line& line)
         {
-            return glm::degrees(glm::atan(line[0].y - line[1].y, line[1].x - line[0].x));
+            return std::atan2f(line[0].y - line[1].y, line[1].x - line[0].x) * 180.0f / M_PI;
         }
 
         float getLength(const Line& line)

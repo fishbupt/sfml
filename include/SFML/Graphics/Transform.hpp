@@ -32,7 +32,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Box.hpp>
 #include <SFML/System/Vector3.hpp>
-#include <glm/mat4x4.hpp> // glm::mat4
 
 namespace sf
 {
@@ -78,13 +77,6 @@ public:
               float a20, float a21, float a22, float a23,
               float a30, float a31, float a32, float a33);
 
-    ////////////////////////////////////////////////////////////
-    /// \brief Construct a transform from glm matrix
-    ///
-    /// \param matrix a glm 4x4 matrix
-    ///
-    ////////////////////////////////////////////////////////////
-    Transform(glm::mat4 matrix);
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the transform as a 4x4 matrix
@@ -453,6 +445,55 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Transform& scale(const Vector3f& factors, const Vector3f& center);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Creates an orthographic projection matrix from the given parameters
+    /// 
+    /// The matrix transforms all the given coordinates to clip coordinates by directly
+    /// porjecting them onto the near plane.
+    /// 
+    /// \param left: specifies the left coordinate of the orthographic frustum.
+    /// \param right: specifies the right coordinate of the orthographic frustum.
+    /// \param bottom: specifies the bottom coordinate of the orthographic frustum.
+    /// \param top: specifies the top coordinate of the orthographic frustum.
+    /// \param near: specifies the near plane of the orthographic frustum.
+    /// \param far: specifies the near plane of the orthographic frustum.
+    /// 
+    /// \return The orthogographic projection transform.
+    ///
+    ////////////////////////////////////////////////////////////
+    static Transform ortho(float left, float right, float bottom, float top, float near, float far);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Creates an perspective projection matrix from the given parameters
+    /// 
+    /// The matrix transforms all the given coordinates to clip coordinates and transforms
+    /// the w component of the vectors in such a way that after perspective division is applied,
+    /// the resulting objects will have perspective.
+    /// 
+    /// \param fov: specifies the Field of View in radians that sets the width of the perspective frustum.
+    /// \param aspect: specifies the aspect ratio of your scene that sets the height of the perspective.
+    /// \param bottom: specifies the bottom coordinate of the orthographic frustum.
+    /// \param near: specifies the near plane of the perspective frustum.
+    /// \param far: specifies the near plane of the perspective frustum.
+    /// 
+    /// \return The perspective projection transform.
+    ///
+    ////////////////////////////////////////////////////////////
+    static Transform perspective(float fov, float aspect, float near, float far);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Creates a view matrix that transforms coordinates in such a way
+    /// that the user looks at a target vector direction from a position vector.
+    /// 
+    /// \param position: specifies the position of the camera in world coordinates.
+    /// \param target: specifies the target position/direction the camera should look at.
+    /// \param up: specifies a vector pointing in the positive y-direction used to create the right vector.
+    /// 
+    /// \return The view transform.
+    ///
+    ////////////////////////////////////////////////////////////
+    static Transform lookAt(Vector3f position, Vector3f target, Vector3f up);
 
     ////////////////////////////////////////////////////////////
     // Static member data
