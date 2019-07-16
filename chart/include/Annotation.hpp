@@ -24,18 +24,6 @@ namespace Presentation
 {
     namespace Graph
     {
-    public
-        /// <summary>
-        /// Managed version of SFML Text::Style
-        /// </summary>
-        enum class TextStyle
-        {
-            Regular = 0,           ///< Regular characters, no style
-            Bold = 1 << 0,         ///< Bold characters
-            Italic = 1 << 1,       ///< Italic characters
-            Underlined = 1 << 2,   ///< Underlined characters
-            StrikeThrough = 1 << 3 ///< Strike through characters
-        };
 
         ref class ScatterChart;
 
@@ -44,12 +32,12 @@ namespace Presentation
         // clang-format on
         {
         public:
-            Annotation(ScatterChart^ chart);
+            Annotation(ScatterChart ^ chart);
 
             /// <summary>
             /// Family of Font
             /// </summary>
-            property FontFamily^ FontFamily;
+            property FontFamily ^ FontFamily;
             /// <summary>
             /// FontSize in pixels
             /// The default value is 16
@@ -76,49 +64,46 @@ namespace Presentation
             /// <summary>
             /// Unit text for X-Axis
             /// </summary>
-            property System::String^ XAxisUnit;
+            property System::String ^ XAxisUnit;
 
             /// <summary>
             /// Unit Text for Y-Axis
             /// </summary>
-            property System::String^ YAxisUnit;
+            property System::String ^ YAxisUnit;
 
             /// <summary>
             /// Unit Text for Z-Axis
             /// </summary>
-            property System::String^ ZAxisUnit;
+            property System::String ^ ZAxisUnit;
 
             /// <summary>
             /// Set this property to "EngineeringFormatter" if you want more readable format value
             /// </summary>
-            property IFormatProvider^ FormatProvider;
+            property IFormatProvider ^ FormatProvider;
 
             /// <summary>
             /// Disable drawing annotations
             /// </summary>
             void Disable();
 
-
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
         private:
-
             void PlotXAnnotation(const sf::Transform& transform);
             void PlotYAnnotation(const sf::Transform& transform);
             void PlotZAnnotation(const sf::Transform& transform);
-            void PlotUnit(TextBlock^ text, const sf::Vector2f& pos, String^ unit, float angle);
-            void PlotAxisMin(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
-            void PlotAxisMax(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
+            void PlotUnit(TextBlock ^ text, const sf::Vector2f& pos, String ^ unit, float angle);
+            void PlotAxisMin(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle);
+            void PlotAxisMax(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle);
 
-            System::String^ FormatAxisValue(double axis);
+            System::String ^ FormatAxisValue(double axis);
+
         private:
-
-            OrbitCamera^ _camera;
-            array<TextBlock^>^ _textBlocks;
-            ScatterChart^ _chart;
+            OrbitCamera ^ _camera;
+            array<TextBlock ^> ^ _textBlocks;
+            ScatterChart ^ _chart;
 
             static const float kMinAxisLenghtInPixelToDisplay = 50.0f;
-
         };
     }
 }

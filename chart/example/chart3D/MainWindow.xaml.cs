@@ -105,9 +105,25 @@ namespace ChartExample
                     GenerateData(data, range1, -1.0f);
                     ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
                     ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
+                    ScatterChart.Chart.Markers[0].Visible = true;
+                    ScatterChart.Chart.Markers[0].X = data[0];
+                    ScatterChart.Chart.Markers[0].Y = data[1];
+                    ScatterChart.Chart.Markers[0].Z = data[2];
+
                     GenerateData(data, range2, 1.0f);
                     ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
                     ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
+                    ScatterChart.Chart.Markers[1].Visible = true;
+                    ScatterChart.Chart.Markers[1].X = data[0]; 
+                    ScatterChart.Chart.Markers[1].Y = data[1]; 
+                    ScatterChart.Chart.Markers[1].Z = data[2];
+                    ScatterChart.Chart.Markers.SelectedIndex = 1;
+
+                    //_markers[0]->Visible = true;
+                    //_markers[0]->Y = 1.0f;
+                    //_markers[1]->Visible = true;
+                    //_markers[1]->Y = -1.0f;
+                    //_markers->SelectedIndex = 1;
                 }
             }
         }

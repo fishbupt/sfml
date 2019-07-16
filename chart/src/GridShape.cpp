@@ -34,7 +34,7 @@ namespace Presentation
             NumberOfYAxisDivisions = 10;
             NumberOfZAxisDivisions = 0;
             _plotBox->setSize({2.0f, 2.0f, 2.0f});
-            _plotBox->setColor(sf::Color::Transparent);
+            _plotBox->setColor(sf::Color::Yellow);
             _plotBox->setBorderColor(sf::Color::White);
         }
 

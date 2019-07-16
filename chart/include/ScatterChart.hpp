@@ -10,6 +10,7 @@
 #include <Drawable.hpp>
 #include <OrbitCamera.hpp>
 #include <Annotation.hpp>
+#include <Markers.hpp>
 
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
@@ -55,7 +56,9 @@ namespace Presentation
 
             virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
-            void DrawAnnotations(sf::RenderTarget *target, sf::RenderStates states);
+            void DrawAnnotations(sf::RenderTarget *target);
+
+            void DrawMarkers(sf::RenderTarget *target);
 
             /// <summary>
             /// Get the X-pixel position corresponding the passed X-axis value.
@@ -125,6 +128,14 @@ namespace Presentation
                 Graph::Annotation^ get()
                 {
                     return _annotation;
+                }
+            }
+
+            property Markers^ Markers
+            {
+                Graph::Markers^ get()
+                {
+                    return _markers;
                 }
             }
 
@@ -355,6 +366,7 @@ namespace Presentation
             OrbitCamera^ _camera;
             bool _enableCamera = false; // true to apply 3d camera
             Graph::Annotation^ _annotation;
+            Graph::Markers^ _markers;
 
         };
     }

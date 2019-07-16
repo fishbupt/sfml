@@ -3,10 +3,12 @@
 #include <SFML/OpenGL.hpp>
 // note: put opengl headers before any other header files
 #include <ScatterChart.hpp>
+#include <Marker.hpp>
 #include <Utils.hpp>
 #include <sstream>
 #include <iomanip>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/Octahedron.hpp>
 
 #using "System.Drawing.dll"
 using Bitmap = System::Drawing::Bitmap;
@@ -45,6 +47,8 @@ namespace Presentation
             _annotation->FontFamily = gcnew System::Windows::Media::FontFamily("Arial");
             _annotation->Color = System::Windows::Media::Colors::Red;
 
+            _markers = gcnew Graph::Markers(12);
+           
             IsPolorCoordinate = true;
 
             // flip image vertically, as image copied from renderTexture is flipped vertically, so we need unflip it
@@ -170,14 +174,28 @@ namespace Presentation
                 shape->Draw(target, states);
             }
             // clang-format on
-            if(Is3DEnabled)
-                DrawAnnotations(target, sf::RenderStates::Default);
+
+            if (Is3DEnabled)
+            {
+                DrawAnnotations(target);
+                DrawMarkers(target);
+            }
+
         }
 
-        void ScatterChart::DrawAnnotations(sf::RenderTarget* target, sf::RenderStates states)
+        void ScatterChart::DrawAnnotations(sf::RenderTarget* target)
         {
-            _annotation->Draw(target, states);
+            _annotation->Draw(target, sf::RenderStates::Default);
         }
+
+        void ScatterChart::DrawMarkers(sf::RenderTarget *target)
+        {
+            sf::Transform viewTransform = _camera->getCamera()->getViewTransform();
+            viewTransform.combine(_transform->getTransform());
+
+            _markers->Draw(target, sf::RenderStates::Default, viewTransform);
+        }
+
         int ScatterChart::PixelAtX(double value, bool gridLimit)
         {
             sf::Vector2f pixelPoint = _transform->getTransform().transformPoint((float)value, 0.0f);

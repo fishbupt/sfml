@@ -16,6 +16,10 @@ set(SRC
     ${SRCROOT}/ScatterChart.cpp
     ${SRCROOT}/SegmentChart.cpp
     ${SRCROOT}/SegmentMinMaxChart.cpp
+    ${SRCROOT}/Marker.cpp
+    ${SRCROOT}/Markers.cpp
+    ${INCROOT}/Marker.hpp
+    ${INCROOT}/Markers.hpp
     ${INCROOT}/Annotation.hpp
     ${INCROOT}/PointsShape.hpp
     ${INCROOT}/GridShape.hpp
