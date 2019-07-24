@@ -66,13 +66,15 @@ namespace ChartExample
             int len = data.Length / 3;
             int rangeLen = valueRangle.Length;
             var rand = new Random();
+            float bias = 0.8f;
             for (int i = 0; i < len; i++)
             {
-                float x = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
-                float y = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * 0.1f;
+                float x = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * bias;
+                float y = valueRangle[rand.Next(0, rangeLen)] + ((float)rand.NextDouble() - 0.5f) * bias;
                 data[3 * i] = x;
                 data[3 * i + 1] = y;
-                data[3 * i + 2] = zValue + ((float)rand.NextDouble() - 0.5f) * 0.1f;
+                //data[3 * i + 2] = zValue;
+                data[3 * i + 2] = zValue + ((float)rand.NextDouble() - 0.5f) * bias;
             }
         }
 

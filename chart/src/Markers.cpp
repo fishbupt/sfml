@@ -12,7 +12,7 @@ namespace Presentation
         }
 
         Markers::Markers(int count)
-            : _camera(new sf::OrbitCamera(45.0f, 0.1f, 100.0f))
+            : _camera(new sf::OrbitCamera(45.0f, 0.1f, 1000.0f))
         {
             _markers = gcnew List<Marker ^>();
             _selectedIndex = 0;

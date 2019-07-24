@@ -69,6 +69,12 @@ namespace Presentation
                 void set(sf::Vector3f value) { _camera->setScale(value); }
             }
 
+            property bool CheckBoundary
+            {
+                bool get() { return _camera->getCheckBoundary(); }
+                void set(bool value) { _camera->setCheckBoundary(value); }
+            }
+
             property bool IsOrthographicProjection
             {
                 bool get()

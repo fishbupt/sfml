@@ -247,6 +247,26 @@ public:
     void zoom(float factor);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Set to check boundary or not
+    ///
+    /// \param check true to check boundary 
+    /// when check is set to true, point out of boundary will 
+    /// not be drawn
+    ///
+    /// \see getCheckBoundary
+    ///
+    ////////////////////////////////////////////////////////////
+    void setCheckBoundary(bool check);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief get CheckBoundary property
+    ///
+    /// \see setCheckBoundary
+    ///
+    ////////////////////////////////////////////////////////////
+    bool getCheckBoundary() const;
+
+    ////////////////////////////////////////////////////////////
     /// \brief Get the projection transform of the view
     ///
     /// This function is meant for internal use only.
@@ -314,6 +334,7 @@ private:
     Vector2f m_size;      ///< Size of the view, in scene coordinates
     float m_rotation;     ///< Angle of rotation of the view rectangle, in degrees
     FloatRect m_viewport; ///< Viewport rectangle, expressed as a factor of the render-target's size
+    bool m_checkBoundary; ///< flag to tell shader whether to check boundary(-1, 1) or not
 };
 
 } // namespace sf

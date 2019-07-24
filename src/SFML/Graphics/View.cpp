@@ -40,6 +40,7 @@ View::View()
     , m_invTransformUpdated(false)
     , m_viewTransformUpdated(false)
     , m_invViewTransformUpdated(false)
+    , m_checkBoundary(false)
 {
     reset(FloatRect(0, 0, 1000, 1000));
 }
@@ -171,6 +172,18 @@ void View::rotate(float angle)
 void View::zoom(float factor)
 {
     setSize(m_size.x * factor, m_size.y * factor);
+}
+
+////////////////////////////////////////////////////////////
+void View::setCheckBoundary(bool check)
+{
+    m_checkBoundary = check;
+}
+
+////////////////////////////////////////////////////////////
+bool View::getCheckBoundary() const
+{
+    return m_checkBoundary;
 }
 
 ////////////////////////////////////////////////////////////

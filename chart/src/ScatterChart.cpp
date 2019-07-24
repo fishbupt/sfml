@@ -36,6 +36,7 @@ namespace Presentation
             _canvas = gcnew Canvas();
             _image = gcnew Image();
             _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
+            _camera->CheckBoundary = true;
             Content = _canvas;
             _canvas->Children->Add(_image);
 
@@ -167,6 +168,12 @@ namespace Presentation
             sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
             target->clear(backColor);
             Grid->Draw(target, states);
+            if (Is3DEnabled)
+            {
+                DrawAnnotations(target);
+                DrawMarkers(target);
+            }
+
             states.transform *= _transform->getTransform();
             // clang-format off
             for each(PointsShape ^ shape in DataShapes)
@@ -175,11 +182,6 @@ namespace Presentation
             }
             // clang-format on
 
-            if (Is3DEnabled)
-            {
-                DrawAnnotations(target);
-                DrawMarkers(target);
-            }
 
         }
 

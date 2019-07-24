@@ -817,6 +817,8 @@ void RenderTarget::applyCurrentView()
         shader->setUniform("sf_ProjectionMatrix", Glsl::Mat4(m_view->getTransform()));
         shader->setUniform("sf_ViewMatrix", Glsl::Mat4(m_view->getViewTransform()));
         shader->setUniform("sf_ViewerPosition", m_view->getCenter());
+        shader->setUniform("sf_CheckBoundary", m_view->getCheckBoundary());
+           
     }
     else
     {
@@ -997,6 +999,7 @@ void RenderTarget::setupNonLegacyPipeline()
                               "uniform mat4 sf_TextureMatrix;\n"
                               "uniform int sf_TextureEnabled;\n"
                               "uniform int sf_LightingEnabled;\n"
+                              "uniform bool sf_CheckBoundary;\n"
                               "\n"
                               "// Vertex attributes\n"
                               "in vec3 sf_Vertex;\n"
@@ -1017,6 +1020,9 @@ void RenderTarget::setupNonLegacyPipeline()
                               "\n"
                               "    // Vertex color\n"
                               "    sf_FrontColor = sf_Color;\n"
+                              "    vec4 pos = sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
+                              "    if (sf_CheckBoundary && (pos.x > 1.0 || pos.x < -1.0 || pos.y > 1.0 || pos.y < -1.0 || pos.z > 1.0 || pos.z < -1.0))\n"
+                              "        sf_FrontColor.a = 0.0;\n"
                               "\n"
                               "    // Texture data\n"
                               "    //if (sf_TextureEnabled == 1)\n"

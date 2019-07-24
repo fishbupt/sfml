@@ -6,7 +6,7 @@ namespace Presentation
 {
     namespace Graph
     {
-        static sf::Vector3f InitialSize{ 0.02f, 0.04f, 0.02f };
+        static sf::Vector3f InitialSize{ 0.03f, 0.06f, 0.03f };
 
         Marker::Marker()
             : _shape(new sf::Octahedron())
