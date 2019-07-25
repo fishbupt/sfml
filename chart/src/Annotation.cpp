@@ -172,7 +172,7 @@ namespace Presentation
             }
             else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
             {
-                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetLeft(text, pos.x + textHeight);
                 Canvas::SetTop(text, pos.y);
             }
             else if (MathUtil::IsInRange(angle, -180.0f, -135.f))
@@ -220,7 +220,7 @@ namespace Presentation
             }
             else if (MathUtil::IsInRange(angle, -135.0f, -90.0f))
             {
-                Canvas::SetLeft(text, pos.x + textWidth + textHeight);
+                Canvas::SetLeft(text, pos.x + textHeight);
                 Canvas::SetTop(text, pos.y);
             }
             else if (MathUtil::IsInRange(angle, -180.0f, -135.0f))
@@ -281,12 +281,14 @@ namespace Presentation
 
             TextBlock ^ minText = _textBlocks[TextYAxisMin];
             minText->Text = FormatAxisValue(_chart->YAxisMin);
-            Canvas::SetLeft(minText, screenY[0].x - 2 * FontSize);
+            float textWidth = minText->DesiredSize.Width;
+            Canvas::SetLeft(minText, screenY[0].x - FontSize - textWidth);
             Canvas::SetTop(minText, screenY[0].y - FontSize);
 
             TextBlock ^ maxText = _textBlocks[TextYAxisMax];
             maxText->Text = FormatAxisValue(_chart->YAxisMax);
-            Canvas::SetLeft(maxText, screenY[1].x - 2 * FontSize);
+            textWidth = maxText->DesiredSize.Width;
+            Canvas::SetLeft(maxText, screenY[1].x - FontSize - textWidth);
             Canvas::SetTop(maxText, screenY[1].y);
         }
 
