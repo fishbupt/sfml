@@ -295,6 +295,8 @@ namespace Presentation
                 }
             }
 
+            property Color BackgroundColor;
+
             property bool Is3DEnabled
             {
                 bool get()

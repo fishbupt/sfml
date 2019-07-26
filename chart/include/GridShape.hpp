@@ -114,14 +114,17 @@ namespace Presentation
 
             scoped_ptr<sf::VertexArray> _xyPlaneGrid;
             scoped_ptr<sf::VertexArray> _xyPlaneBorder;
+            scoped_ptr<sf::VertexArray> _xyPlaneBackground;
             bool _xyPlaneGridUpdated;
             bool _showFrontPlane; // True -- display grid on Front plane. False -- display grid on back plane
             scoped_ptr<sf::VertexArray> _xzPlaneGrid;
             scoped_ptr<sf::VertexArray> _xzPlaneBorder;
+            scoped_ptr<sf::VertexArray> _xzPlaneBackground;
             bool _xzPlaneGridUpdated;
             bool _showTopPlane; // True -- display grid on Top plane. False -- display grid on Bottom plane
             scoped_ptr<sf::VertexArray> _yzPlaneGrid;
             scoped_ptr<sf::VertexArray> _yzPlaneBorder;
+            scoped_ptr<sf::VertexArray> _yzPlaneBackground;
             bool _yzPlaneGridUpdated;
             bool _showRightPlane; // True -- display grid on Right plane. False -- display grid on Left plane
 

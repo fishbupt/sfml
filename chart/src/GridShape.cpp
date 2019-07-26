@@ -15,12 +15,15 @@ namespace Presentation
             , _numberOfZAxisDivisions(0)
             , _xyPlaneGrid(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _xyPlaneBorder(new sf::VertexArray(sf::PrimitiveType::Lines, 8))
+            , _xyPlaneBackground(new sf::VertexArray(sf::PrimitiveType::Quads, 4))
             , _xyPlaneGridUpdated(false)
             , _xzPlaneGrid(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _xzPlaneBorder(new sf::VertexArray(sf::PrimitiveType::Lines, 8))
+            , _xzPlaneBackground(new sf::VertexArray(sf::PrimitiveType::Quads, 4))
             , _xzPlaneGridUpdated(false)
             , _yzPlaneGrid(new sf::VertexArray(sf::PrimitiveType::Lines))
             , _yzPlaneBorder(new sf::VertexArray(sf::PrimitiveType::Lines, 8))
+            , _yzPlaneBackground(new sf::VertexArray(sf::PrimitiveType::Quads, 4))
             , _yzPlaneGridUpdated(false)
             , _showTopPlane(true)
             , _showFrontPlane(true)
@@ -28,7 +31,7 @@ namespace Presentation
             , _plotBox(new sf::Cuboid())
         {
             IsVisible = true;
-            BackgroundColor = Colors::Black;
+            BackgroundColor = Colors::White;
             GridColor = System::Windows::Media::Color::FromRgb(128, 128, 128);
             NumberOfXAxisDivisions = 10;
             NumberOfYAxisDivisions = 10;
@@ -49,6 +52,17 @@ namespace Presentation
         void GridShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
         {
             UpdateXYPlaneGrid();
+            if (Is3DEnabled)
+            {
+                UpdateXZPlaneGrid();
+                UpdateYZPlaneGrid();
+
+                target->enableDepthTest(false);
+                target->draw(*_xyPlaneBackground, states);
+                target->draw(*_xzPlaneBackground, states);
+                target->draw(*_yzPlaneBackground, states);
+                target->enableDepthTest(true);
+            }
             if (IsVisible) // draw grid lines
             {
                 target->draw(*_xyPlaneGrid, states);
@@ -59,8 +73,6 @@ namespace Presentation
             }
             if (Is3DEnabled)
             {
-                UpdateXZPlaneGrid();
-                UpdateYZPlaneGrid();
                 if (IsVisible)
                 {
                     target->draw(*_xzPlaneGrid, states);
@@ -212,6 +224,27 @@ namespace Presentation
                 border[6] = yGrid[_numberOfYAxisDivisions * 2];
                 border[7] = yGrid[_numberOfYAxisDivisions * 2 + 1];
 
+                sf::Vertex *bgData = _xyPlaneBackground->data();
+                sf::Color bgColor = ColorUtil::ColorFrom(BackgroundColor);
+                bgData[0].position.x = xStart;
+                bgData[0].position.y = yStart;
+                bgData[0].position.z = zValue;
+                bgData[0].color = bgColor;
+
+                bgData[1].position.x = xStop;
+                bgData[1].position.y = yStart;
+                bgData[1].position.z = zValue;
+                bgData[1].color = bgColor;
+
+                bgData[2].position.x = xStop;
+                bgData[2].position.y = yStop;
+                bgData[2].position.z = zValue;
+                bgData[2].color = bgColor;
+
+                bgData[3].position.x = xStart;
+                bgData[3].position.y = yStop;
+                bgData[3].position.z = zValue;
+                bgData[3].color = bgColor;
                 _xyPlaneGridUpdated = true;
             }
         }
@@ -269,6 +302,27 @@ namespace Presentation
                 border[6] = zGrid[_numberOfZAxisDivisions * 2];
                 border[7] = zGrid[_numberOfZAxisDivisions * 2 + 1];
 
+                sf::Vertex *bgData = _xzPlaneBackground->data();
+                sf::Color bgColor = ColorUtil::ColorFrom(BackgroundColor);
+                bgData[0].position.x = xStart;
+                bgData[0].position.y = yValue;
+                bgData[0].position.z = zStart;
+                bgData[0].color = bgColor;
+
+                bgData[1].position.x = xStop;
+                bgData[1].position.y = yValue;
+                bgData[1].position.z = zStart;
+                bgData[1].color = bgColor;
+
+                bgData[2].position.x = xStop;
+                bgData[2].position.y = yValue;
+                bgData[2].position.z = zStop;
+                bgData[2].color = bgColor;
+
+                bgData[3].position.x = xStart;
+                bgData[3].position.y = yValue;
+                bgData[3].position.z = zStop;
+                bgData[3].color = bgColor;
                 _xzPlaneGridUpdated = true;
             }
         }
@@ -325,6 +379,29 @@ namespace Presentation
                 border[5] = zGrid[1];
                 border[6] = zGrid[_numberOfZAxisDivisions * 2];
                 border[7] = zGrid[_numberOfZAxisDivisions * 2 + 1];
+
+                sf::Vertex *bgData = _yzPlaneBackground->data();
+                sf::Color bgColor = ColorUtil::ColorFrom(BackgroundColor);
+                bgData[0].position.x = xValue;
+                bgData[0].position.y = yStart;
+                bgData[0].position.z = zStart;
+                bgData[0].color = bgColor;
+
+                bgData[1].position.x = xValue;
+                bgData[1].position.y = yStart;
+                bgData[1].position.z = zStop;
+                bgData[1].color = bgColor;
+
+                bgData[2].position.x = xValue;
+                bgData[2].position.y = yStop;
+                bgData[2].position.z = zStop;
+                bgData[2].color = bgColor;
+
+                bgData[3].position.x = xValue;
+                bgData[3].position.y = yStop;
+                bgData[3].position.z = zStart;
+                bgData[3].color = bgColor;
+
                 _yzPlaneGridUpdated = true;
             }
         }

@@ -33,6 +33,7 @@ namespace Presentation
             : _transform(new sf::Transformable())
             , _renderTexture(new sf::RenderTexture())
         {
+            BackgroundColor = System::Windows::Media::Color::FromArgb(0, 0, 0, 0);
             _canvas = gcnew Canvas();
             _image = gcnew Image();
             _camera = gcnew OrbitCamera(45.0f, 0.1f, 100.0f);
@@ -165,7 +166,7 @@ namespace Presentation
             else
                 target->enableDepthTest(false);
 
-            sf::Color backColor = ColorUtil::ColorFrom(Grid->BackgroundColor);
+            sf::Color backColor = ColorUtil::ColorFrom(BackgroundColor);
             target->clear(backColor);
             Grid->Draw(target, states);
             if (Is3DEnabled)
