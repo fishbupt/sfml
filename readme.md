@@ -1,4 +1,4 @@
-#SA SFML Chart
+# SA SFML Chart
 
 ## Overview
 SFML Chart is an library to provide WPF chart control, consists of 2D and 3D scatter charts. 
