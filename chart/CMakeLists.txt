@@ -8,6 +8,7 @@ set(SRCROOT ./src)
 
 # all source files
 set(SRC
+    ${SRCROOT}/AssemblyInfo.cpp
     ${SRCROOT}/Annotation.cpp
     ${SRCROOT}/PointsShape.cpp
     ${SRCROOT}/GridShape.cpp
