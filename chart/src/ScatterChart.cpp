@@ -294,6 +294,9 @@ namespace Presentation
                 _xAxisMin = -xHalf;
                 _xAxisMax = xHalf;
             }
+            sf::Vector3f scale(xRange / (float)(XAxisMax - XAxisMin),
+                               yRange / (float)(YAxisMax - YAxisMin),
+                               zRange / (float)(ZAxisMax - ZAxisMin));
             if (Is3DEnabled)
             {
                 sf::Vector3f origin((float)(XAxisMin + XAxisMax) / 2.0f,
@@ -308,10 +311,8 @@ namespace Presentation
                                       -(float)YAxisMin * yRange / (float)(YAxisMax - YAxisMin));
                 _transform->setOrigin({ 0, 0, 0 });
                 _transform->setPosition(position);
+                scale.z = 1.0f;
             }
-            sf::Vector3f scale(xRange / (float)(XAxisMax - XAxisMin),
-                               yRange / (float)(YAxisMax - YAxisMin),
-                               zRange / (float)(ZAxisMax - ZAxisMin));
 
             _transform->setScale(scale);
 
@@ -328,6 +329,19 @@ namespace Presentation
             UpdateTransform();
         }
 
+        double ScatterChart::ClipMax(double min, double max)
+        {
+            if (min > max)
+                return min + std::abs(min) * 0.1;
+            return max;
+        }
+
+        double ScatterChart::ClipMin(double min, double max)
+        {
+            if (max < min)
+                return max - std::abs(max) * 0.1;
+            return min;
+        }
     }
 }
 }

@@ -35,6 +35,8 @@ namespace ChartExample
             ScatterChart.Chart.YAxisMax = YAxisMax;
             ScatterChart.Chart.XAxisMin = XAxisMin;
             ScatterChart.Chart.XAxisMax = XAxisMax;
+            ScatterChart.Chart.ZAxisMin = 0;
+            ScatterChart.Chart.ZAxisMax = 0;
 
             var refreshRate = new TimeSpan(0, 0, 0, 0, 1);
             _timer = new DispatcherTimer { Interval = refreshRate };

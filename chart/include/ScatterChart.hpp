@@ -105,6 +105,9 @@ namespace Presentation
             array<Color>^ _segColors = gcnew array<Color>(0);
             array<Color>^ _traceColors = gcnew array<Color>(1);
 
+            double ClipMin(double min, double max);
+            double ClipMax(double min, double max);
+               
         public:
             // clang-format off
             property GridShape^ Grid
@@ -153,9 +156,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (IsPolorCoordinate || _xAxisMin == value || value >= _xAxisMax)
+                    if (IsPolorCoordinate || _xAxisMin == value)
                         return;
                     _xAxisMin = value;
+                    _xAxisMax = ClipMax(_xAxisMin, _xAxisMax);
                     UpdateTransform();
                 }
             }
@@ -168,9 +172,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (IsPolorCoordinate || _xAxisMax == value || value <= _xAxisMin)
+                    if (IsPolorCoordinate || _xAxisMax == value)
                         return;
                     _xAxisMax = value;
+                    _xAxisMin = ClipMin(_xAxisMin, _xAxisMax);
                     UpdateTransform();
                 }
             }
@@ -183,9 +188,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (_yAxisMin == value || value >= _yAxisMax)
+                    if (_yAxisMin == value)
                         return;
                     _yAxisMin = value;
+                    _yAxisMax = ClipMax(_yAxisMin, _yAxisMax);
                     UpdateTransform();
                 }
             }
@@ -198,9 +204,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (_yAxisMax == value || value <= _yAxisMin)
+                    if (_yAxisMax == value)
                         return;
                     _yAxisMax = value;
+                    _yAxisMin = ClipMin(_yAxisMin, _yAxisMax);
                     UpdateTransform();
                 }
             }
@@ -212,9 +219,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (_zAxisMin == value || value >= _zAxisMax)
+                    if (_zAxisMin == value)
                         return;
                     _zAxisMin = value;
+                    _zAxisMax = ClipMax(_zAxisMin, _zAxisMax);
                     UpdateTransform();
                 }
             }
@@ -227,9 +235,10 @@ namespace Presentation
                 }
                 void set(double value)
                 {
-                    if (_zAxisMax == value || value <= _zAxisMin)
+                    if (_zAxisMax == value)
                         return;
                     _zAxisMax = value;
+                    _zAxisMin = ClipMin(_zAxisMin, _zAxisMax);
                     UpdateTransform();
                 }
             }
