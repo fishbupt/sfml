@@ -1225,7 +1225,15 @@ void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t firstVertex, s
     GLenum mode = modes[type];
 
     // Draw the primitives
-    glCheck(glDrawArrays(mode, static_cast<GLint>(firstVertex), static_cast<GLsizei>(vertexCount)));
+    static const int MAX_ELEMENTS_VERTICES = 655360;
+    int remainderCount = vertexCount;
+    for (int i = 0; i < vertexCount; i += MAX_ELEMENTS_VERTICES)
+    {
+        int drawCount = std::min(remainderCount, MAX_ELEMENTS_VERTICES);
+        glCheck(glDrawArrays(mode, static_cast<GLint>(firstVertex + i), static_cast<GLsizei>(drawCount)));
+        remainderCount -= drawCount;
+    }
+
 }
 
 ////////////////////////////////////////////////////////////
