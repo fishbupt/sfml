@@ -35,7 +35,7 @@ const Vector3f& Octahedron::getSize() const
 
 
 ////////////////////////////////////////////////////////////
-unsigned int Octahedron::getFaceCount() const
+size_t Octahedron::getFaceCount() const
 {
     return 8;
 }

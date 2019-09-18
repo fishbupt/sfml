@@ -1,155 +1,87 @@
 #include "PointsShape.hpp"
 #include <Utils.hpp>
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
+    PointsShape::PointsShape()
+        : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
     {
-        PointsShape::PointsShape()
-            : _vertices(new sf::VertexArray(sf::PrimitiveType::Points))
-            , _segColors(new sf::ColorArray())
+        IsVisible = true;
+    }
+
+    PointsShape::~PointsShape()
+    {
+        this->!PointsShape();
+    }
+
+    PointsShape::!PointsShape()
+    {}
+
+    void PointsShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
+    {
+        if (IsVisible && _vertices->getVertexCount() != 0)
         {
-            IsVisible = true;
-            XStart = 0.0;
-            XDelta = 1.0;
-        }
-
-        PointsShape::~PointsShape()
-        {
-            this->!PointsShape();
-        }
-
-        PointsShape::!PointsShape()
-        {}
-
-        void PointsShape::SegColors::set(array<Color> ^ value)
-        {
-            int count = value->Length;
-            _segColors->resize(count);
-            for (int i = 0; i < count; i++)
-            {
-                (*_segColors)[i] = ColorUtil::ColorFrom(value[i]);
-                if (i == _invalidSegIndex)
-                    (*_segColors)[i] = sf::Color::Transparent;
-            }
-        }
-
-        void PointsShape::Draw(sf::RenderTarget* target, sf::RenderStates states)
-        {
-            if (IsVisible && _vertices->getVertexCount() != 0)
-            {
-                target->draw(*_vertices, states);
-            }
-        }
-
-        void PointsShape::SetXYData(float* pData, int dataSize)
-        {
-            if (dataSize == 0 || !pData)
-                return;
-            if (dataSize % 2 != 0)
-                return throw gcnew InvalidOperationException();
-
-            int pointSize = dataSize / 2;
-            _vertices->resize(pointSize);
-            sf::VertexArray& vertices = *_vertices;
-            sf::Color color = ColorUtil::ColorFrom(TraceColor);
-            for (int i = 0; i < pointSize; i++)
-            {
-                auto& vertex = vertices[i];
-                vertex.color = color;
-                vertex.position.x = pData[2 * i];
-                vertex.position.y = pData[2 * i + 1];
-            }
-        }
-
-        void PointsShape::SetXYData(float* pData, int dataSize, short* pSeg, int segIndexesSize)
-        {
-            if (dataSize == 0 || segIndexesSize == 0 || !pData || !pSeg)
-                return;
-            if (dataSize % 2 != 0)
-                return throw gcnew InvalidOperationException();
-
-            int pointSize = dataSize / 2;
-            _vertices->resize(pointSize);
-            sf::VertexArray& vertices = *_vertices;
-            sf::ColorArray segColors = *_segColors;
-
-            for (int i = 0; i < pointSize; i++)
-            {
-                auto& vertex = vertices[i];
-                vertex.color = segColors[pSeg[i]];
-                vertex.position.x = pData[2 * i];
-                vertex.position.y = pData[2 * i + 1];
-            }
-        }
-
-        void PointsShape::SetData(float* pYData, int yDataSize, short* pSeg, int segIndexesSize)
-        {
-            if (yDataSize == 0 || segIndexesSize == 0 || !pYData || !pSeg)
-                return;
-            if (yDataSize % 2 != 0)
-                return throw gcnew InvalidOperationException();
-
-            int pointSize = yDataSize;
-            _vertices->resize(pointSize);
-            sf::VertexArray& vertices = *_vertices;
-            sf::ColorArray& segColors = *_segColors;
-
-            float xPos = 0;
-            for (int i = 0; i < pointSize; i++)
-            {
-                auto& vertex = vertices[i];
-                vertex.color = segColors[pSeg[i]];
-                vertex.position.x = xPos * XDelta + XStart;
-                vertex.position.y = pYData[i];
-                xPos++;
-            }
-        }
-
-        void PointsShape::SetXYZData(float* pData, int dataSize)
-        {
-            if (dataSize == 0 || !pData)
-                return;
-            if (dataSize % 3 != 0)
-                return throw gcnew InvalidOperationException();
-
-            int pointSize = dataSize / 3;
-            _vertices->resize(pointSize);
-            sf::VertexArray& vertices = *_vertices;
-            sf::Color color = ColorUtil::ColorFrom(TraceColor);
-            for (int i = 0; i < pointSize; i++)
-            {
-                auto& vertex = vertices[i];
-                vertex.color = color;
-                vertex.position.x = pData[3 * i];
-                vertex.position.y = pData[3 * i + 1];
-                vertex.position.z = pData[3 * i + 2];
-            }
-        }
-
-        void PointsShape::SetXYZData(float* pData, int dataSize, short* pSeg, int segIndexesSize)
-        {
-            if (dataSize == 0 || segIndexesSize == 0 || !pData || !pSeg)
-                return;
-            if (dataSize % 3 != 0)
-                return throw gcnew InvalidOperationException();
-
-            int pointSize = dataSize / 3;
-            _vertices->resize(pointSize);
-            sf::VertexArray& vertices = *_vertices;
-            sf::ColorArray segColors = *_segColors;
-
-            for (int i = 0; i < pointSize; i++)
-            {
-                auto& vertex = vertices[i];
-                vertex.color = segColors[pSeg[i]];
-                vertex.position.x = pData[3 * i];
-                vertex.position.y = pData[3 * i + 1];
-                vertex.position.z = pData[3 * i + 2];
-            }
+            target->draw(*_vertices, states);
         }
     }
-}
+
+    void PointsShape::SetXYData(float* pData, int dataSize)
+    {
+        if (dataSize == 0 || !pData)
+            return;
+        if (dataSize % 2 != 0)
+            return throw gcnew InvalidOperationException();
+
+        int pointSize = dataSize / 2;
+        _vertices->resize(pointSize);
+        sf::VertexArray& vertices = *_vertices;
+        sf::Color color = ColorUtil::ColorFrom(TraceColor);
+        for (int i = 0; i < pointSize; i++)
+        {
+            auto& vertex = vertices[i];
+            vertex.color = color;
+            vertex.position.x = pData[2 * i];
+            vertex.position.y = pData[2 * i + 1];
+        }
+    }
+
+    void PointsShape::SetXYData(float* xData, float* yData, int dataSize)
+    {
+        if (dataSize == 0 || !xData || !yData)
+            return;
+
+        int pointSize = dataSize;
+        _vertices->resize(pointSize);
+        sf::VertexArray& vertices = *_vertices;
+        sf::Color color = ColorUtil::ColorFrom(TraceColor);
+        for (int i = 0; i < pointSize; i++)
+        {
+            auto& vertex = vertices[i];
+            vertex.color = color;
+            vertex.position.x = xData[i];
+            vertex.position.y = yData[i];
+        }
+    }
+
+    void PointsShape::SetXYZData(float* pData, int dataSize)
+    {
+        if (dataSize == 0 || !pData)
+            return;
+        if (dataSize % 3 != 0)
+            return throw gcnew InvalidOperationException();
+
+        int pointSize = dataSize / 3;
+        _vertices->resize(pointSize);
+        sf::VertexArray& vertices = *_vertices;
+        sf::Color color = ColorUtil::ColorFrom(TraceColor);
+        for (int i = 0; i < pointSize; i++)
+        {
+            auto& vertex = vertices[i];
+            vertex.color = color;
+            vertex.position.x = pData[3 * i];
+            vertex.position.y = pData[3 * i + 1];
+            vertex.position.z = pData[3 * i + 2];
+        }
+    }
+
 }

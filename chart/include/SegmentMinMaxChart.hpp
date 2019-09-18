@@ -1,22 +1,14 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #pragma once
-#include <ScatterChart.hpp>
+#include <ColorfulScatterChart.hpp>
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
+    public ref class SegmentMinMaxChart : public ColorfulScatterChart
     {
-        // clang-format off
-        public ref class SegmentMinMaxChart : public ScatterChart
-        // clang-format on
-        {
-        public:
-            SegmentMinMaxChart();
+    public:
+        SegmentMinMaxChart();
 
-            virtual PointsShape ^ CreateShape() override;
-        };
-    }
-}
+        PointsShape^ CreateShape() override;
+    };
 }

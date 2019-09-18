@@ -80,7 +80,7 @@ public :
     /// \see setFaceCount
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const;
+    virtual size_t getFaceCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get a face of the polyhedron

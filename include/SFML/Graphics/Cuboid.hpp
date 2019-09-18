@@ -53,7 +53,7 @@ public :
     /// \return Number of faces defining the polyhedron
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const;
+    virtual size_t getFaceCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get a face of the polyhedron

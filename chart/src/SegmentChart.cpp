@@ -2,22 +2,16 @@
 #include <SegmentChart.hpp>
 #include <SegmentPointsShape.hpp>
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
+    SegmentChart::SegmentChart()
+        : ColorfulScatterChart()
     {
-        SegmentChart::SegmentChart()
-            : ScatterChart()
-        {
-            IsPolorCoordinate = false;
-        }
-
-        PointsShape ^ SegmentChart::CreateShape()
-        {
-            return gcnew SegmentPointsShape();
-        }
+        IsPolorCoordinate = false;
     }
-}
+
+    PointsShape^ SegmentChart::CreateShape()
+    {
+        return gcnew SegmentPointsShape();
+    }
 }

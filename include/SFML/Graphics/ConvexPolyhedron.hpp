@@ -46,7 +46,7 @@ public :
     /// \see setFaceCount
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const;
+    virtual size_t getFaceCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the vertices of a face

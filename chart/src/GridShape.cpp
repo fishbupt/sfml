@@ -339,7 +339,7 @@ namespace Presentation
                 float zStart = kMinZValue;
                 float zStop = kMaxZValue;
                 float xValue = (float)GridRectangle.X;
-                if(_showRightPlane) xValue += GridRectangle.Width;
+                if(_showRightPlane) xValue += (float)GridRectangle.Width;
 
                 sf::Color gridColor = ColorUtil::ColorFrom(GridColor);
 

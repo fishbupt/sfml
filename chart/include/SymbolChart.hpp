@@ -1,13 +1,12 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #pragma once
-#include <ColorfulScatterChart.hpp>
+#include <ScatterChart.hpp>
 
 namespace Xsa::Presentation::Graph
 {
-    public ref class SegmentChart : public ColorfulScatterChart
+    public ref class SymbolChart : public ScatterChart
     {
     public:
-        SegmentChart();
 
         PointsShape^ CreateShape() override;
     };

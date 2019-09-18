@@ -1,10 +1,10 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "Annotation.hpp"
 #include "Utils.hpp"
 #include "ScatterChart.hpp"
 #include <array>
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 namespace Xsa
 {
@@ -35,7 +35,7 @@ namespace Presentation
 
         float getAngle(const Line& line)
         {
-            return std::atan2f(line[0].y - line[1].y, line[1].x - line[0].x) * 180.0f / M_PI;
+            return std::atan2f(line[0].y - line[1].y, line[1].x - line[0].x) * 180.0f / (float)M_PI;
         }
 
         float getLength(const Line& line)
@@ -71,7 +71,7 @@ namespace Presentation
 
         }
 
-        void Annotation::Draw(sf::RenderTarget* target, sf::RenderStates states)
+        void Annotation::Draw(sf::RenderTarget* target, sf::RenderStates)
         {
 
             const sf::Transform& cameraTransform = _camera->getCamera()->getTransform();
@@ -97,7 +97,7 @@ namespace Presentation
         void Annotation::PlotUnit(TextBlock ^ text, const sf::Vector2f& pos, String ^ unit, float angle)
         {
             text->Text = unit;
-            float textWidth = text->DesiredSize.Width;
+            float textWidth = (float)text->DesiredSize.Width;
             text->RenderTransformOrigin = Point(0.5, 0.5);
             RotateTransform ^ textTransform = (RotateTransform ^) text->RenderTransform;
             if (MathUtil::IsInRange(angle, -90.0f, -70.0f) || MathUtil::IsInRange(angle, 90.0f, 110.f))
@@ -137,7 +137,7 @@ namespace Presentation
         void Annotation::PlotAxisMin(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
             text->Text = FormatAxisValue(axis);
-            float textWidth = text->DesiredSize.Width;
+            float textWidth = (float)text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
             if (MathUtil::IsInRange(angle, -45.0f, 0))
@@ -185,7 +185,7 @@ namespace Presentation
         void Annotation::PlotAxisMax(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle)
         {
             text->Text = FormatAxisValue(axis);
-            float textWidth = text->DesiredSize.Width;
+            float textWidth = (float)text->DesiredSize.Width;
             float textHeight = (float)FontSize;
 
             if (MathUtil::IsInRange(angle, -45.0f, 0))
@@ -281,13 +281,13 @@ namespace Presentation
 
             TextBlock ^ minText = _textBlocks[TextYAxisMin];
             minText->Text = FormatAxisValue(_chart->YAxisMin);
-            float textWidth = minText->DesiredSize.Width;
+            float textWidth = (float)minText->DesiredSize.Width;
             Canvas::SetLeft(minText, screenY[0].x - FontSize - textWidth);
             Canvas::SetTop(minText, screenY[0].y - FontSize);
 
             TextBlock ^ maxText = _textBlocks[TextYAxisMax];
             maxText->Text = FormatAxisValue(_chart->YAxisMax);
-            textWidth = maxText->DesiredSize.Width;
+            textWidth = (float)maxText->DesiredSize.Width;
             Canvas::SetLeft(maxText, screenY[1].x - FontSize - textWidth);
             Canvas::SetTop(maxText, screenY[1].y);
         }

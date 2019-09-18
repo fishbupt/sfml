@@ -52,12 +52,12 @@ unsigned int SphericalPolyhedron::getSubdivisions() const
 }
 
 ////////////////////////////////////////////////////////////
-unsigned int SphericalPolyhedron::getFaceCount() const
+size_t SphericalPolyhedron::getFaceCount() const
 {
     if (m_geometry.empty())
         construct();
 
-    return static_cast<unsigned int>(m_geometry.size()) / 3;
+    return m_geometry.size() / 3;
 }
 
 

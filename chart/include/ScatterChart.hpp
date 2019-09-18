@@ -23,363 +23,336 @@ using namespace System::Windows;
 using namespace System::Windows::Controls;
 using namespace System::Windows::Media::Imaging;
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
+    public ref class ScatterChart : public UserControl, public Drawable
     {
-        // clang-format off
-        public ref class ScatterChart : public UserControl, public Drawable
-        // clang-format on
+    public:
+        ScatterChart();
+
+        ~ScatterChart();
+
+        !ScatterChart();
+        /// <summary>
+        /// This Method do library level initialization
+        /// SFML use a shared OpenGL context to create other OpenGL context after the first context was created
+        /// call this method to create a shared OpenGL context
+        /// </summary>
+        static void Initialize()
         {
-        public:
-            ScatterChart();
+            sf::Context ctx;
+        }
 
-            ~ScatterChart();
+        /// <summary>
+        /// Draw object to the control
+        /// </summary>
+        void Draw();
 
-            !ScatterChart();
-            /// <summary>
-            /// This Method do library level initialization
-            /// SFML use a shared OpenGL context to create other OpenGL context after the first context was created
-            /// call this method to create a shared OpenGL context
-            /// </summary>
-            static void Initialize()
-            {
-                sf::Context ctx;
-            }
+        virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
-            /// <summary>
-            /// Draw object to the control
-            /// </summary>
-            void Draw();
+        void DrawAnnotations(sf::RenderTarget* target);
 
-            virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
+        void DrawMarkers(sf::RenderTarget* target);
 
-            void DrawAnnotations(sf::RenderTarget *target);
+        /// <summary>
+        /// Get the X-pixel position corresponding the passed X-axis value.
+        /// </summary>
+        /// <param name="value">The X-pixel value.</param>
+        /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid</param>
+        /// <returns>The X-pixel position.</returns>
+        int PixelAtX(double value, bool gridLimit);
 
-            void DrawMarkers(sf::RenderTarget *target);
+        /// <summary>
+        /// Get the Y-pixel position corresponding the passed Y-axis value.
+        /// </summary>
+        /// <param name="value">The Y-pixel value</param>
+        /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid.</param>
+        /// <returns>The Y-pixel position</returns>
+        int PixelAtY(double value, bool gridLimit);
 
-            /// <summary>
-            /// Get the X-pixel position corresponding the passed X-axis value.
-            /// </summary>
-            /// <param name="value">The X-pixel value.</param>
-            /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid</param>
-            /// <returns>The X-pixel position.</returns>
-            int PixelAtX(double value, bool gridLimit);
+        /// <summary>
+        /// Get the X-axis value corresponding the passed X-pixel position.
+        /// </summary>
+        /// <param name="value">The X-pixel position.</param>
+        /// <returns>The X-axis value</returns>
+        float XAtPixel(int value);
 
-            /// <summary>
-            /// Get the Y-pixel position corresponding the passed Y-axis value.
-            /// </summary>
-            /// <param name="value">The Y-pixel value</param>
-            /// <param name="gridLimit">Whether to limit the pixel position to fit within the grid.</param>
-            /// <returns>The Y-pixel position</returns>
-            int PixelAtY(double value, bool gridLimit);
-
-            /// <summary>
-            /// Get the X-axis value corresponding the passed X-pixel position.
-            /// </summary>
-            /// <param name="value">The X-pixel position.</param>
-            /// <returns>The X-axis value</returns>
-            float XAtPixel(int value);
-
-            /// <summary>
-            /// Get the Y-axis value corresponding the passed Y-pixel position.
-            /// </summary>
-            /// <param name="value">The Y-pixel position.</param>
-            /// <returns>The Y-axis value.</returns>
-            float YAtPixel(int value);
+        /// <summary>
+        /// Get the Y-axis value corresponding the passed Y-pixel position.
+        /// </summary>
+        /// <param name="value">The Y-pixel position.</param>
+        /// <returns>The Y-axis value.</returns>
+        float YAtPixel(int value);
 
 #pragma region Properties
-        private:
-            GridShape^ _grid = gcnew GridShape();
-            List<PointsShape^>^ _dataShapes = gcnew List<PointsShape ^>();
+    private:
+        GridShape^ _grid = gcnew GridShape();
+        List<PointsShape^>^ _dataShapes = gcnew List<PointsShape^>();
 
-            double _xAxisMin = -1.0;
-            double _xAxisMax = 1.0;
-            double _yAxisMin = -1.0;
-            double _yAxisMax = 1.0;
-            double _zAxisMin = -1.0;
-            double _zAxisMax = 1.0;
+        double _xAxisMin = -1.0;
+        double _xAxisMax = 1.0;
+        double _yAxisMin = -1.0;
+        double _yAxisMax = 1.0;
+        double _zAxisMin = -1.0;
+        double _zAxisMax = 1.0;
 
-            array<Color>^ _segColors = gcnew array<Color>(0);
-            array<Color>^ _traceColors = gcnew array<Color>(1);
+        array<Color>^ _traceColors = gcnew array<Color>(1);
 
-            double ClipMin(double min, double max);
-            double ClipMax(double min, double max);
-               
-        public:
-            // clang-format off
-            property GridShape^ Grid
+        double ClipMin(double min, double max);
+        double ClipMax(double min, double max);
+
+    public:
+        property GridShape^ Grid
+        {
+            GridShape^ get()
             {
-                GridShape^ get()
-                {
-                    return _grid;
-                }
+                return _grid;
             }
+        }
 
-            property List<PointsShape^>^ DataShapes
+        property List<PointsShape^>^ DataShapes
+        {
+            List<PointsShape^>^ get()
             {
-                List<PointsShape^>^ get()
-                {
-                    return _dataShapes;
-                }
+                return _dataShapes;
             }
+        }
 
-            property Annotation^ Annotation
+        property Annotation^ Annotation
+        {
+            Graph::Annotation^ get()
             {
-                Graph::Annotation^ get()
-                {
-                    return _annotation;
-                }
+                return _annotation;
             }
+        }
 
-            property Markers^ Markers
+        property Markers^ Markers
+        {
+            Graph::Markers^ get()
             {
-                Graph::Markers^ get()
-                {
-                    return _markers;
-                }
+                return _markers;
             }
+        }
 
-            /// <summary>
-            /// For Polor Coordinate, the XAxisMin and XAxisMax are determinated by YAxisMin and YAxisMax
-            /// </summary>
-            property bool IsPolorCoordinate;
-            // clang-format on
+        /// <summary>
+        /// For Polor Coordinate, the XAxisMin and XAxisMax are determinated by YAxisMin and YAxisMax
+        /// </summary>
+        property bool IsPolorCoordinate;
 
-            property double XAxisMin
+        property double XAxisMin
+        {
+            double get()
             {
-                double get()
-                {
-                    return _xAxisMin;
-                }
-                void set(double value)
-                {
-                    if (IsPolorCoordinate || _xAxisMin == value)
-                        return;
-                    _xAxisMin = value;
-                    _xAxisMax = ClipMax(_xAxisMin, _xAxisMax);
-                    UpdateTransform();
-                }
+                return _xAxisMin;
             }
+            void set(double value)
+            {
+                if (IsPolorCoordinate || _xAxisMin == value)
+                    return;
+                _xAxisMin = value;
+                _xAxisMax = ClipMax(_xAxisMin, _xAxisMax);
+                UpdateTransform();
+            }
+        }
 
-            property double XAxisMax
+        property double XAxisMax
+        {
+            double get()
             {
-                double get()
-                {
-                    return _xAxisMax;
-                }
-                void set(double value)
-                {
-                    if (IsPolorCoordinate || _xAxisMax == value)
-                        return;
-                    _xAxisMax = value;
-                    _xAxisMin = ClipMin(_xAxisMin, _xAxisMax);
-                    UpdateTransform();
-                }
+                return _xAxisMax;
             }
+            void set(double value)
+            {
+                if (IsPolorCoordinate || _xAxisMax == value)
+                    return;
+                _xAxisMax = value;
+                _xAxisMin = ClipMin(_xAxisMin, _xAxisMax);
+                UpdateTransform();
+            }
+        }
 
-            property double YAxisMin
+        property double YAxisMin
+        {
+            double get()
             {
-                double get()
-                {
-                    return _yAxisMin;
-                }
-                void set(double value)
-                {
-                    if (_yAxisMin == value)
-                        return;
-                    _yAxisMin = value;
-                    _yAxisMax = ClipMax(_yAxisMin, _yAxisMax);
-                    UpdateTransform();
-                }
+                return _yAxisMin;
             }
+            void set(double value)
+            {
+                if (_yAxisMin == value)
+                    return;
+                _yAxisMin = value;
+                _yAxisMax = ClipMax(_yAxisMin, _yAxisMax);
+                UpdateTransform();
+            }
+        }
 
-            property double YAxisMax
+        property double YAxisMax
+        {
+            double get()
             {
-                double get()
-                {
-                    return _yAxisMax;
-                }
-                void set(double value)
-                {
-                    if (_yAxisMax == value)
-                        return;
-                    _yAxisMax = value;
-                    _yAxisMin = ClipMin(_yAxisMin, _yAxisMax);
-                    UpdateTransform();
-                }
+                return _yAxisMax;
             }
-            property double ZAxisMin
+            void set(double value)
             {
-                double get()
-                {
-                    return _zAxisMin;
-                }
-                void set(double value)
-                {
-                    if (_zAxisMin == value)
-                        return;
-                    _zAxisMin = value;
-                    _zAxisMax = ClipMax(_zAxisMin, _zAxisMax);
-                    UpdateTransform();
-                }
+                if (_yAxisMax == value)
+                    return;
+                _yAxisMax = value;
+                _yAxisMin = ClipMin(_yAxisMin, _yAxisMax);
+                UpdateTransform();
             }
+        }
+        property double ZAxisMin
+        {
+            double get()
+            {
+                return _zAxisMin;
+            }
+            void set(double value)
+            {
+                if (_zAxisMin == value)
+                    return;
+                _zAxisMin = value;
+                _zAxisMax = ClipMax(_zAxisMin, _zAxisMax);
+                UpdateTransform();
+            }
+        }
 
-            property double ZAxisMax
+        property double ZAxisMax
+        {
+            double get()
             {
-                double get()
-                {
-                    return _zAxisMax;
-                }
-                void set(double value)
-                {
-                    if (_zAxisMax == value)
-                        return;
-                    _zAxisMax = value;
-                    _zAxisMin = ClipMin(_zAxisMin, _zAxisMax);
-                    UpdateTransform();
-                }
+                return _zAxisMax;
             }
-            property int NumberOfTraces
+            void set(double value)
             {
-                int get()
+                if (_zAxisMax == value)
+                    return;
+                _zAxisMax = value;
+                _zAxisMin = ClipMin(_zAxisMin, _zAxisMax);
+                UpdateTransform();
+            }
+        }
+        property int NumberOfTraces
+        {
+            int get()
+            {
+                return DataShapes->Count;
+            }
+            void set(int value)
+            {
+                if (value != DataShapes->Count)
                 {
-                    return DataShapes->Count;
-                }
-                void set(int value)
-                {
-                    if (value != DataShapes->Count)
+                    DataShapes->Clear();
+                    for (int i = 0; i < value; i++)
                     {
-                        DataShapes->Clear();
-                        for (int i = 0; i < value; i++)
-                        {
-                            PointsShape ^ shape = CreateShape();
-                            int colorIndex = i < _traceColors->Length ? i : 0;
-                            shape->TraceColor = _traceColors[colorIndex];
-                            shape->SegColors = _segColors;
-                            DataShapes->Add(shape);
-                        }
+                        PointsShape^ shape = CreateShape();
+                        DataShapes->Add(shape);
+                        InitShape(i);
                     }
                 }
             }
-            // clang-format off
-            property array<Color>^ TraceColors
+        }
+        property array<Color>^ TraceColors
+        {
+            array<Color>^ get()
             {
-                array<Color>^ get()
+                return _traceColors;
+            }
+            void set(array<Color>^ value)
+            {
+                if (_traceColors != value)
                 {
-                    return _traceColors;
-                }
-                void set(array<Color> ^ value)
-                {
-                    if (_traceColors != value)
+                    _traceColors = value;
+                    for (int i = 0; i < DataShapes->Count; i++)
                     {
-                        _traceColors = value;
-                        for (int i = 0; i < DataShapes->Count; i++)
-                        {
-                            int colorIndex = i < _traceColors->Length ? i : 0;
-                            DataShapes[i]->TraceColor = _traceColors[colorIndex];
-                        }
+                        int colorIndex = i < _traceColors->Length ? i : 0;
+                        DataShapes[i]->TraceColor = _traceColors[colorIndex];
                     }
                 }
             }
+        }
 
-            property array<Color>^ SegColors
+        property Color BackgroundColor;
+
+        property bool Is3DEnabled
+        {
+            bool get()
             {
-                array<Color>^ get()
-                {
-                    return _segColors;
-                }
-                void set(array<Color> ^ value)
-                {
-                    if (_segColors != value)
-                    {
-                        _segColors = value;
-                        for (int i = 0; i < DataShapes->Count; i++)
-                        {
-                            DataShapes[i]->SegColors = _segColors;
-                        }
-                    }
-                }
+                return _enableCamera;
             }
-
-            property Color BackgroundColor;
-
-            property bool Is3DEnabled
+            void set(bool value)
             {
-                bool get()
+                if (_enableCamera != value)
+                    _enableCamera = value;
+                if (!_enableCamera)
                 {
-                    return _enableCamera;
+                    _annotation->Disable();
+                    _renderTexture->setView(_renderTexture->getDefaultView());
+                    ((ScaleTransform^)_image->RenderTransform)->ScaleY = 1;
                 }
-                void set(bool value)
+                else
                 {
-                    if (_enableCamera != value)
-                        _enableCamera = value;
-                    if (!_enableCamera)
-                    {
-                        _annotation->Disable();
-                        _renderTexture->setView(_renderTexture->getDefaultView());
-                        ((ScaleTransform^)_image->RenderTransform)->ScaleY = 1;
-                    }
-                    else
-                    {
-                        ((ScaleTransform^)_image->RenderTransform)->ScaleY = -1;
-                    }
-                    UpdateTransform();
+                    ((ScaleTransform^)_image->RenderTransform)->ScaleY = -1;
                 }
+                UpdateTransform();
             }
+        }
 
-            property OrbitCamera^ Camera
-            {
-                OrbitCamera^ get() { return _camera; }
-            }
+        property OrbitCamera^ Camera
+        {
+            OrbitCamera^ get() { return _camera; }
+        }
 
-            #pragma endregion Properties
+#pragma endregion Properties
 
-            #pragma region Events
-        private:
-            System::Windows::Forms::PaintEventHandler ^ _drawCustomMarkers;
-        public:
-            event System::Windows::Forms::PaintEventHandler ^ DrawCustomMarkers
-            {
-                void add(System::Windows::Forms::PaintEventHandler^ p){ _drawCustomMarkers += p; }
-                void remove(System::Windows::Forms::PaintEventHandler ^p){ _drawCustomMarkers -= p; }
-            }
-        #pragma endregion Events
-        protected :
-            /// <summary>
-            /// Factory method to create different shapes
-            /// </summary>
-            /// <returns></returns>
-            virtual PointsShape ^ CreateShape();
-            // clang-format on
+#pragma region Events
+    private:
+        System::Windows::Forms::PaintEventHandler^ _drawCustomMarkers;
+    public:
+        event System::Windows::Forms::PaintEventHandler^ DrawCustomMarkers
+        {
+            void add(System::Windows::Forms::PaintEventHandler^ p) { _drawCustomMarkers += p; }
+            void remove(System::Windows::Forms::PaintEventHandler^ p) { _drawCustomMarkers -= p; }
+        }
+#pragma endregion Events
+    protected:
+        /// <summary>
+        /// Factory method to create different shapes
+        /// </summary>
+        /// <returns></returns>
+        virtual PointsShape^ CreateShape();
 
-        private:
-            void CreateRenderTexture();
+        /// <summary>
+        /// Factory method to initialize shape such as setting color...
+        /// <param> shapeIndex -- index of shape
+        /// </summary>
+        /// <returns></returns>
+        virtual void InitShape(int shapeIndex);
 
-            void OnSizeChanged(Object ^ sender, SizeChangedEventArgs ^ e);
+    private:
+        void CreateRenderTexture();
 
-            void OnGridRectangleChanged(Object ^ sender, EventArgs ^ e);
+        void OnSizeChanged(Object^ sender, SizeChangedEventArgs^ e);
 
-            void UpdateTransform();
+        void OnGridRectangleChanged(Object^ sender, EventArgs^ e);
 
-        public:
-            Canvas^ _canvas;
-        private:
-            scoped_ptr<sf::Transformable> _transform;
-            scoped_ptr<sf::RenderTexture> _renderTexture;
-            bool _renderTextureIsReady = false;
-            Image^ _image;
-            WriteableBitmap^ _drawnImage; // displaying bitmap
-            int _glMajorVersion;
+        void UpdateTransform();
 
-            OrbitCamera^ _camera;
-            bool _enableCamera = false; // true to apply 3d camera
-            Graph::Annotation^ _annotation;
-            Graph::Markers^ _markers;
+    public:
+        Canvas^ _canvas;
+    private:
+        scoped_ptr<sf::Transformable> _transform;
+        scoped_ptr<sf::RenderTexture> _renderTexture;
+        bool _renderTextureIsReady = false;
+        Image^ _image;
+        WriteableBitmap^ _drawnImage; // displaying bitmap
+        int _glMajorVersion;
 
-        };
-    }
-}
+        OrbitCamera^ _camera;
+        bool _enableCamera = false; // true to apply 3d camera
+        Graph::Annotation^ _annotation;
+        Graph::Markers^ _markers;
+
+    };
 }

@@ -449,7 +449,7 @@ public :
     /// \return Maximum number of lights supported
     ///
     ////////////////////////////////////////////////////////////
-    static unsigned int getMaximumLights();
+    static size_t getMaximumLights();
 
     ////////////////////////////////////////////////////////////
     /// \brief Enable lighting for objects that are going to be rendered

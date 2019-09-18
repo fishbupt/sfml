@@ -92,7 +92,7 @@ m_insideBounds()
 void Polyhedron::update() const
 {
     // Get the total number of faces of the polyhedron
-    unsigned int count = getFaceCount();
+    auto count = getFaceCount();
     if (!count)
     {
         m_vertices.resize(0);
@@ -131,7 +131,7 @@ void Polyhedron::draw(RenderTarget& target, RenderStates states) const
 void Polyhedron::generateNormals()
 {
     // Get the total number of faces of the polyhedron
-    unsigned int count = m_vertices.getVertexCount() / 3;
+    auto count = m_vertices.getVertexCount() / 3;
 
     // Vertices
     for (unsigned int i = 0; i < count; ++i)

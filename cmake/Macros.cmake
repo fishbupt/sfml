@@ -195,7 +195,10 @@ macro(sfml_add_library target)
     if(NOT BUILD_SHARED_LIBS)
         target_compile_definitions(${target} PUBLIC "SFML_STATIC")
     endif()
-
+    # enable warnings
+    #target_compile_options(${target} PRIVATE
+    #    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>: -Werror -Wall -Wextra>
+    #    $<$<CXX_COMPILER_ID:MSVC>: /W4 /WX>)           
 endmacro()
 
 # add a new target which is a SFML example

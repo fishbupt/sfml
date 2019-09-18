@@ -51,7 +51,7 @@ public :
     /// \return Number of faces defining the octahedron
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const;
+    virtual size_t getFaceCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get a face of the octahedron

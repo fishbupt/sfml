@@ -2,22 +2,16 @@
 #include <SegmentMinMaxChart.hpp>
 #include <SegmentMinMaxShape.hpp>
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
+    SegmentMinMaxChart::SegmentMinMaxChart()
+        : ColorfulScatterChart()
     {
-        SegmentMinMaxChart::SegmentMinMaxChart()
-            : ScatterChart()
-        {
-            IsPolorCoordinate = false;
-        }
-
-        PointsShape ^ SegmentMinMaxChart::CreateShape()
-        {
-            return gcnew SegmentMinMaxPointsShape();
-        }
+        IsPolorCoordinate = false;
     }
-}
+
+    PointsShape^ SegmentMinMaxChart::CreateShape()
+    {
+        return gcnew SegmentMinMaxPointsShape();
+    }
 }

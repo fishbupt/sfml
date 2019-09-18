@@ -105,7 +105,7 @@ public :
     /// \see getFace
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const = 0;
+    virtual size_t getFaceCount() const = 0;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get a face of the polyhedron

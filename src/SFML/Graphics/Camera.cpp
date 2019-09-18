@@ -177,7 +177,7 @@ const Transform& Camera::getTransform() const
         }
         else
         {
-            m_transform = Transform::perspective(m_fieldOfView*M_PI / 180.0f, 1.0f, m_nearPlane, m_farPlane);
+            m_transform = Transform::perspective(m_fieldOfView * (float)M_PI / 180.0f, 1.0f, m_nearPlane, m_farPlane);
         }
         m_transformUpdated = true;
     }

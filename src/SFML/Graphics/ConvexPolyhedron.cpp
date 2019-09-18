@@ -22,9 +22,9 @@ void ConvexPolyhedron::setFaceCount(unsigned int count)
 
 
 ////////////////////////////////////////////////////////////
-unsigned int ConvexPolyhedron::getFaceCount() const
+size_t ConvexPolyhedron::getFaceCount() const
 {
-    return static_cast<unsigned int>(m_vertices.size() / 3);
+    return m_vertices.size() / 3;
 }
 
 

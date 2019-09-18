@@ -3,30 +3,24 @@
 #include <SegmentPointsShape.hpp>
 #include <Utils.hpp>
 
-namespace Xsa
+namespace Xsa::Presentation::Graph
 {
-namespace Presentation
-{
-    namespace Graph
-    {
-        // clang-format off
-        public ref class SegmentMinMaxPointsShape : public SegmentPointsShape
+    // clang-format off
+    public ref class SegmentMinMaxPointsShape : public SegmentPointsShape
         // clang-format on
+    {
+    public:
+        SegmentMinMaxPointsShape()
+            : SegmentPointsShape()
+            , _linesVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
         {
-        public:
-            SegmentMinMaxPointsShape()
-                : SegmentPointsShape()
-                , _linesVertices(new sf::VertexArray(sf::PrimitiveType::Lines))
-            {
-            }
+        }
 
-            virtual void SetData(float* pYData, int yDataSize, short* pSeg, int segIndexesSize) override;
+        void SetYData(float* pYData, int yDataSize, short* pColorIndexes, int colorIndexesSize) override;
 
-            virtual void Draw(sf::RenderTarget* target, sf::RenderStates states) override;
+        void Draw(sf::RenderTarget* target, sf::RenderStates states) override;
 
-        private:
-            scoped_ptr<sf::VertexArray> _linesVertices;
-        };
-    }
-}
+    private:
+        scoped_ptr<sf::VertexArray> _linesVertices;
+    };
 }

@@ -33,7 +33,7 @@ const Vector3f& Cuboid::getSize() const
 
 
 ////////////////////////////////////////////////////////////
-unsigned int Cuboid::getFaceCount() const
+size_t Cuboid::getFaceCount() const
 {
     return 12;
 }

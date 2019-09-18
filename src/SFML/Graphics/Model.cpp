@@ -13,7 +13,7 @@ Model::~Model()
 
 
 ////////////////////////////////////////////////////////////
-unsigned int Model::getFaceCount() const
+size_t Model::getFaceCount() const
 {
     return m_faces.size();
 }
@@ -58,7 +58,7 @@ const Vertex& Model::getVertex(unsigned int index) const
 
 
 ////////////////////////////////////////////////////////////
-unsigned int Model::getVertexCount() const
+size_t Model::getVertexCount() const
 {
     return m_vertices.size();
 }

@@ -34,7 +34,7 @@ public :
     /// \see getFace, addFace, clearFaces
     ///
     ////////////////////////////////////////////////////////////
-    virtual unsigned int getFaceCount() const;
+    virtual size_t getFaceCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get a face of the model
@@ -115,7 +115,7 @@ protected :
     /// \see addVertex, setVertex, getVertex
     ///
     ////////////////////////////////////////////////////////////
-    unsigned int getVertexCount() const;
+    size_t getVertexCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Add a face to the model

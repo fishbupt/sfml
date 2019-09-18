@@ -489,7 +489,7 @@ namespace sf
 
 
     ////////////////////////////////////////////////////////////
-    unsigned int Light::getMaximumLights()
+    size_t Light::getMaximumLights()
     {
         //sf::priv::ensureExtensionsInit();
 
@@ -567,7 +567,7 @@ namespace sf
             // This will only succeed if the supported version is not GLSL ES
             if (versionNumber > 1.29)
             {
-                unsigned int maxUniformComponents = Shader::getMaximumUniformComponents();
+                auto maxUniformComponents = Shader::getMaximumUniformComponents();
 
                 GLint maxLegacyLights = 0;
                 glCheck(glGetIntegerv(GL_MAX_LIGHTS, &maxLegacyLights));
