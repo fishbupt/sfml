@@ -17,10 +17,8 @@ namespace Xsa::Presentation::Graph
         int dataPerSymbol = PointsPerSymbol * 2;
         if (dataSize == 0 || !pData)
             return;
-        if (dataSize % dataPerSymbol != 0)
-            return throw gcnew InvalidOperationException();
 
-        int pointSize = dataSize / dataPerSymbol;
+        int pointSize = (int)std::ceil((float)dataSize / (float)dataPerSymbol);
         _vertices->resize(pointSize);
         sf::VertexArray& vertices = *_vertices;
         sf::Color symbolColor = ColorUtil::ColorFrom(SymbolColor);
@@ -49,10 +47,8 @@ namespace Xsa::Presentation::Graph
         int dataPerSymbol = PointsPerSymbol;
         if (dataSize == 0 || !xData || !yData)
             return;
-        if (dataSize % dataPerSymbol != 0)
-            return throw gcnew InvalidOperationException();
 
-        int pointSize = dataSize / dataPerSymbol;
+        int pointSize = (int)std::ceil((float)dataSize / (float)dataPerSymbol);
         _vertices->resize(pointSize);
         sf::VertexArray& vertices = *_vertices;
         sf::Color symbolColor = ColorUtil::ColorFrom(SymbolColor);
