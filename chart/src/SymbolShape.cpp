@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 
 #include <SymbolShape.hpp>
+#include <cmath>
 
 namespace Xsa::Presentation::Graph
 {
