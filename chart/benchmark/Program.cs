@@ -42,7 +42,7 @@ namespace ChartBenchmark
             System.Windows.Application app;
             ChartType mainWindow;
 
-            [Params(1000, 10000, 100000, 1000000, 5000000)]
+            [Params(1000, 10000, 100000, 1000000, 7096320)]
             public int DataSize;
 
 
@@ -135,6 +135,7 @@ namespace ChartBenchmark
 
     public class MainWindow2DChart : MainWindowChart
     {
+        public readonly VertexArray DisplayTrace = new VertexArray();
         public MainWindow2DChart() : base()
         {
             _chart.NumberOfTraces = 2;
@@ -145,16 +146,36 @@ namespace ChartBenchmark
             _chart.YAxisMax = 3.0;
             _chart.XAxisMin = -5.0;
             _chart.XAxisMax = 5.0;
+            _chart.OnDrawTraces += _chart_OnDrawTraces;
+        }
+
+        private void _chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
+        {
+            if(DisplayTrace.IsVisible)
+            {
+                unsafe
+                {
+                    DisplayTrace.Draw(e.Target, *e.States);
+                }
+            }
         }
 
         public override void SetData()
         {
+            int pointSize = _data.Length / 2;
+            DisplayTrace.Type = PrimitiveType.Points;
+            DisplayTrace.Size = _data.Length / 2;
+            Color mediaColor = Colors.Green;
+            GlColor color = new GlColor(mediaColor.R, mediaColor.G, mediaColor.B);
             unsafe
             {
-                fixed (float* pData = &_data[0])
+                Vertex* vPointer = DisplayTrace.AsPointer();
+                for (int i = 0; i < pointSize; i++)
                 {
-                    _chart.DataShapes[0].TraceColor = Colors.Green;
-                    _chart.DataShapes[0].SetXYData(pData, _data.Length);
+                    ref Vertex vertex = ref vPointer[i];
+                    vertex.Position.X = _data[2 * i];
+                    vertex.Position.Y = _data[2 * i + 1];
+                    vertex.Color = color;
                 }
             }
         }
@@ -186,6 +207,7 @@ namespace ChartBenchmark
 
     public class MainWindow3DChart : MainWindowChart
     {
+        public readonly VertexArray DisplayTrace = new VertexArray();
         public MainWindow3DChart() : base()
         {
             _chart.NumberOfTraces = 2;
@@ -205,20 +227,39 @@ namespace ChartBenchmark
             _chart.Camera.Azimuth = -37.5f;
             _chart.Camera.Elevation = 30.0f;
             _chart.Camera.UseOrthographicCamera();
+            _chart.OnDrawTraces += _chart_OnDrawTraces;
+        }
+
+        private void _chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
+        {
+            if(DisplayTrace.IsVisible)
+            {
+                unsafe
+                {
+                    DisplayTrace.Draw(e.Target, *e.States);
+                }
+            }
         }
 
         public override void SetData()
         {
+            int pointSize = _data.Length / 3;
+            DisplayTrace.Type = PrimitiveType.Points;
+            DisplayTrace.Size = _data.Length / 3;
+            Color mediaColor = Colors.Red;
+            GlColor color = new GlColor(mediaColor.R, mediaColor.G, mediaColor.B);
             unsafe
             {
-                fixed (float* pData = &_data[0])
+                Vertex* vPointer = DisplayTrace.AsPointer();
+                for (int i = 0; i < pointSize; i++)
                 {
-                    _chart.DataShapes[0].TraceColor = Colors.Green;
-                    _chart.DataShapes[0].SetXYZData(pData, _data.Length);
-
+                    ref Vertex vertex = ref vPointer[i];
+                    vertex.Position.X = _data[3 * i];
+                    vertex.Position.Y = _data[3 * i + 1];
+                    vertex.Position.Z = _data[3 * i + 2];
+                    vertex.Color = color;
                 }
             }
-
         }
 
         public override void PrepareData()

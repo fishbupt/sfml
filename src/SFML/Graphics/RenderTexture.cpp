@@ -89,7 +89,7 @@ bool RenderTexture::create(unsigned int width, unsigned int height, const Contex
         return false;
 
     // We can now initialize the render target part
-    RenderTarget::initialize();
+    RenderTarget::initialize(settings.depthBits > 0);
 
     return true;
 }

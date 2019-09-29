@@ -23,6 +23,7 @@ set(SRC
     ${SRCROOT}/SymbolChart.cpp
     ${SRCROOT}/Marker.cpp
     ${SRCROOT}/Markers.cpp
+    ${SRCROOT}/VertexArray.cpp
     ${INCROOT}/Marker.hpp
     ${INCROOT}/Markers.hpp
     ${INCROOT}/Annotation.hpp
@@ -42,6 +43,11 @@ set(SRC
     ${INCROOT}/Utils.hpp
     ${INCROOT}/ColorArray.hpp
     ${INCROOT}/OrbitCamera.hpp
+    ${INCROOT}/VertexArray.hpp
+    ${INCROOT}/Color.hpp
+    ${INCROOT}/PrimitiveType.hpp
+    ${INCROOT}/Vector3.hpp
+    ${INCROOT}/Vertex.hpp
 )
 source_group("" FILES ${SRC})
 

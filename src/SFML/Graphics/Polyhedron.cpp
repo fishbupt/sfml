@@ -139,9 +139,9 @@ void Polyhedron::generateNormals()
         Vector3f normal = computeNormal(m_vertices[i * 3 + 2].position - m_vertices[i * 3 + 1].position,
                                         m_vertices[i * 3 + 0].position - m_vertices[i * 3 + 1].position);
 
-        m_vertices[i * 3 + 0].normal     = normal;
-        m_vertices[i * 3 + 1].normal = normal;
-        m_vertices[i * 3 + 2].normal = normal;
+        //m_vertices[i * 3 + 0].normal = normal;
+        //m_vertices[i * 3 + 1].normal = normal;
+        //m_vertices[i * 3 + 2].normal = normal;
     }
 }
 

@@ -142,13 +142,13 @@ void SphericalPolyhedron::subdivide(const Vector3f& a, const Vector3f& b, const 
     {
         Vertex va(a * m_radius);
         va.color = getColor();
-        va.normal = a;
+        //va.normal = a;
         Vertex vb(b * m_radius);
         vb.color = getColor();
-        vb.normal = b;
+        //vb.normal = b;
         Vertex vc(c * m_radius);
         vc.color = getColor();
-        vc.normal = c;
+        //vc.normal = c;
 
         m_geometry.push_back(va);
         m_geometry.push_back(vb);

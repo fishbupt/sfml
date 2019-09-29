@@ -31,7 +31,6 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/VertexBuffer.hpp>
-#include <SFML/Graphics/Light.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/Mutex.hpp>
@@ -146,13 +145,11 @@ RenderTarget::RenderTarget()
     , m_lastNonLegacyShader(nullptr)
 {
     m_cache.glStatesSet = false;
-    Light::increaseLightReferences();
 }
 
 ////////////////////////////////////////////////////////////
 RenderTarget::~RenderTarget()
 {
-    Light::decreaseLightReferences();
 }
 
 ////////////////////////////////////////////////////////////
@@ -312,7 +309,6 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
                 glCheck(glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), data + offsetof(Vertex, color)));
                 if (enableTexCoordsArray)
                     glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
-                glCheck(glNormalPointer(GL_FLOAT, sizeof(Vertex), data + offsetof(Vertex, normal)));
             }
             else if (enableTexCoordsArray && !m_cache.texCoordsArrayEnabled)
             {
@@ -330,12 +326,10 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
         {
             Shader *shader = const_cast<Shader*>(m_currentNonLegacyShader);
 
-            Light::addLightsToShader(*shader);
 
             int vertexLocation = shader->getVertexAttributeLocation("sf_Vertex");
             int colorLocation = shader->getVertexAttributeLocation("sf_Color");
             int texCoordLocation = shader->getVertexAttributeLocation("sf_MultiTexCoord0");
-            int normalLocation = shader->getVertexAttributeLocation("sf_Normal");
 
             const char* data = reinterpret_cast<const char*>(vertices);
 
@@ -357,12 +351,6 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
                 glCheck(glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
             }
 
-            if (normalLocation >= 0)
-            {
-                glCheck(glEnableVertexAttribArrayARB(normalLocation));
-                glCheck(glVertexAttribPointerARB(normalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), data + offsetof(Vertex, normal)));
-            }
-
             // Draw the primitives
             drawPrimitives(type, 0, vertexCount);
 
@@ -374,9 +362,6 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
 
             if (texCoordLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(texCoordLocation));
-
-            if (normalLocation >= 0)
-                glCheck(glDisableVertexAttribArrayARB(normalLocation));
 
         }
         cleanupDraw(states);
@@ -441,12 +426,8 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
             glCheck(glVertexPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, position))));
             glCheck(glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, color))));
             glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, texCoords))));
-            glCheck(glNormalPointer(GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal))));
 
             drawPrimitives(vertexBuffer.getPrimitiveType(), firstVertex, vertexCount);
-
-            // Unbind vertex buffer
-            applyVertexBuffer(nullptr);
 
             // Update the cache
             m_cache.useVertexCache = false;
@@ -456,97 +437,13 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
         {
             Shader *shader = const_cast<Shader*>(m_currentNonLegacyShader);
 
-            Light::addLightsToShader(*shader);
-
-            unsigned int arrayObject = 0;
             bool newArray = true;
             bool needUpload = false;
 
-#if 0
-            if (VertexBuffer::hasVertexArrayObjects())
-            {
-                // Lookup the current context (id, shader id) in the VertexBuffer
-                std::pair<Uint64, Uint64> contextIdentifier(m_id, shader->m_id);
-                VertexBuffer::ArrayObjects::iterator arrayObjectIter = vertexBuffer.m_arrayObjects.find(contextIdentifier);
-
-                if (arrayObjectIter == vertexBuffer.m_arrayObjects.end())
-                {
-                    // VertexBuffer doesn't have a VAO in this context
-
-                    // Create a new VAO
-                    glCheck(glGenVertexArrays(1, &arrayObject));
-
-                    // Register the VAO with the VertexBuffer
-                    vertexBuffer.m_arrayObjects[contextIdentifier] = arrayObject;
-
-                    // Mark the VAO age as 0
-                    m_arrayAgeCount[arrayObject] = 0;
-                }
-                else
-                {
-                    // VertexBuffer has/had a VAO in this context
-
-                    // Grab the VAO identifier from the VertexBuffer
-                    arrayObject = arrayObjectIter->second;
-
-                    // Still need to check if it still exists
-                    ArrayAgeCount::iterator arrayAge = m_arrayAgeCount.find(arrayObject);
-
-                    if (arrayAge != m_arrayAgeCount.end())
-                    {
-                        // VAO still exists in this context
-                        newArray = false;
-
-                        // Check if the VertexBuffer data needs to be re-uploaded
-                        needUpload = vertexBuffer.m_needUpload;
-
-                        // Mark the VAO age as 0
-                        arrayAge->second = 0;
-                    }
-                    else
-                    {
-                        // VAO needs to be recreated in this context
-
-                        // Create a new VAO
-                        glCheck(glGenVertexArrays(1, &arrayObject));
-
-                        // Register the VAO with the VertexBuffer
-                        arrayObjectIter->second = arrayObject;
-
-                        // Mark the VAO age as 0
-                        m_arrayAgeCount[arrayObject] = 0;
-                    }
-                }
-
-                glBindVertexArray(arrayObject);
-
-                // Maximum array object age in draw calls before being purged
-                // If an array object was not used to draw this many
-                // calls, it will be considered expired and purged
-                // from the context owned by this RenderTarget
-                const static unsigned int maxArrayObjectAge = 10000;
-
-                // Increment age counters and purge all expired VAOs
-                for (ArrayAgeCount::iterator arrayAge = m_arrayAgeCount.begin(); arrayAge != m_arrayAgeCount.end();)
-                {
-                    arrayAge->second++;
-
-                    if (arrayAge->second > maxArrayObjectAge)
-                    {
-                        glCheck(glDeleteVertexArrays(1, &(arrayAge->first)));
-                        m_arrayAgeCount.erase(arrayAge++);
-                        continue;
-                    }
-
-                    ++arrayAge;
-                }
-            }
-#endif 
 
             int vertexLocation = -1;
             int colorLocation = -1;
             int texCoordLocation = -1;
-            int normalLocation = -1;
 
             // If we are creating a new array object or buffer data
             // needs to be re-uploaded, we need to rebind even if
@@ -563,7 +460,6 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
                 vertexLocation = shader->getVertexAttributeLocation("sf_Vertex");
                 colorLocation = shader->getVertexAttributeLocation("sf_Color");
                 texCoordLocation = shader->getVertexAttributeLocation("sf_MultiTexCoord0");
-                normalLocation = shader->getVertexAttributeLocation("sf_Normal");
 
                 if (vertexLocation >= 0)
                 {
@@ -582,19 +478,10 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
                     glCheck(glEnableVertexAttribArrayARB(texCoordLocation));
                     glCheck(glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texCoords))));
                 }
-
-                if (normalLocation >= 0)
-                {
-                    glCheck(glEnableVertexAttribArrayARB(normalLocation));
-                    glCheck(glVertexAttribPointerARB(normalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal))));
-                }
             }
 
             // Draw the primitives
             drawPrimitives(vertexBuffer.getPrimitiveType(), firstVertex, vertexCount);
-
-            //if (arrayObject)
-            //    glBindVertexArray(0);
 
             if (vertexLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(vertexLocation));
@@ -605,8 +492,6 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
             if (texCoordLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(texCoordLocation));
 
-            if (normalLocation >= 0)
-                glCheck(glDisableVertexAttribArrayARB(normalLocation));
         }
         // Unbind vertex buffer
         applyVertexBuffer(nullptr);
@@ -752,7 +637,6 @@ void RenderTarget::resetGLStates()
             glCheck(glEnableClientState(GL_VERTEX_ARRAY));
             glCheck(glEnableClientState(GL_COLOR_ARRAY));
             glCheck(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
-            glCheck(glEnableClientState(GL_NORMAL_ARRAY));
         }
         glCheck(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
         m_cache.glStatesSet = true;
@@ -783,7 +667,7 @@ void RenderTarget::resetGLStates()
 }
 
 ////////////////////////////////////////////////////////////
-void RenderTarget::initialize(bool tryToSetupNonLegacyPipeLine)
+void RenderTarget::initialize(bool enableBoundaryCheck)
 {
     // Setup the default and current views
     m_defaultView.reset(FloatRect(0, 0, static_cast<float>(getSize().x), static_cast<float>(getSize().y)));
@@ -796,8 +680,7 @@ void RenderTarget::initialize(bool tryToSetupNonLegacyPipeLine)
     m_id = getUniqueId();
 
     // Try to set up non-legacy pipeline if available
-    if(tryToSetupNonLegacyPipeLine)
-        setupNonLegacyPipeline();
+    setupNonLegacyPipeline(enableBoundaryCheck);
 
     setView(m_defaultView);
 }
@@ -816,7 +699,6 @@ void RenderTarget::applyCurrentView()
 
         shader->setUniform("sf_ProjectionMatrix", Glsl::Mat4(m_view->getTransform()));
         shader->setUniform("sf_ViewMatrix", Glsl::Mat4(m_view->getViewTransform()));
-        shader->setUniform("sf_ViewerPosition", m_view->getCenter());
         shader->setUniform("sf_CheckBoundary", m_view->getCheckBoundary());
            
     }
@@ -882,13 +764,6 @@ void RenderTarget::applyTransform(const Transform& transform)
         Shader* shader = m_currentNonLegacyShader ? const_cast<Shader*>(m_currentNonLegacyShader) : m_defaultShader.get();
 
         shader->setUniform("sf_ModelMatrix", Glsl::Mat4(transform));
-
-        const float* modelMatrix = transform.getMatrix();
-        Transform normalMatrix(modelMatrix[0], modelMatrix[4], modelMatrix[8], 0.f, modelMatrix[1], modelMatrix[5], modelMatrix[9], 0.f,
-                               modelMatrix[2], modelMatrix[6], modelMatrix[10], 0.f, 0.f, 0.f, 0.f, 1.f);
-
-        if (sf::Light::isLightingEnabled())
-            shader->setUniform("sf_NormalMatrix", Glsl::Mat4(normalMatrix.getInverse().getTranspose()));
     }
     else
     {
@@ -967,13 +842,9 @@ void RenderTarget::applyVertexBuffer(const VertexBuffer* buffer)
 }
 
 ////////////////////////////////////////////////////////////
-void RenderTarget::setupNonLegacyPipeline()
+void RenderTarget::setupNonLegacyPipeline(bool enableBoundaryCheck)
 {
     // Setup the default shader if non-legacy rendering is supported
-
-    // Check if our shader lighting implementation is supported
-    if (!Light::hasShaderLighting())
-        return;
 
     double versionNumber = 0.0;
     std::istringstream versionStringStream(Shader::getSupportedVersion());
@@ -991,50 +862,44 @@ void RenderTarget::setupNonLegacyPipeline()
 
         std::stringstream vertexShaderSource;
         vertexShaderSource << "#version 130\n"
-                              "\n"
-                              "// Uniforms\n"
-                              "uniform mat4 sf_ModelMatrix;\n"
-                              "uniform mat4 sf_ViewMatrix;\n"
-                              "uniform mat4 sf_ProjectionMatrix;\n"
-                              "uniform mat4 sf_TextureMatrix;\n"
-                              "uniform int sf_TextureEnabled;\n"
-                              "uniform int sf_LightingEnabled;\n"
-                              "uniform bool sf_CheckBoundary;\n"
-                              "\n"
-                              "// Vertex attributes\n"
-                              "in vec3 sf_Vertex;\n"
-                              "in vec4 sf_Color;\n"
-                              "in vec2 sf_MultiTexCoord0;\n"
-                              "in vec3 sf_Normal;\n"
-                              "\n"
-                              "// Vertex shader outputs\n"
-                              "out vec4 sf_FrontColor;\n"
-                              "out vec2 sf_TexCoord0;\n"
-                              "out vec3 sf_FragWorldPosition;\n"
-                              "out vec3 sf_FragNormal;\n"
-                              "\n"
-                              "void main()\n"
-                              "{\n"
-                              "    // Vertex position\n"
-                              "    gl_Position = sf_ProjectionMatrix * sf_ViewMatrix * sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
-                              "\n"
-                              "    // Vertex color\n"
-                              "    sf_FrontColor = sf_Color;\n"
-                              "    vec4 pos = sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
-                              "    if (sf_CheckBoundary && (pos.x > 1.0 || pos.x < -1.0 || pos.y > 1.0 || pos.y < -1.0 || pos.z > 1.0 || pos.z < -1.0))\n"
-                              "        sf_FrontColor.a = 0.0;\n"
-                              "\n"
-                              "    // Texture data\n"
-                              "    //if (sf_TextureEnabled == 1)\n"
-                              "    //    sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
-                              "\n"
-                              "    // Lighting data\n"
-                              "    //if (sf_LightingEnabled > 0)\n"
-                              "    //{\n"
-                              "    //    sf_FragNormal = sf_Normal;\n"
-                              "    //    sf_FragWorldPosition = vec3(sf_ModelMatrix * vec4(sf_Vertex, 1.0));\n"
-                              "    //}\n"
-                              "}\n";
+            "\n"
+            "// Uniforms\n"
+            "uniform mat4 sf_ModelMatrix;\n"
+            "uniform mat4 sf_ViewMatrix;\n"
+            "uniform mat4 sf_ProjectionMatrix;\n"
+            "uniform mat4 sf_TextureMatrix;\n"
+            "uniform int sf_TextureEnabled;\n"
+            "uniform bool sf_CheckBoundary;\n"
+            "\n"
+            "// Vertex attributes\n"
+            "in vec3 sf_Vertex;\n"
+            "in vec4 sf_Color;\n"
+            "in vec2 sf_MultiTexCoord0;\n"
+            "\n"
+            "// Vertex shader outputs\n"
+            "out vec4 sf_FrontColor;\n"
+            "out vec2 sf_TexCoord0;\n"
+            "out vec3 sf_FragWorldPosition;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            "    // Vertex position\n"
+            "    gl_Position = sf_ProjectionMatrix * sf_ViewMatrix * sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
+            "\n"
+            "    // Vertex color\n"
+            "    sf_FrontColor = sf_Color;\n"
+            "    vec4 pos = sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n";
+        if (enableBoundaryCheck)
+            vertexShaderSource <<
+            "    if (sf_CheckBoundary && (pos.x > 1.0 || pos.x < -1.0 || pos.y > 1.0 || pos.y < -1.0 || pos.z > 1.0 || pos.z < -1.0))\n"
+            "        sf_FrontColor.a = 0.0;\n";
+        vertexShaderSource <<
+            "\n"
+            "    // Texture data\n"
+            "    if (sf_TextureEnabled == 1)\n"
+            "        sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
+            "\n"
+            "}\n";
 
         std::stringstream fragmentShaderSource;
         fragmentShaderSource << "#version 130\n";
@@ -1043,109 +908,41 @@ void RenderTarget::setupNonLegacyPipeline()
             fragmentShaderSource << "#extension GL_ARB_uniform_buffer_object : enable\n";
 
         fragmentShaderSource << "\n"
-                                "// Light structure\n"
-                                "struct Light\n"
-                                "{\n"
-                                "    vec4 ambientColor;\n"
-                                "    vec4 diffuseColor;\n"
-                                "    vec4 specularColor;\n"
-                                "    vec4 positionDirection;\n"
-                                "    vec4 attenuation;\n"
-                                "};\n"
-                                "\n"
-                                "// Uniforms\n"
-                                "uniform mat4 sf_ModelMatrix;\n"
-                                "uniform mat4 sf_NormalMatrix;\n"
-                                "uniform sampler2D sf_Texture0;\n"
-                                "uniform int sf_TextureEnabled;\n"
-                                "uniform int sf_LightCount;\n"
-                                "uniform int sf_LightingEnabled;\n"
-                                "uniform vec3 sf_ViewerPosition;\n"
-                                "\n";
-
-        if (Shader::isUniformBufferAvailable())
-            fragmentShaderSource << "layout (std140) uniform Lights\n"
-                                    "{\n"
-                                    "    Light sf_Lights["
-                                 << Light::getMaximumLights()
-                                 << "];\n"
-                                    "};\n";
-        else
-            fragmentShaderSource << "uniform Light sf_Lights[" << Light::getMaximumLights() << "];\n";
+            "// Uniforms\n"
+            "uniform mat4 sf_ModelMatrix;\n"
+            "uniform sampler2D sf_Texture0;\n"
+            "uniform int sf_TextureEnabled;\n"
+            "\n";
 
         fragmentShaderSource << "\n"
-                                "// Fragment attributes\n"
-                                "in vec4 sf_FrontColor;\n"
-                                "in vec2 sf_TexCoord0;\n"
-                                "in vec3 sf_FragWorldPosition;\n"
-                                "in vec3 sf_FragNormal;\n"
-                                "\n"
-                                "// Fragment shader outputs\n"
-                                "out vec4 sf_FragColor;\n"
-                                "\n"
-                                "vec4 computeLighting()\n"
-                                "{\n"
-                                "    // Early return in case lighting disabled\n"
-                                "    if (sf_LightingEnabled == 0)\n"
-                                "        return vec4(1.0, 1.0, 1.0, 1.0);\n"
-                                "\n"
-                                "    // TODO: Implement way to manipulate materials\n"
-                                "    const float materialShininess = 1.0;\n"
-                                "    const vec4 materialSpecularColor = vec4(0.0001, 0.0001, 0.0001, 1.0);\n"
-                                "\n"
-                                "    vec3 fragmentNormal = normalize((sf_NormalMatrix * vec4(sf_FragNormal, 1.0)).xyz);\n"
-                                "    vec3 fragmentDistanceToViewer = normalize(sf_ViewerPosition - sf_FragWorldPosition);"
-                                "\n"
-                                "    vec4 totalIntensity = vec4(0.0, 0.0, 0.0, 0.0);\n"
-                                "\n"
-                                "    for (int index = 0; index < sf_LightCount; ++index)\n"
-                                "    {\n"
-                                "        vec3 rayDirection = normalize(sf_Lights[index].positionDirection.xyz);\n"
-                                "        float attenuationFactor = 1.0;"
-                                "\n"
-                                "        if (sf_Lights[index].positionDirection.w > 0.0)\n"
-                                "        {\n"
-                                "            rayDirection = normalize(sf_FragWorldPosition - sf_Lights[index].positionDirection.xyz);\n"
-                                "            float rayLength = length(sf_Lights[index].positionDirection.xyz - sf_FragWorldPosition);"
-                                "            vec4 attenuationCoefficients = vec4(1.0, rayLength, rayLength * rayLength, 0.0);"
-                                "            attenuationFactor = dot(sf_Lights[index].attenuation, attenuationCoefficients);\n"
-                                "        }\n"
-                                "\n"
-                                "        vec4 ambientIntensity = sf_Lights[index].ambientColor;\n"
-                                "\n"
-                                "        float diffuseCoefficient = max(0.0, dot(fragmentNormal, -rayDirection));\n"
-                                "        vec4 diffuseIntensity = sf_Lights[index].diffuseColor * diffuseCoefficient;\n"
-                                "\n"
-                                "        float specularCoefficient = 0.0;\n"
-                                "        if(diffuseCoefficient > 0.0)"
-                                "            specularCoefficient = pow(max(0.0, dot(fragmentDistanceToViewer, reflect(rayDirection, "
-                                "fragmentNormal))), materialShininess);"
-                                "        vec4 specularIntensity = specularCoefficient * materialSpecularColor * "
-                                "sf_Lights[index].specularColor;"
-                                "\n"
-                                "        totalIntensity += ambientIntensity + (diffuseIntensity + specularIntensity) / attenuationFactor;\n"
-                                "    }\n"
-                                "\n"
-                                "    return vec4(totalIntensity.rgb, 1.0);\n"
-                                "}\n"
-                                "\n"
-                                "vec4 computeTexture()\n"
-                                "{\n"
-                                "    if (sf_TextureEnabled == 0)\n"
-                                "        return vec4(1.0, 1.0, 1.0, 1.0);\n"
-                                "\n"
-                                "    return texture2D(sf_Texture0, sf_TexCoord0);\n"
-                                "}\n"
-                                "\n"
-                                "void main()\n"
-                                "{\n"
-                                "    // Fragment color\n"
-                                "    //vec4 color = sf_FrontColor * computeTexture() * computeLighting();\n"
-                                "    //if(color.a == 0)\n"
-                                "    if(sf_FrontColor.a == 0)\n"
-                                "      discard;\n"
-                                "    sf_FragColor = sf_FrontColor;\n"
-                                "}\n";
+            "// Fragment attributes\n"
+            "in vec4 sf_FrontColor;\n"
+            "in vec2 sf_TexCoord0;\n"
+            "in vec3 sf_FragWorldPosition;\n"
+            "\n"
+            "// Fragment shader outputs\n"
+            "out vec4 sf_FragColor;\n"
+            "\n"
+            "vec4 computeTexture()\n"
+            "{\n"
+            "    if (sf_TextureEnabled == 0)\n"
+            "        return vec4(1.0, 1.0, 1.0, 1.0);\n"
+            "\n"
+            "    return texture2D(sf_Texture0, sf_TexCoord0);\n"
+            "}\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            "    // Fragment color\n"
+            "    //vec4 color = sf_FrontColor * computeTexture() * computeLighting();\n"
+            "    //if(color.a == 0)\n";
+        if (enableBoundaryCheck)
+            fragmentShaderSource <<
+            "    if(sf_FrontColor.a == 0)\n"
+            "      discard;\n";
+        fragmentShaderSource <<
+            "    sf_FragColor = sf_FrontColor;\n"
+            "}\n";
 
         if (!m_defaultShader->loadFromMemory(vertexShaderSource.str(), fragmentShaderSource.str()))
         {
@@ -1233,7 +1030,6 @@ void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t firstVertex, s
         glCheck(glDrawArrays(mode, static_cast<GLint>(firstVertex + i), static_cast<GLsizei>(drawCount)));
         remainderCount -= drawCount;
     }
-
 }
 
 ////////////////////////////////////////////////////////////

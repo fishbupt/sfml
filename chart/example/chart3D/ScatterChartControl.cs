@@ -12,6 +12,8 @@ namespace Xsa.Presentation.Graph
     {
         #region --- Fields ---
         public ScatterChart Chart { get; private set; } = new ScatterChart();
+
+        public readonly VertexArray[] DisplayTraces = {new VertexArray(), new VertexArray()};
         #endregion --- Fields ---
 
 
@@ -27,6 +29,18 @@ namespace Xsa.Presentation.Graph
             Chart.Grid.IsVisible = true;
             Chart.Is3DEnabled = true;
             Chart.IsPolorCoordinate = false;
+            Chart.OnDrawTraces += Chart_OnDrawTraces;
+        }
+
+        private void Chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
+        {
+            foreach (var displayTrace in DisplayTraces)
+            {
+                unsafe
+                {
+                   displayTrace.Draw(e.Target, *e.States); 
+                }
+            }
         }
 
         #region --- Event Handlers ---

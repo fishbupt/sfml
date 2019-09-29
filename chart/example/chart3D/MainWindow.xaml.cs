@@ -105,16 +105,18 @@ namespace ChartExample
                 fixed (float* pData = &data[0])
                 {
                     GenerateData(data, range1, -1.0f);
-                    ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
-                    ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
+                    //ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
+                    //ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
+                    SetData(ScatterChart.DisplayTraces[0], data, Colors.Green);
                     ScatterChart.Chart.Markers[0].Visible = true;
                     ScatterChart.Chart.Markers[0].X = data[0];
                     ScatterChart.Chart.Markers[0].Y = data[1];
                     ScatterChart.Chart.Markers[0].Z = data[2];
 
                     GenerateData(data, range2, 1.0f);
-                    ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
-                    ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
+                    //ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
+                    //ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
+                    SetData(ScatterChart.DisplayTraces[1], data, Colors.Yellow);
                     ScatterChart.Chart.Markers[1].Visible = true;
                     ScatterChart.Chart.Markers[1].X = data[0]; 
                     ScatterChart.Chart.Markers[1].Y = data[1]; 
@@ -126,6 +128,25 @@ namespace ChartExample
                     //_markers[1]->Visible = true;
                     //_markers[1]->Y = -1.0f;
                     //_markers->SelectedIndex = 1;
+                }
+            }
+        }
+
+        private void SetData(VertexArray vaArray, float[] data, Color color)
+        {
+            int pointSize = data.Length / 3;
+            vaArray.Type = PrimitiveType.Points;
+            vaArray.Size = pointSize;
+            GlColor glColor = new GlColor(color.R, color.G, color.B);
+            unsafe
+            {
+                Vertex* vertexArray = vaArray.AsPointer();
+                for (int i = 0; i < pointSize; i++)
+                {
+                    vertexArray[i].Position.X = data[3 * i];
+                    vertexArray[i].Position.Y = data[3 * i + 1];
+                    vertexArray[i].Position.Z = data[3 * i + 2];
+                    vertexArray[i].Color = glColor;
                 }
             }
         }

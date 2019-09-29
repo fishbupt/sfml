@@ -392,9 +392,11 @@ protected:
     /// The derived classes must call this function after the
     /// target is created and ready for drawing.
     ///
-    /// \param tryToSetupNonLegacyPipeline true to call setupLegacyPipeline
+    ///  \param enableBoundaryCheck true to check position is in range [-1, 1]
+    ///  the x, y and z value exceed the range [-1, 1] will be discarded
+    /// 
     ////////////////////////////////////////////////////////////
-    void initialize(bool tryToSetupNonLegacyPipeline = true);
+    void initialize(bool enableBoundaryCheck = false);
 
 private:
     ////////////////////////////////////////////////////////////
@@ -484,8 +486,11 @@ private:
     /// set up the default shader used for rendering that will
     /// emulate the legacy pipeline using the non-legacy OpenGL API.
     ///
+    ///  \param enableBoundaryCheck true to check position is in range [-1, 1]
+    ///  the x, y and z value exceed the range [-1, 1] will be discarded
+    ///
     ////////////////////////////////////////////////////////////
-    void setupNonLegacyPipeline();
+    void setupNonLegacyPipeline(bool enableBoundaryCheck);
 
     ////////////////////////////////////////////////////////////
     /// \brief Render states cache

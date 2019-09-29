@@ -175,8 +175,13 @@ namespace Xsa::Presentation::Graph
             shape->Draw(target, states);
         }
 
+        if (_onDrawTraces != nullptr)
+        {
+            _onDrawTraces(this, gcnew DrawTracesEventArgs(target, &states));
+        }
 
     }
+
 
     void ScatterChart::DrawAnnotations(sf::RenderTarget* target)
     {

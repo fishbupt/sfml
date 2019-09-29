@@ -93,23 +93,12 @@ public:
     Vertex(const Vector3f& thePosition, const Color& theColor, const Vector2f& theTexCoords);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Construct the vertex from its position, color, texture coordinates and lighting normal
-    ///
-    /// \param thePosition  Vertex position
-    /// \param theColor     Vertex color
-    /// \param theTexCoords Vertex texture coordinates
-    /// \param theNormal    Lighting normal
-    ///
-    ////////////////////////////////////////////////////////////
-    Vertex(const Vector3f& thePosition, const Color& theColor, const Vector2f& theTexCoords, const Vector3f& theNormal);
-
-    ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Vector3f  position;  ///< 3D position of the vertex
-    Color     color;     ///< Color of the vertex
-    Vector2f  texCoords; ///< Coordinates of the texture's pixel to map to the vertex
-    Vector3f  normal;    ///< Lighting normal
+    Vector3f  position{ 0,0,0 };  ///< 3D position of the vertex
+    Color     color{ 255,255,255 };     ///< Color of the vertex
+    Vector2f  texCoords{ 0,0 }; ///< Coordinates of the texture's pixel to map to the vertex
+    //Vector3f  normal;    ///< Lighting normal
 };
 
 } // namespace sf

@@ -11,6 +11,7 @@
 #include <OrbitCamera.hpp>
 #include <Annotation.hpp>
 #include <Markers.hpp>
+#include <VertexArray.hpp>
 
 #using "WindowsBase.dll"
 #using "PresentationFramework.dll"
@@ -25,6 +26,18 @@ using namespace System::Windows::Media::Imaging;
 
 namespace Xsa::Presentation::Graph
 {
+    public ref class DrawTracesEventArgs : public System::EventArgs
+    {
+    public:
+        DrawTracesEventArgs(sf::RenderTarget *target, sf::RenderStates *states)
+        {
+            Target = target;
+            States = states;
+        }
+        sf::RenderTarget* Target;
+        sf::RenderStates* States;
+    };
+
     public ref class ScatterChart : public UserControl, public Drawable
     {
     public:
@@ -315,6 +328,15 @@ namespace Xsa::Presentation::Graph
             void add(System::Windows::Forms::PaintEventHandler^ p) { _drawCustomMarkers += p; }
             void remove(System::Windows::Forms::PaintEventHandler^ p) { _drawCustomMarkers -= p; }
         }
+
+    private:
+        EventHandler<DrawTracesEventArgs^>^ _onDrawTraces;
+    public:
+        event EventHandler<DrawTracesEventArgs^>^ OnDrawTraces
+        {
+            void add(EventHandler<DrawTracesEventArgs^>^ p) { _onDrawTraces += p; }
+            void remove(EventHandler<DrawTracesEventArgs^>^ p) { _onDrawTraces -= p; }
+        }
 #pragma endregion Events
     protected:
         /// <summary>
@@ -355,4 +377,5 @@ namespace Xsa::Presentation::Graph
         Graph::Markers^ _markers;
 
     };
+
 }

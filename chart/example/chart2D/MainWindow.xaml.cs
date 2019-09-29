@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
 using Xsa.Presentation.Graph;
+using Color = System.Windows.Media.Color;
 
 namespace ChartExample
 {
@@ -110,15 +111,34 @@ namespace ChartExample
                 fixed (float* pData = &data[0])
                 {
                     GenerateData1(data, range1);
-                    ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
-                    ScatterChart.Chart.DataShapes[0].SetXYData(pData, data.Length);
+                    //ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
+                    //ScatterChart.Chart.DataShapes[0].SetXYData(pData, data.Length);
+                    SetData(ScatterChart.DisplayTraces[0], data, Colors.Blue);
                     GenerateData(data, range2);
-                    ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
-                    ScatterChart.Chart.DataShapes[1].SetXYData(pData, data.Length);
+                    //ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
+                    //ScatterChart.Chart.DataShapes[1].SetXYData(pData, data.Length);
+                    SetData(ScatterChart.DisplayTraces[1], data, Colors.Yellow);
                 }
             }
         }
+        private void SetData(VertexArray vArray, float[] data, Color color)
+        {
+            int pointSize = data.Length / 2;
+            vArray.Type = PrimitiveType.Points;
+            vArray.Size = data.Length / 2;
+            GlColor glColor = new GlColor(color.R, color.G, color.B);
+            unsafe
+            {
+                Vertex* vertexArray = vArray.AsPointer();
+                for (int i = 0; i < pointSize; i++)
+                {
+                    vertexArray[i].Position.X = data[2 * i];
+                    vertexArray[i].Position.Y = data[2 * i + 1];
+                    vertexArray[i].Color = new GlColor(color.R, color.G, color.B);
 
+                }
+            }
+        }
         private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.-]+");
