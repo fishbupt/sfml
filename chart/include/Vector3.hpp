@@ -3,7 +3,11 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     /// <summary>
     /// Vector3f is an utility class for manipulating 3 dimensional vectors with float components
@@ -178,4 +182,6 @@ namespace Xsa::Presentation::Graph
             return !lhs.Equals(rhs);
         }
     };
-}
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

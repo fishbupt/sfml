@@ -9,7 +9,11 @@
 #include<SFML/Graphics/PrimitiveType.hpp>
 
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     /// <summary>
     /// Define a set of 3D primitives
@@ -84,7 +88,11 @@ namespace Xsa::Presentation::Graph
 
         virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
+        void Draw(IntPtr target, IntPtr states);
+
     private:
         scoped_ptr<std::vector<sf::Vertex>> _vertices;
     };
-}
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

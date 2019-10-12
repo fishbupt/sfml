@@ -12,56 +12,56 @@ namespace Xsa
 {
 namespace Presentation
 {
-    namespace Graph
+namespace Graph
+{
+    ref class Marker;
+    // clang-format off
+    public ref class Markers 
+    // clang-format on
     {
-        ref class Marker;
-        // clang-format off
-        public ref class Markers 
-        // clang-format on
+    public:
+        Markers(int count);
+
+        ~Markers();
+
+        !Markers();
+
+        /// <summary>
+        /// The number of markers.
+        /// </summary>
+        property int Count
         {
-        public:
-            Markers(int count);
+            int get();
+            void set(int value);
+        }
 
-            ~Markers();
+        /// <summary>
+        /// Index of the marker that has been selected
+        /// </summary>
+        property int SelectedIndex
+        {
+            int get();
+            void set(int value);
+        }
 
-            !Markers();
-
-            /// <summary>
-            /// The number of markers.
-            /// </summary>
-            property int Count
+        property Marker^ default[int]
+        {
+            Marker^ get(int index)
             {
-                int get();
-                void set(int value);
+                if (index < 0 || index >= Count)
+                    return nullptr;
+
+                return _markers[index];
             }
-
-            /// <summary>
-            /// Index of the marker that has been selected
-            /// </summary>
-            property int SelectedIndex
-            {
-                int get();
-                void set(int value);
-            }
-
-            property Marker^ default[int]
-            {
-                Marker^ get(int index)
-                {
-                    if (index < 0 || index >= Count)
-                        return nullptr;
-
-                    return _markers[index];
-                }
-            }
+        }
 
 
-            void Draw(sf::RenderTarget* target, sf::RenderStates states, sf::Transform transform);
-        private:
-            List<Marker^>^ _markers;
-            scoped_ptr<sf::OrbitCamera> _camera;
-            int _selectedIndex;
-        };
-    }
-} // Presentation
-} // Xsa
+        void Draw(sf::RenderTarget* target, sf::RenderStates states, sf::Transform transform);
+    private:
+        List<Marker^>^ _markers;
+        scoped_ptr<sf::OrbitCamera> _camera;
+        int _selectedIndex;
+    };
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

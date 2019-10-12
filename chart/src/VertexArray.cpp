@@ -1,7 +1,11 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #include <VertexArray.hpp>
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     VertexArray::VertexArray()
         :VertexArray(PrimitiveType::Points)
@@ -66,4 +70,11 @@ namespace Xsa::Presentation::Graph
             target->draw(_vertices->data(), Size, static_cast<sf::PrimitiveType>(Type), states);
         }
     }
-}
+
+    void VertexArray::Draw(IntPtr target, IntPtr states)
+    {
+        VertexArray::Draw((sf::RenderTarget*)target.ToPointer(), *(sf::RenderStates*)states.ToPointer());
+    }
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

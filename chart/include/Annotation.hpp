@@ -22,89 +22,108 @@ namespace Xsa
 {
 namespace Presentation
 {
-    namespace Graph
-    {
+namespace Graph
+{
 
-        ref class ScatterChart;
-
-        // clang-format off
-        public ref class Annotation : public Drawable
+    // clang-format off
+    public ref class Annotation : public Drawable
         // clang-format on
+    {
+    public:
+        Annotation(OrbitCamera^ camera);
+
+        /// <summary>
+        /// Family of Font
+        /// </summary>
+        property FontFamily^ FontFamily;
+        /// <summary>
+        /// FontSize in pixels
+        /// The default value is 16
+        /// </summary>
+        property double FontSize;
+
+        /// <summary>
+        /// Style of Font
+        /// The default style is Normal
+        /// </summary>
+        property FontStyle FontStyle;
+
+        /// <summary>
+        /// Weight of Font
+        /// The default value is Normal
+        /// </summary>
+        property FontWeight FontWeight;
+
+        /// <summary>
+        /// Color of the annotation text
+        /// </summary>
+        property Color Color;
+
+        /// <summary>
+        /// Set of TextBlock to rendering annotations
+        /// </summary>
+        property array<TextBlock^>^ TextBlocks
         {
-        public:
-            Annotation(ScatterChart ^ chart);
+            array<TextBlock^>^ get() { return _textBlocks; }
+        }
 
-            /// <summary>
-            /// Family of Font
-            /// </summary>
-            property FontFamily ^ FontFamily;
-            /// <summary>
-            /// FontSize in pixels
-            /// The default value is 16
-            /// </summary>
-            property double FontSize;
+        /// <summary>
+        /// Unit text for X-Axis
+        /// </summary>
+        property System::String^ XAxisUnit;
 
-            /// <summary>
-            /// Style of Font
-            /// The default style is Normal
-            /// </summary>
-            property FontStyle FontStyle;
+        /// <summary>
+        /// Unit Text for Y-Axis
+        /// </summary>
+        property System::String^ YAxisUnit;
 
-            /// <summary>
-            /// Weight of Font
-            /// The default value is Normal
-            /// </summary>
-            property FontWeight FontWeight;
+        /// <summary>
+        /// Unit Text for Z-Axis
+        /// </summary>
+        property System::String^ ZAxisUnit;
 
-            /// <summary>
-            /// Color of the annotation text
-            /// </summary>
-            property Color Color;
+        property double XAxisMin;
 
-            /// <summary>
-            /// Unit text for X-Axis
-            /// </summary>
-            property System::String ^ XAxisUnit;
+        property double XAxisMax;
 
-            /// <summary>
-            /// Unit Text for Y-Axis
-            /// </summary>
-            property System::String ^ YAxisUnit;
+        property double YAxisMin;
 
-            /// <summary>
-            /// Unit Text for Z-Axis
-            /// </summary>
-            property System::String ^ ZAxisUnit;
+        property double YAxisMax;
 
-            /// <summary>
-            /// Set this property to "EngineeringFormatter" if you want more readable format value
-            /// </summary>
-            property IFormatProvider ^ FormatProvider;
+        property double ZAxisMin;
 
-            /// <summary>
-            /// Disable drawing annotations
-            /// </summary>
-            void Disable();
+        property double ZAxisMax;
 
-            virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
+        /// <summary>
+        /// Set this property to "EngineeringFormatter" if you want more readable format value
+        /// </summary>
+        property IFormatProvider^ FormatProvider;
 
-        private:
-            void PlotXAnnotation(const sf::Transform& transform);
-            void PlotYAnnotation(const sf::Transform& transform);
-            void PlotZAnnotation(const sf::Transform& transform);
-            void PlotUnit(TextBlock ^ text, const sf::Vector2f& pos, String ^ unit, float angle);
-            void PlotAxisMin(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle);
-            void PlotAxisMax(TextBlock ^ text, const sf::Vector2f& pos, double axis, float angle);
+        /// <summary>
+        /// Disable drawing annotations
+        /// </summary>
+        void Disable();
 
-            System::String ^ FormatAxisValue(double axis);
+        virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
-        private:
-            OrbitCamera ^ _camera;
-            array<TextBlock ^> ^ _textBlocks;
-            ScatterChart ^ _chart;
+        void Draw(IntPtr target);
 
-            static const float kMinAxisLenghtInPixelToDisplay = 50.0f;
-        };
-    }
-}
-}
+    private:
+        void PlotXAnnotation(const sf::Transform& transform);
+        void PlotYAnnotation(const sf::Transform& transform);
+        void PlotZAnnotation(const sf::Transform& transform);
+        void PlotUnit(TextBlock^ text, const sf::Vector2f& pos, String^ unit, float angle);
+        void PlotAxisMin(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
+        void PlotAxisMax(TextBlock^ text, const sf::Vector2f& pos, double axis, float angle);
+
+        System::String^ FormatAxisValue(double axis);
+
+    private:
+        OrbitCamera^ _camera;
+        array<TextBlock^>^ _textBlocks;
+
+        static const float kMinAxisLenghtInPixelToDisplay = 50.0f;
+    };
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

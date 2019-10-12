@@ -5,7 +5,11 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     /// <summary>
     /// Define a point with color and texture coordinates
@@ -71,4 +75,6 @@ namespace Xsa::Presentation::Graph
             return String::Format("[Vertex] Position({0}) Color({1}) TexCoords({2})", Position, Color, TexCoords);
         }
     };
-}
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

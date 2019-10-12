@@ -4,7 +4,11 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     using byte = uint8_t;
     /// <summary>
@@ -132,5 +136,15 @@ namespace Xsa::Presentation::Graph
             return !lhs.Equals(rhs);
         }
 
+        static property GlColor Transparent
+        {
+            GlColor get()
+            {
+                return GlColor(0, 0, 0, 0);
+            }
+        } 
+
     };
-}
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

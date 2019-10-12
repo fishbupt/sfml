@@ -14,38 +14,38 @@ namespace Xsa
 {
 namespace Presentation
 {
-    namespace Graph
+namespace Graph
+{
+
+    ref class ColorUtil
     {
-
-        ref class ColorUtil
+    public:
+        static Color ColorFrom(sf::Color color)
         {
-        public:
-            static Color ColorFrom(sf::Color color)
-            {
-                return Color::FromArgb(color.a, color.r, color.g, color.b);
-            }
+            return Color::FromArgb(color.a, color.r, color.g, color.b);
+        }
 
-            static sf::Color ColorFrom(Color color)
-            {
-                return sf::Color(color.R, color.G, color.B, color.A);
-            }
-        };
-
-        ref class MathUtil
+        static sf::Color ColorFrom(Color color)
         {
-        public:
-            /// <summary>
-            /// Check value is in range [low, high)
-            /// </summary>
-            /// <param name="value"></param>
-            /// <param name="low"></param>
-            /// <param name="high"></param>
-            /// <returns></returns>
-            static bool IsInRange(const float& value,  const float& low, const float& high)
-            {
-                return !(value < low) && (value < high);
-            }
-        };
-    }
-}
-}
+            return sf::Color(color.R, color.G, color.B, color.A);
+        }
+    };
+
+    ref class MathUtil
+    {
+    public:
+        /// <summary>
+        /// Check value is in range [low, high)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="low"></param>
+        /// <param name="high"></param>
+        /// <returns></returns>
+        static bool IsInRange(const float& value,  const float& low, const float& high)
+        {
+            return !(value < low) && (value < high);
+        }
+    };
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

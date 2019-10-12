@@ -11,7 +11,7 @@ namespace Xsa.Presentation.Graph
     public partial class ScatterChartControl : UserControl
     {
         #region --- Fields ---
-        public ScatterChart Chart { get; private set; } = new ScatterChart();
+        public ChartElement Chart { get; private set; } = new ChartElement();
 
         public readonly VertexArray[] DisplayTraces = {new VertexArray(), new VertexArray()};
         #endregion --- Fields ---
@@ -22,13 +22,12 @@ namespace Xsa.Presentation.Graph
             Content = Chart;
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
-            Chart.NumberOfTraces = 2;
             Chart.Grid.NumberOfXAxisDivisions = 5;
             Chart.Grid.NumberOfYAxisDivisions = 5;
-            Chart.Grid.NumberOfZAxisDivisions = 5;
+            Chart.Grid.NumberOfZAxisDivisions = 0;
             Chart.Grid.IsVisible = true;
-            Chart.Is3DEnabled = true;
-            Chart.IsPolorCoordinate = false;
+            Chart.Is3DEnabled = false;
+            Chart.IsPolorCoordinate = true;
             Chart.OnDrawTraces += Chart_OnDrawTraces;
         }
 
@@ -38,7 +37,7 @@ namespace Xsa.Presentation.Graph
             {
                 unsafe
                 {
-                   displayTrace.Draw(e.Target, *e.States); 
+                   displayTrace.Draw(e.Target, e.States); 
                 }
             }
         }
@@ -52,15 +51,14 @@ namespace Xsa.Presentation.Graph
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             SizeChanged += OnSizeChanged;
-            //CreateRenderTexture();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //CreateRenderTexture();
         }
-        public void Draw()
+        public async void Draw()
         {
+            await Chart.Render();
             Chart.Draw();
         }
         #endregion --- Event Handlers ---

@@ -1,7 +1,11 @@
 // Copyright (c) 2019 Keysight Technologies. All rights reserved.
 #pragma once
 
-namespace Xsa::Presentation::Graph
+namespace Xsa
+{
+namespace Presentation
+{
+namespace Graph
 {
     /// <summary>
     /// Types of primitives that a Vertex can render.
@@ -33,4 +37,6 @@ namespace Xsa::Presentation::Graph
         /// List of individual quads
         Quads
     };
-}
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

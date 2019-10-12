@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ChartExample"
         xmlns:graph="clr-namespace:Xsa.Presentation.Graph"
         mc:Ignorable="d"
-        Title="Chart3D Demo" Height="600" Width="800">
+        Title="Chart3D Demo" Height="800" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -42,12 +42,18 @@
                 <TextBox Margin="2" PreviewTextInput="NumberValidationTextBox"
                          Name="tbZAxisMax" KeyDown="ZAxisMax_KeyDown"></TextBox>
                 <ComboBox
+                    Name="ComboBox"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Width="120"
                     Loaded="ComboBox_Loaded"
                     SelectionChanged="ComboBox_SelectionChanged"
                     />
+                <CheckBox Margin="8"
+                          Checked="ToggleButton_OnChecked"
+                          Unchecked="ToggleButton_OnUnchecked">
+                    Enable 3D
+                </CheckBox>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1" Margin="4">
@@ -55,7 +61,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <GroupBox Margin="0,4,373,6" Grid.Column="0" >
+            <GroupBox Margin="0,4,373,6" Grid.Column="0" Visibility="{Binding Is3DEnabled}">
                 <GroupBox.Header>
                     Camera Settings
                 </GroupBox.Header>

@@ -40,8 +40,8 @@ namespace ChartExample
             ScatterChart.Chart.YAxisMax = YAxisMax;
             ScatterChart.Chart.XAxisMin = XAxisMin;
             ScatterChart.Chart.XAxisMax = XAxisMax;
-            ScatterChart.Chart.ZAxisMin = ZAxisMin;
-            ScatterChart.Chart.ZAxisMax = ZAxisMax;
+            ScatterChart.Chart.ZAxisMin = 0;
+            ScatterChart.Chart.ZAxisMax = 0;
 
             var refreshRate = new TimeSpan(0, 0, 0, 0, 1);
             _timer = new DispatcherTimer { Interval = refreshRate };
@@ -97,37 +97,37 @@ namespace ChartExample
             var comboBox = sender as ComboBox;
 
             int size = Convert.ToInt32(comboBox.SelectedItem);
+            ChangeDataSize(size);
+        }
+
+        private unsafe void ChangeDataSize(int size)
+        {
             float[] data = new float[size * 3];
-            float[] range1 = new float[] { 1.0f, 2.0f, -1.0f, -2.0f };
-            float[] range2 = new float[] { 1.5f, -1.5f };
+            float[] range1 = new float[] {1.0f, 2.0f, -1.0f, -2.0f};
+            float[] range2 = new float[] {1.5f, -1.5f};
             unsafe
             {
                 fixed (float* pData = &data[0])
                 {
                     GenerateData(data, range1, -1.0f);
-                    //ScatterChart.Chart.DataShapes[0].TraceColor = Colors.Green;
-                    //ScatterChart.Chart.DataShapes[0].SetXYZData(pData, data.Length);
-                    SetData(ScatterChart.DisplayTraces[0], data, Colors.Green);
-                    ScatterChart.Chart.Markers[0].Visible = true;
-                    ScatterChart.Chart.Markers[0].X = data[0];
-                    ScatterChart.Chart.Markers[0].Y = data[1];
-                    ScatterChart.Chart.Markers[0].Z = data[2];
+                    SetData(ScatterChart.DisplayTraces[0], data, Colors.Blue);
 
                     GenerateData(data, range2, 1.0f);
-                    //ScatterChart.Chart.DataShapes[1].TraceColor = Colors.Yellow;
-                    //ScatterChart.Chart.DataShapes[1].SetXYZData(pData, data.Length);
                     SetData(ScatterChart.DisplayTraces[1], data, Colors.Yellow);
-                    ScatterChart.Chart.Markers[1].Visible = true;
-                    ScatterChart.Chart.Markers[1].X = data[0]; 
-                    ScatterChart.Chart.Markers[1].Y = data[1]; 
-                    ScatterChart.Chart.Markers[1].Z = data[2];
-                    ScatterChart.Chart.Markers.SelectedIndex = 1;
 
-                    //_markers[0]->Visible = true;
-                    //_markers[0]->Y = 1.0f;
-                    //_markers[1]->Visible = true;
-                    //_markers[1]->Y = -1.0f;
-                    //_markers->SelectedIndex = 1;
+                    if (Is3DEnabled)
+                    {
+                        ScatterChart.Chart.Markers[0].Visible = true;
+                        ScatterChart.Chart.Markers[0].X = data[0];
+                        ScatterChart.Chart.Markers[0].Y = data[1];
+                        ScatterChart.Chart.Markers[0].Z = data[2];
+
+                        ScatterChart.Chart.Markers[1].Visible = true;
+                        ScatterChart.Chart.Markers[1].X = data[0];
+                        ScatterChart.Chart.Markers[1].Y = data[1];
+                        ScatterChart.Chart.Markers[1].Z = data[2];
+                        ScatterChart.Chart.Markers.SelectedIndex = 1;
+                    }
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace ChartExample
                 {
                     vertexArray[i].Position.X = data[3 * i];
                     vertexArray[i].Position.Y = data[3 * i + 1];
-                    vertexArray[i].Position.Z = data[3 * i + 2];
+                    vertexArray[i].Position.Z = Is3DEnabled ? data[3 * i + 2] : 0;
                     vertexArray[i].Color = glColor;
                 }
             }
@@ -267,6 +267,32 @@ namespace ChartExample
                 azimuthSlider.Value = ScatterChart.Chart.Camera.Azimuth;
                 elevationSlider.Value = ScatterChart.Chart.Camera.Elevation;
             }
+        }
+
+        public bool Is3DEnabled
+        {
+            get => ScatterChart.Chart.Is3DEnabled;
+            set => ScatterChart.Chart.Is3DEnabled = value;
+        }
+
+        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            ScatterChart.Chart.ZAxisMax = ZAxisMax;
+            ScatterChart.Chart.ZAxisMin = ZAxisMin;
+            ScatterChart.Chart.Grid.NumberOfZAxisDivisions = 5;
+            Is3DEnabled = true;
+            int size = Convert.ToInt32(ComboBox.SelectedItem);
+            ChangeDataSize(size);
+        }
+
+        private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            ScatterChart.Chart.ZAxisMax = 0;
+            ScatterChart.Chart.ZAxisMin = 0;
+            ScatterChart.Chart.Grid.NumberOfZAxisDivisions = 0;
+            Is3DEnabled = false;
+            int size = Convert.ToInt32(ComboBox.SelectedItem);
+            ChangeDataSize(size);
         }
     }
 }

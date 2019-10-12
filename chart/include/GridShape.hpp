@@ -21,123 +21,123 @@ namespace Xsa
 {
 namespace Presentation
 {
-    namespace Graph
+namespace Graph
+{
+    // clang-format off
+    public ref class GridShape : public Drawable
+    // clang-format on
     {
-        // clang-format off
-        public ref class GridShape : public Drawable
-        // clang-format on
+    public:
+        GridShape();
+
+        ~GridShape();
+
+        !GridShape();
+
+        static const float kMinZValue = -1.0f;
+
+        static const float kMaxZValue = 1.0f;
+
+        event EventHandler ^ GridRectangleChanged;
+
+        property bool IsVisible;
+
+        property Color GridColor;
+
+        property Color BackgroundColor;
+
+        property Rect ClientRectangle;
+
+        property Rect GridRectangle;
+
+        property Rect WindowRectangle
         {
-        public:
-            GridShape();
-
-            ~GridShape();
-
-            !GridShape();
-
-            static const float kMinZValue = -1.0f;
-
-            static const float kMaxZValue = 1.0f;
-
-            event EventHandler ^ GridRectangleChanged;
-
-            property bool IsVisible;
-
-            property Color GridColor;
-
-            property Color BackgroundColor;
-
-            property Rect ClientRectangle;
-
-            property Rect GridRectangle;
-
-            property Rect WindowRectangle
+            Rect get()
             {
-                Rect get()
-                {
-                    return _windowRectangle;
-                }
-                void set(Rect value);
+                return _windowRectangle;
             }
+            void set(Rect value);
+        }
 
-            property int NumberOfXAxisDivisions
+        property int NumberOfXAxisDivisions
+        {
+            int get()
             {
-                int get()
-                {
-                    return _numberOfXAxisDivisions;
-                }
-                void set(int value);
+                return _numberOfXAxisDivisions;
             }
+            void set(int value);
+        }
 
-            property int NumberOfYAxisDivisions
+        property int NumberOfYAxisDivisions
+        {
+            int get()
             {
-                int get()
-                {
-                    return _numberOfYAxisDivisions;
-                }
-                void set(int value);
+                return _numberOfYAxisDivisions;
             }
+            void set(int value);
+        }
 
-            property int NumberOfZAxisDivisions
+        property int NumberOfZAxisDivisions
+        {
+            int get()
             {
-                int get()
-                {
-                    return _numberOfZAxisDivisions;
-                }
-                void set(int value);
+                return _numberOfZAxisDivisions;
             }
+            void set(int value);
+        }
 
-            virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
+        virtual void Draw(sf::RenderTarget* target, sf::RenderStates states);
 
-            property sf::FloatBox PlotBoxBounds
+        property sf::FloatBox PlotBoxBounds
+        {
+            sf::FloatBox get()
             {
-                sf::FloatBox get()
-                {
-                    return _plotBox->getLocalBounds();
-                }
+                return _plotBox->getLocalBounds();
             }
+        }
 
-            void ShowTopPlane(bool showTop);
+        void ShowTopPlane(bool showTop);
 
-            void ShowFrontPlane(bool showFront);
+        void ShowFrontPlane(bool showFront);
 
-            void ShowRightPlane(bool showRight);
+        void ShowRightPlane(bool showRight);
 
-        private:
-            constexpr static float kBorderPixelOffset{1.0f};
+    private:
+        constexpr static float kBorderPixelOffset{1.0f};
 
-            Rect _windowRectangle;
-            int _numberOfXAxisDivisions;
-            int _numberOfYAxisDivisions;
-            int _numberOfZAxisDivisions;
+        Rect _windowRectangle;
+        int _numberOfXAxisDivisions;
+        int _numberOfYAxisDivisions;
+        int _numberOfZAxisDivisions;
 
-            scoped_ptr<sf::Cuboid> _plotBox;
+        scoped_ptr<sf::Cuboid> _plotBox;
 
-            scoped_ptr<sf::VertexArray> _xyPlaneGrid;
-            scoped_ptr<sf::VertexArray> _xyPlaneBorder;
-            scoped_ptr<sf::VertexArray> _xyPlaneBackground;
-            bool _xyPlaneGridUpdated;
-            bool _showFrontPlane; // True -- display grid on Front plane. False -- display grid on back plane
-            scoped_ptr<sf::VertexArray> _xzPlaneGrid;
-            scoped_ptr<sf::VertexArray> _xzPlaneBorder;
-            scoped_ptr<sf::VertexArray> _xzPlaneBackground;
-            bool _xzPlaneGridUpdated;
-            bool _showTopPlane; // True -- display grid on Top plane. False -- display grid on Bottom plane
-            scoped_ptr<sf::VertexArray> _yzPlaneGrid;
-            scoped_ptr<sf::VertexArray> _yzPlaneBorder;
-            scoped_ptr<sf::VertexArray> _yzPlaneBackground;
-            bool _yzPlaneGridUpdated;
-            bool _showRightPlane; // True -- display grid on Right plane. False -- display grid on Left plane
+        scoped_ptr<sf::VertexArray> _xyPlaneGrid;
+        scoped_ptr<sf::VertexArray> _xyPlaneBorder;
+        scoped_ptr<sf::VertexArray> _xyPlaneBackground;
+        bool _xyPlaneGridUpdated;
+        bool _showFrontPlane; // True -- display grid on Front plane. False -- display grid on back plane
+        scoped_ptr<sf::VertexArray> _xzPlaneGrid;
+        scoped_ptr<sf::VertexArray> _xzPlaneBorder;
+        scoped_ptr<sf::VertexArray> _xzPlaneBackground;
+        bool _xzPlaneGridUpdated;
+        bool _showTopPlane; // True -- display grid on Top plane. False -- display grid on Bottom plane
+        scoped_ptr<sf::VertexArray> _yzPlaneGrid;
+        scoped_ptr<sf::VertexArray> _yzPlaneBorder;
+        scoped_ptr<sf::VertexArray> _yzPlaneBackground;
+        bool _yzPlaneGridUpdated;
+        bool _showRightPlane; // True -- display grid on Right plane. False -- display grid on Left plane
 
-            void UpdateXYPlaneGrid();
-            void UpdateXZPlaneGrid();
-            void UpdateYZPlaneGrid();
+        void UpdateXYPlaneGrid();
+        void UpdateXZPlaneGrid();
+        void UpdateYZPlaneGrid();
 
-            property bool Is3DEnabled
-            {
-                bool get();
-            }
+        property bool Is3DEnabled
+        {
+            bool get();
+        }
 
-        };
-    }
-}
-}
+    };
+} // namespace Xsa
+} // namespace Presentation
+} // namespace Graph

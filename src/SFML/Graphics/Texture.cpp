@@ -37,55 +37,52 @@
 #include <cassert>
 #include <cstring>
 
-
 namespace
 {
-    sf::Mutex idMutex;
-    sf::Mutex maximumSizeMutex;
+sf::Mutex idMutex;
+sf::Mutex maximumSizeMutex;
 
-    // Thread-safe unique identifier generator,
-    // is used for states cache (see RenderTarget)
-    sf::Uint64 getUniqueId()
-    {
-        sf::Lock lock(idMutex);
+// Thread-safe unique identifier generator,
+// is used for states cache (see RenderTarget)
+sf::Uint64 getUniqueId()
+{
+    sf::Lock lock(idMutex);
 
-        static sf::Uint64 id = 1; // start at 1, zero is "no texture"
+    static sf::Uint64 id = 1; // start at 1, zero is "no texture"
 
-        return id++;
-    }
+    return id++;
 }
-
+}
 
 namespace sf
 {
 ////////////////////////////////////////////////////////////
-Texture::Texture() :
-m_size         (0, 0),
-m_actualSize   (0, 0),
-m_texture      (0),
-m_isSmooth     (false),
-m_sRgb         (false),
-m_isRepeated   (false),
-m_pixelsFlipped(false),
-m_fboAttachment(false),
-m_hasMipmap    (false),
-m_cacheId      (getUniqueId())
+Texture::Texture()
+    : m_size(0, 0)
+    , m_actualSize(0, 0)
+    , m_texture(0)
+    , m_isSmooth(false)
+    , m_sRgb(false)
+    , m_isRepeated(false)
+    , m_pixelsFlipped(false)
+    , m_fboAttachment(false)
+    , m_hasMipmap(false)
+    , m_cacheId(getUniqueId())
 {
 }
 
-
 ////////////////////////////////////////////////////////////
-Texture::Texture(const Texture& copy) :
-m_size         (0, 0),
-m_actualSize   (0, 0),
-m_texture      (0),
-m_isSmooth     (copy.m_isSmooth),
-m_sRgb         (copy.m_sRgb),
-m_isRepeated   (copy.m_isRepeated),
-m_pixelsFlipped(false),
-m_fboAttachment(false),
-m_hasMipmap    (false),
-m_cacheId      (getUniqueId())
+Texture::Texture(const Texture& copy)
+    : m_size(0, 0)
+    , m_actualSize(0, 0)
+    , m_texture(0)
+    , m_isSmooth(copy.m_isSmooth)
+    , m_sRgb(copy.m_sRgb)
+    , m_isRepeated(copy.m_isRepeated)
+    , m_pixelsFlipped(false)
+    , m_fboAttachment(false)
+    , m_hasMipmap(false)
+    , m_cacheId(getUniqueId())
 {
     if (copy.m_texture)
     {
@@ -104,7 +101,6 @@ m_cacheId      (getUniqueId())
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 Texture::~Texture()
 {
@@ -117,7 +113,6 @@ Texture::~Texture()
         glCheck(glDeleteTextures(1, &texture));
     }
 }
-
 
 ////////////////////////////////////////////////////////////
 bool Texture::create(unsigned int width, unsigned int height)
@@ -143,15 +138,14 @@ bool Texture::create(unsigned int width, unsigned int height)
     {
         err() << "Failed to create texture, its internal size is too high "
               << "(" << actualSize.x << "x" << actualSize.y << ", "
-              << "maximum is " << maxSize << "x" << maxSize << ")"
-              << std::endl;
+              << "maximum is " << maxSize << "x" << maxSize << ")" << std::endl;
         return false;
     }
 
     // All the validity checks passed, we can store the new texture settings
-    m_size.x        = width;
-    m_size.y        = height;
-    m_actualSize    = actualSize;
+    m_size.x = width;
+    m_size.y = height;
+    m_actualSize = actualSize;
     m_pixelsFlipped = false;
     m_fboAttachment = false;
 
@@ -205,9 +199,12 @@ bool Texture::create(unsigned int width, unsigned int height)
 
     // Initialize the texture
     glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
-    glCheck(glTexImage2D(GL_TEXTURE_2D, 0, (m_sRgb ? GLEXT_GL_SRGB8_ALPHA8 : GL_RGBA), m_actualSize.x, m_actualSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
-    glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
+    glCheck(glTexImage2D(GL_TEXTURE_2D, 0, (m_sRgb ? GLEXT_GL_SRGB8_ALPHA8 : GL_RGBA), m_actualSize.x, m_actualSize.y, 0, GL_RGBA,
+                         GL_UNSIGNED_BYTE, NULL));
+    glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                            m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
+    glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                            m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
     glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_isSmooth ? GL_LINEAR : GL_NEAREST));
     glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_isSmooth ? GL_LINEAR : GL_NEAREST));
     m_cacheId = getUniqueId();
@@ -217,14 +214,12 @@ bool Texture::create(unsigned int width, unsigned int height)
     return true;
 }
 
-
 ////////////////////////////////////////////////////////////
 bool Texture::loadFromFile(const std::string& filename, const IntRect& area)
 {
     Image image;
     return image.loadFromFile(filename) && loadFromImage(image, area);
 }
-
 
 ////////////////////////////////////////////////////////////
 bool Texture::loadFromMemory(const void* data, std::size_t size, const IntRect& area)
@@ -233,14 +228,12 @@ bool Texture::loadFromMemory(const void* data, std::size_t size, const IntRect& 
     return image.loadFromMemory(data, size) && loadFromImage(image, area);
 }
 
-
 ////////////////////////////////////////////////////////////
 bool Texture::loadFromStream(InputStream& stream, const IntRect& area)
 {
     Image image;
     return image.loadFromStream(stream) && loadFromImage(image, area);
 }
-
 
 ////////////////////////////////////////////////////////////
 bool Texture::loadFromImage(const Image& image, const IntRect& area)
@@ -250,8 +243,7 @@ bool Texture::loadFromImage(const Image& image, const IntRect& area)
     int height = static_cast<int>(image.getSize().y);
 
     // Load the entire image if the source area is either empty or contains the whole image
-    if (area.width == 0 || (area.height == 0) ||
-       ((area.left <= 0) && (area.top <= 0) && (area.width >= width) && (area.height >= height)))
+    if (area.width == 0 || (area.height == 0) || ((area.left <= 0) && (area.top <= 0) && (area.width >= width) && (area.height >= height)))
     {
         // Load the entire image
         if (create(image.getSize().x, image.getSize().y))
@@ -271,10 +263,14 @@ bool Texture::loadFromImage(const Image& image, const IntRect& area)
 
         // Adjust the rectangle to the size of the image
         IntRect rectangle = area;
-        if (rectangle.left   < 0) rectangle.left = 0;
-        if (rectangle.top    < 0) rectangle.top  = 0;
-        if (rectangle.left + rectangle.width > width)  rectangle.width  = width - rectangle.left;
-        if (rectangle.top + rectangle.height > height) rectangle.height = height - rectangle.top;
+        if (rectangle.left < 0)
+            rectangle.left = 0;
+        if (rectangle.top < 0)
+            rectangle.top = 0;
+        if (rectangle.left + rectangle.width > width)
+            rectangle.width = width - rectangle.left;
+        if (rectangle.top + rectangle.height > height)
+            rectangle.height = height - rectangle.top;
 
         // Create the texture and upload the pixels
         if (create(rectangle.width, rectangle.height))
@@ -309,13 +305,11 @@ bool Texture::loadFromImage(const Image& image, const IntRect& area)
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 Vector2u Texture::getSize() const
 {
     return m_size;
 }
-
 
 ////////////////////////////////////////////////////////////
 Image Texture::copyToImage() const
@@ -398,14 +392,12 @@ Image Texture::copyToImage() const
     return image;
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::update(const Uint8* pixels)
 {
     // Update the whole texture
     update(pixels, m_size.x, m_size.y, 0, 0);
 }
-
 
 ////////////////////////////////////////////////////////////
 void Texture::update(const Uint8* pixels, unsigned int width, unsigned int height, unsigned int x, unsigned int y)
@@ -434,14 +426,12 @@ void Texture::update(const Uint8* pixels, unsigned int width, unsigned int heigh
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::update(const Texture& texture)
 {
     // Update the whole texture
     update(texture, 0, 0);
 }
-
 
 ////////////////////////////////////////////////////////////
 void Texture::update(const Texture& texture, unsigned int x, unsigned int y)
@@ -502,11 +492,10 @@ void Texture::update(const Texture& texture, unsigned int x, unsigned int y)
         if ((sourceStatus == GLEXT_GL_FRAMEBUFFER_COMPLETE) && (destStatus == GLEXT_GL_FRAMEBUFFER_COMPLETE))
         {
             // Blit the texture contents from the source to the destination texture
-            glCheck(GLEXT_glBlitFramebuffer(
-                0, texture.m_pixelsFlipped ? texture.m_size.y : 0, texture.m_size.x, texture.m_pixelsFlipped ? 0 : texture.m_size.y, // Source rectangle, flip y if source is flipped
-                x, y, x + texture.m_size.x, y + texture.m_size.y, // Destination rectangle
-                GL_COLOR_BUFFER_BIT, GL_NEAREST
-            ));
+            glCheck(GLEXT_glBlitFramebuffer(0, texture.m_pixelsFlipped ? texture.m_size.y : 0, texture.m_size.x,
+                                            texture.m_pixelsFlipped ? 0 : texture.m_size.y, // Source rectangle, flip y if source is flipped
+                                            x, y, x + texture.m_size.x, y + texture.m_size.y, // Destination rectangle
+                                            GL_COLOR_BUFFER_BIT, GL_NEAREST));
         }
         else
         {
@@ -543,7 +532,6 @@ void Texture::update(const Texture& texture, unsigned int x, unsigned int y)
     update(texture.copyToImage(), x, y);
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::update(const Image& image)
 {
@@ -551,20 +539,17 @@ void Texture::update(const Image& image)
     update(image.getPixelsPtr(), image.getSize().x, image.getSize().y, 0, 0);
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::update(const Image& image, unsigned int x, unsigned int y)
 {
     update(image.getPixelsPtr(), image.getSize().x, image.getSize().y, x, y);
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::update(const Window& window)
 {
     update(window, 0, 0);
 }
-
 
 ////////////////////////////////////////////////////////////
 void Texture::update(const Window& window, unsigned int x, unsigned int y)
@@ -593,7 +578,6 @@ void Texture::update(const Window& window, unsigned int x, unsigned int y)
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::setSmooth(bool smooth)
 {
@@ -613,7 +597,8 @@ void Texture::setSmooth(bool smooth)
 
             if (m_hasMipmap)
             {
-                glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_isSmooth ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR));
+                glCheck(
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_isSmooth ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR));
             }
             else
             {
@@ -623,13 +608,11 @@ void Texture::setSmooth(bool smooth)
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 bool Texture::isSmooth() const
 {
     return m_isSmooth;
 }
-
 
 ////////////////////////////////////////////////////////////
 void Texture::setSrgb(bool sRgb)
@@ -637,13 +620,11 @@ void Texture::setSrgb(bool sRgb)
     m_sRgb = sRgb;
 }
 
-
 ////////////////////////////////////////////////////////////
 bool Texture::isSrgb() const
 {
     return m_sRgb;
 }
-
 
 ////////////////////////////////////////////////////////////
 void Texture::setRepeated(bool repeated)
@@ -676,19 +657,19 @@ void Texture::setRepeated(bool repeated)
             }
 
             glCheck(glBindTexture(GL_TEXTURE_2D, m_texture));
-            glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
-            glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
+            glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                                    m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
+            glCheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                                    m_isRepeated ? GL_REPEAT : (textureEdgeClamp ? GLEXT_GL_CLAMP_TO_EDGE : GLEXT_GL_CLAMP)));
         }
     }
 }
-
 
 ////////////////////////////////////////////////////////////
 bool Texture::isRepeated() const
 {
     return m_isRepeated;
 }
-
 
 ////////////////////////////////////////////////////////////
 bool Texture::generateMipmap()
@@ -716,7 +697,6 @@ bool Texture::generateMipmap()
     return true;
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::invalidateMipmap()
 {
@@ -734,7 +714,6 @@ void Texture::invalidateMipmap()
     m_hasMipmap = false;
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::bind(const Texture* texture, CoordinateType coordinateType)
 {
@@ -748,10 +727,7 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
         // Check if we need to define a special texture matrix
         if ((coordinateType == Pixels) || texture->m_pixelsFlipped)
         {
-            GLfloat matrix[16] = {1.f, 0.f, 0.f, 0.f,
-                                  0.f, 1.f, 0.f, 0.f,
-                                  0.f, 0.f, 1.f, 0.f,
-                                  0.f, 0.f, 0.f, 1.f};
+            GLfloat matrix[16] = {1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f};
 
             // If non-normalized coordinates (= pixels) are requested, we need to
             // setup scale factors that convert the range [0 .. size] to [0 .. 1]
@@ -790,7 +766,6 @@ void Texture::bind(const Texture* texture, CoordinateType coordinateType)
     }
 }
 
-
 ////////////////////////////////////////////////////////////
 unsigned int Texture::getMaximumSize()
 {
@@ -811,9 +786,8 @@ unsigned int Texture::getMaximumSize()
     return static_cast<unsigned int>(size);
 }
 
-
 ////////////////////////////////////////////////////////////
-Texture& Texture::operator =(const Texture& right)
+Texture& Texture::operator=(const Texture& right)
 {
     Texture temp(right);
 
@@ -822,24 +796,22 @@ Texture& Texture::operator =(const Texture& right)
     return *this;
 }
 
-
 ////////////////////////////////////////////////////////////
 void Texture::swap(Texture& right)
 {
-    std::swap(m_size,          right.m_size);
-    std::swap(m_actualSize,    right.m_actualSize);
-    std::swap(m_texture,       right.m_texture);
-    std::swap(m_isSmooth,      right.m_isSmooth);
-    std::swap(m_sRgb,          right.m_sRgb);
-    std::swap(m_isRepeated,    right.m_isRepeated);
+    std::swap(m_size, right.m_size);
+    std::swap(m_actualSize, right.m_actualSize);
+    std::swap(m_texture, right.m_texture);
+    std::swap(m_isSmooth, right.m_isSmooth);
+    std::swap(m_sRgb, right.m_sRgb);
+    std::swap(m_isRepeated, right.m_isRepeated);
     std::swap(m_pixelsFlipped, right.m_pixelsFlipped);
     std::swap(m_fboAttachment, right.m_fboAttachment);
-    std::swap(m_hasMipmap,     right.m_hasMipmap);
+    std::swap(m_hasMipmap, right.m_hasMipmap);
 
     m_cacheId = getUniqueId();
     right.m_cacheId = getUniqueId();
 }
-
 
 ////////////////////////////////////////////////////////////
 unsigned int Texture::getNativeHandle() const
@@ -847,11 +819,11 @@ unsigned int Texture::getNativeHandle() const
     return m_texture;
 }
 
-
 ////////////////////////////////////////////////////////////
 unsigned int Texture::getValidSize(unsigned int size)
 {
-    if (GLEXT_texture_non_power_of_two)
+    // if (GLEXT_texture_non_power_of_two)
+    if (false)
     {
         // If hardware supports NPOT textures, then just return the unmodified size
         return size;

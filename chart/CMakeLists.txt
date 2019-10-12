@@ -10,44 +10,28 @@ set(SRCROOT ./src)
 set(SRC
     ${SRCROOT}/AssemblyInfo.cpp
     ${SRCROOT}/Annotation.cpp
-    ${SRCROOT}/PointsShape.cpp
-    ${SRCROOT}/ColorfulPointsShape.cpp
     ${SRCROOT}/GridShape.cpp
-    ${SRCROOT}/SegmentPointsShape.cpp
-    ${SRCROOT}/SegmentMinMaxShape.cpp
-    ${SRCROOT}/SymbolShape.cpp
-    ${SRCROOT}/ScatterChart.cpp
-    ${SRCROOT}/ColorfulScatterChart.cpp
-    ${SRCROOT}/SegmentChart.cpp
-    ${SRCROOT}/SegmentMinMaxChart.cpp
-    ${SRCROOT}/SymbolChart.cpp
     ${SRCROOT}/Marker.cpp
     ${SRCROOT}/Markers.cpp
     ${SRCROOT}/VertexArray.cpp
+    ${SRCROOT}/RenderChart.cpp
+    ${SRCROOT}/Transform.cpp
+    ${SRCROOT}/Transformable.cpp
     ${INCROOT}/Marker.hpp
     ${INCROOT}/Markers.hpp
     ${INCROOT}/Annotation.hpp
-    ${INCROOT}/PointsShape.hpp
-    ${INCROOT}/ColorfulPointsShape.hpp
     ${INCROOT}/GridShape.hpp
-    ${INCROOT}/SegmentPointsShape.hpp
-    ${INCROOT}/SegmentMinMaxShape.hpp
-    ${INCROOT}/SymbolShape.hpp
-    ${INCROOT}/ScatterChart.hpp
-    ${INCROOT}/ColorfulScatterChart.hpp
-    ${INCROOT}/SegmentChart.hpp
-    ${INCROOT}/SegmentMinMaxChart.hpp
-    ${INCROOT}/SymbolChart.hpp
     ${INCROOT}/Drawable.hpp
     ${INCROOT}/ScopedPtr.hpp
     ${INCROOT}/Utils.hpp
-    ${INCROOT}/ColorArray.hpp
     ${INCROOT}/OrbitCamera.hpp
     ${INCROOT}/VertexArray.hpp
     ${INCROOT}/Color.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Vector3.hpp
     ${INCROOT}/Vertex.hpp
+ 
+    
 )
 source_group("" FILES ${SRC})
 
@@ -59,7 +43,7 @@ add_library(${CHART_LIB} SHARED ${SRC} )
 #set properties
 set(SIGN_KEY ${CMAKE_SOURCE_DIR}/chart/Agilent.SAD.snk)
 set(SIGN_OPTION "/KEYFILE:${SIGN_KEY}")
-target_compile_features(${CHART_LIB} PUBLIC cxx_std_17) 
+target_compile_features(${CHART_LIB} PUBLIC cxx_std_14) 
 target_compile_options(${CHART_LIB} PRIVATE /W4 /WX)
 
 target_link_options(${CHART_LIB} PRIVATE ${SIGN_OPTION} "$<$<CONFIG:Debug>:/ASSEMBLYDEBUG>")
