@@ -201,16 +201,16 @@ namespace Xsa.Presentation.Graph
 
         static ChartElement()
         {
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
             _glTakScheduler = new SingleThreadTaskScheduler(CancellationToken.None, "OpenGLThread");
             _glTakScheduler.Start();
+            //System.Windows.Application.Current.MainWindow.Closed += MainWindow_Closed;
 
         }
 
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            _glTakScheduler.Complete();
-        }
+        //private static void MainWindow_Closed(object sender, EventArgs e)
+        //{
+        //    _glTakScheduler.Complete();
+        //}
 
         public ChartElement()
         {
@@ -249,43 +249,31 @@ namespace Xsa.Presentation.Graph
         public async Task Render()
         {
 
-            if (!_renderTextureIsReady) return;
-           await _glTakScheduler.Run(() =>
-           {
-               try
-               {
-                   SetupAnnotation();
-                   _renderChart.Camera = Camera;
-                   _renderChart.Annotation = Annotation;
-                   _renderChart.Grid = Grid;
-                   _renderChart.Markers = Markers;
-                   _renderChart.Transform = _transformable.NativePointer;
-                   _renderChart.BackgroundColor = BackgroundColor;
-                   _renderChart.Draw(Is3DEnabled);
+            if (!_renderTextureIsReady || _renderChart.GlMajorVersion < 2) return;
+            await _glTakScheduler.Run(() =>
+            {
+                SetupAnnotation();
+                _renderChart.Camera = Camera;
+                _renderChart.Annotation = Annotation;
+                _renderChart.Grid = Grid;
+                _renderChart.Markers = Markers;
+                _renderChart.Transform = _transformable.NativePointer;
+                _renderChart.BackgroundColor = BackgroundColor;
+                _renderChart.Draw(Is3DEnabled);
 
-                   OnDrawTraces?.Invoke(this,
-                       new DrawTracesEventArgs(_renderChart.RenderTarget, _renderChart.RenderState));
+                OnDrawTraces?.Invoke(this,
+                   new DrawTracesEventArgs(_renderChart.RenderTarget, _renderChart.RenderState));
 
-                   _renderChart.UpdateBuffer();
-               }
-               catch(System.AccessViolationException e)
-               {
-                   Console.WriteLine("exception: " + e.Message);
-               }
-               catch
-               {
-                   Console.WriteLine("exception: ");
-               }
+                _renderChart.UpdateBuffer();
 
-           });
-            return;
+            }).ConfigureAwait(false);
         }
 
         public void Draw()
         {
-            if (!_renderTextureIsReady || _renderChart.RenderBuffer == IntPtr.Zero) return;
+            if (!_renderTextureIsReady || _renderChart.RenderBuffer == IntPtr.Zero || _renderChart.GlMajorVersion < 2) return;
 
-            if(Is3DEnabled)
+            if (Is3DEnabled)
                 Annotation.Draw(_renderChart.RenderTarget);
 
             _drawnBitmap.Lock();
@@ -402,7 +390,7 @@ namespace Xsa.Presentation.Graph
 
         private void SetupAnnotation()
         {
-            if(!Is3DEnabled) return;
+            if (!Is3DEnabled) return;
 
             Annotation.XAxisMin = XAxisMin;
             Annotation.XAxisMax = XAxisMax;
@@ -471,19 +459,19 @@ namespace Xsa.Presentation.Graph
 
         #region Event Handlers
 
-        private async void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             int width = (int)Math.Max(10.0, ActualWidth);
             int height = (int)Math.Max(10.0, ActualHeight);
 
-            await _glTakScheduler.Run(() =>
+            _glTakScheduler.Run(() =>
             {
                 _renderTextureIsReady = _renderChart.CreateRenderTexture(width, height, Is3DEnabled);
-            });
+            }).Wait();
             _drawnBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Pbgra32, BitmapPalettes.WebPalette);
             //_camera->Position = sf::Vector3f(1.0f, 1.0f, 1.0f);
             Grid.WindowRectangle = new Rect(0, 0, width, height);
-            await Render();
+            Render().Wait();
             Draw();
         }
 
@@ -499,17 +487,17 @@ namespace Xsa.Presentation.Graph
         private bool _isDisposed = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
-        { 
+        {
             if (!_isDisposed)
             {
                 if (disposing)
                 {
                     // dispose managed state (managed objects).
-                    _renderChart.Dispose();
                     _transformable.Dispose();
                     _camera.Dispose();
                     _markers.Dispose();
                     _grid.Dispose();
+                    _glTakScheduler.Run(() => _renderChart.Dispose());
                 }
 
                 // free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -529,7 +517,7 @@ namespace Xsa.Presentation.Graph
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-             GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

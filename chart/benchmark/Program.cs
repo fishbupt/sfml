@@ -25,8 +25,9 @@ namespace ChartBenchmark
         static void Main(string[] args)
         {
 #if DEBUG
-            var test = new BenchmarkTests<MainWindow3DChart>();
+            var test = new BenchmarkTests<MainWindow2DChart>();
             test.Setup();
+            test.Draw();
             Task.Delay(5000).Wait();
             test.Cleanup();
 #else
@@ -67,6 +68,7 @@ namespace ChartBenchmark
             {
                 app.Dispatcher.Invoke(() =>
                 {
+                    mainWindow.Close();
                     app.Shutdown();
                     app = null;
                 });
@@ -76,14 +78,29 @@ namespace ChartBenchmark
             [Benchmark]
             public void Draw()
             {
-                mainWindow.Dispatcher.Invoke(() => mainWindow.Draw());
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    mainWindow.Draw();
+                });
             }
 
             [Benchmark]
             public void UpdateTraces()
             {
-                mainWindow.Dispatcher.Invoke(() => mainWindow.UpdateTraces());
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    mainWindow.UpdateTraces();
+                });
             }
+
+            //[Benchmark]
+            //public void Draw()
+            //{
+            //    mainWindow.Dispatcher.Invoke(() =>
+            //    {
+            //        mainWindow.Draw().Wait();
+            //    });
+            //}
         }
     }
 
@@ -94,7 +111,11 @@ namespace ChartBenchmark
 
         public abstract void PrepareData();
 
-        public void Draw() => _chart.Draw();
+        public void Draw()
+        {
+            _chart.Render().Wait(); 
+            _chart.Draw();
+        }
 
         public void UpdateTraces()
         {
@@ -120,16 +141,9 @@ namespace ChartBenchmark
         {
             Content = _chart;
 
-#if DEBUG
-            var refreshRate = new TimeSpan(0, 0, 0, 0, 1);
-            _timer.Interval = refreshRate;
-            _timer.Tick += (s, e) => Draw();
-            _timer.Start();
-#endif
         }
 
-        protected ScatterChart _chart = new ScatterChart();
-        private readonly DispatcherTimer _timer = new DispatcherTimer();
+        protected ChartElement _chart = new ChartElement();
     }
 
 
@@ -138,7 +152,6 @@ namespace ChartBenchmark
         public readonly VertexArray DisplayTrace = new VertexArray();
         public MainWindow2DChart() : base()
         {
-            _chart.NumberOfTraces = 2;
             _chart.Grid.NumberOfXAxisDivisions = 10;
             _chart.Grid.NumberOfYAxisDivisions = 10;
             _chart.Grid.IsVisible = true;
@@ -146,16 +159,16 @@ namespace ChartBenchmark
             _chart.YAxisMax = 3.0;
             _chart.XAxisMin = -5.0;
             _chart.XAxisMax = 5.0;
-            _chart.OnDrawTraces += _chart_OnDrawTraces;
+            _chart.OnDrawTraces += Chart_OnDrawTraces;
         }
 
-        private void _chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
+        private void Chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
         {
             if(DisplayTrace.IsVisible)
             {
                 unsafe
                 {
-                    DisplayTrace.Draw(e.Target, *e.States);
+                    DisplayTrace.Draw(e.Target, e.States);
                 }
             }
         }
@@ -210,7 +223,6 @@ namespace ChartBenchmark
         public readonly VertexArray DisplayTrace = new VertexArray();
         public MainWindow3DChart() : base()
         {
-            _chart.NumberOfTraces = 2;
             _chart.Grid.NumberOfXAxisDivisions = 5;
             _chart.Grid.NumberOfYAxisDivisions = 5;
             _chart.Grid.NumberOfZAxisDivisions = 5;
@@ -227,16 +239,16 @@ namespace ChartBenchmark
             _chart.Camera.Azimuth = -37.5f;
             _chart.Camera.Elevation = 30.0f;
             _chart.Camera.UseOrthographicCamera();
-            _chart.OnDrawTraces += _chart_OnDrawTraces;
+            _chart.OnDrawTraces += Chart_OnDrawTraces;
         }
 
-        private void _chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
+        private void Chart_OnDrawTraces(object sender, DrawTracesEventArgs e)
         {
             if(DisplayTrace.IsVisible)
             {
                 unsafe
                 {
-                    DisplayTrace.Draw(e.Target, *e.States);
+                    DisplayTrace.Draw(e.Target, e.States);
                 }
             }
         }

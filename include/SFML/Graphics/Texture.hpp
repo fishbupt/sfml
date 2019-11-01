@@ -223,6 +223,15 @@ public:
     Vector2u getSize() const;
 
     ////////////////////////////////////////////////////////////
+    /// \brief Return the size of the texture
+    ///
+    /// \return ActualSize in pixels
+    /// The ActualSize could be larger than Size
+    ///
+    ////////////////////////////////////////////////////////////
+    Vector2u getActualSize() const;
+
+    ////////////////////////////////////////////////////////////
     /// \brief Copy the texture pixels to an image
     ///
     /// This function performs a slow operation that downloads

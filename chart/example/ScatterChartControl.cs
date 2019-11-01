@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Xsa.Presentation.Graph
 {
 
-    public partial class ScatterChartControl : UserControl
+    public partial class ScatterChartControl : UserControl, IDisposable 
     {
         #region --- Fields ---
         public ChartElement Chart { get; private set; } = new ChartElement();
@@ -60,6 +60,11 @@ namespace Xsa.Presentation.Graph
         {
             await Chart.Render();
             Chart.Draw();
+        }
+
+        public void Dispose()
+        {
+            Chart.Dispose();
         }
         #endregion --- Event Handlers ---
 

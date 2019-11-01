@@ -312,6 +312,12 @@ Vector2u Texture::getSize() const
 }
 
 ////////////////////////////////////////////////////////////
+Vector2u Texture::getActualSize() const
+{
+    return m_actualSize;
+}
+
+////////////////////////////////////////////////////////////
 Image Texture::copyToImage() const
 {
     // Easy case: empty texture
@@ -822,8 +828,7 @@ unsigned int Texture::getNativeHandle() const
 ////////////////////////////////////////////////////////////
 unsigned int Texture::getValidSize(unsigned int size)
 {
-    // if (GLEXT_texture_non_power_of_two)
-    if (false)
+     if (GLEXT_texture_non_power_of_two)
     {
         // If hardware supports NPOT textures, then just return the unmodified size
         return size;

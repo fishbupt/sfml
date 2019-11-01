@@ -43,6 +43,7 @@ namespace Xsa.Presentation.Graph
                 Name = _threadName
             };
 
+            _thread.IsBackground = true;
             _thread.Start();
         }
 

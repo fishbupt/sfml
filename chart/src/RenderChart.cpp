@@ -28,168 +28,195 @@ namespace Presentation
 {
 namespace Graph
 {
-    public ref class RenderChart
+public ref class RenderChart
+{
+public:
+
+    property int GlMajorVersion;
+
+    property GridShape^ Grid;
+
+    property Annotation^ Annotation;
+
+    property Markers^ Markers;
+
+    property OrbitCamera^ Camera;
+
+    property Color BackgroundColor;
+
+    property IntPtr RenderTarget
     {
-    public:
+        IntPtr get() { return IntPtr(_renderTexture.get()); }
+    }
 
-        property int GlMajorVersion;
+    property IntPtr RenderState
+    {
+        IntPtr get() { return IntPtr(_renderState.get()); }
+    }
 
-        property GridShape^ Grid;
+    property IntPtr RenderBuffer
+    {
+        IntPtr get() { return IntPtr(_renderBuffer->data()); }
+    }
 
-        property Annotation^ Annotation;
-
-        property Markers^ Markers;
-
-        property OrbitCamera^ Camera;
-
-        property Color BackgroundColor;
-
-        property IntPtr RenderTarget
+    property IntPtr Transform
+    {
+        void set(IntPtr value)
         {
-            IntPtr get() { return IntPtr(_renderTexture.get()); }
-        }
-
-        property IntPtr RenderState
-        {
-            IntPtr get() { return IntPtr(_renderState.get()); }
-        }
-
-        property IntPtr RenderBuffer
-        {
-            IntPtr get() { return IntPtr(_renderBuffer->data()); }
-        }
-
-        property IntPtr Transform
-        {
-            void set(IntPtr value)
+            if (value != IntPtr::Zero)
             {
-                if (value != IntPtr::Zero)
-                {
-                    _transform = (sf::Transformable*)value.ToPointer();
-                }
+                _transform = (sf::Transformable*)value.ToPointer();
             }
         }
+    }
 
-        RenderChart()
-            :_renderTexture(new sf::RenderTexture())
-            , _renderState(new sf::RenderStates(sf::RenderStates::Default))
-            ,_renderBuffer(new std::vector<int>())
+    RenderChart()
+        :_renderTexture(new sf::RenderTexture())
+        , _renderState(new sf::RenderStates(sf::RenderStates::Default))
+        , _renderBuffer(new std::vector<int>())
+    {
+    }
+
+    void Draw(bool is3DEnabled) {
+
+        if (GlMajorVersion >= 3)
         {
-        }
-
-        void Draw(bool is3DEnabled) {
-
-            if (GlMajorVersion >= 3)
+            glEnable(GL_POINT_SMOOTH);
+            if (is3DEnabled)
             {
-                glEnable(GL_POINT_SMOOTH);
-                if (is3DEnabled)
-                {
-                    glEnable(GL_LINE_SMOOTH);
-                    glLineWidth(1.1f);
-                }
-                else
-                {
-                    glDisable(GL_LINE_SMOOTH);
-                    glLineWidth(1.0f);
-                }
+                glEnable(GL_LINE_SMOOTH);
+                glLineWidth(1.1f);
             }
-            glPointSize(3.0f);
-
-            Draw(_renderTexture.get(), is3DEnabled);
-
+            else
+            {
+                glDisable(GL_LINE_SMOOTH);
+                glLineWidth(1.0f);
+            }
         }
+        glPointSize(3.0f);
 
-        void UpdateBuffer()
+        Draw(_renderTexture.get(), is3DEnabled);
+
+    }
+
+    void UpdateBuffer()
+    {
+        _renderTexture->display();
+        const sf::Texture& texture = _renderTexture->getTexture();
+
+        sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
+        auto size = texture.getSize();
+        auto actualSize = texture.getActualSize();
+        if (size == actualSize)
         {
-            _renderTexture->display();
-            const sf::Texture& texture = _renderTexture->getTexture();
-
-            sf::Texture::bind(&texture, sf::Texture::CoordinateType::Normalized);
             glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, _renderBuffer->data());
         }
-
-        void Draw(sf::RenderTarget* target, bool is3DEnabled)
+        else
         {
+            // Texture is either padded or flipped, we have to use a slower algorithm
 
-            if (is3DEnabled)
+            // All the pixels will first be copied to a temporary array
+            std::vector<int> allPixels(actualSize.x * actualSize.y);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, &allPixels[0]);
+
+            // Then we copy the useful pixels from the temporary array to the final one
+            const auto* src = &allPixels[0];
+            auto* dst = _renderBuffer->data();
+            int srcPitch = actualSize.x;
+            int dstPitch = size.x;
+
+            for (unsigned int i = 0; i < size.y; ++i)
             {
-                if (Camera->IsOrthographicProjection)
+                std::memcpy(dst, src, dstPitch);
+                src += srcPitch;
+                dst += dstPitch;
+            }
+        }
+
+    }
+
+    void Draw(sf::RenderTarget* target, bool is3DEnabled)
+    {
+
+        if (is3DEnabled)
+        {
+            if (Camera->IsOrthographicProjection)
+            {
+                sf::Transform transform = Camera->getCamera()->getTransform();
+                sf::Transform viewTransform = Camera->getCamera()->getViewTransform();
+                transform.combine(viewTransform);
+
+                sf::FloatRect tRect = transform.transformBoxToRect(Grid->PlotBoxBounds);
+                float minSide = std::min((float)Grid->WindowRectangle.Width, (float)Grid->WindowRectangle.Height);
+                if (minSide > 0)
                 {
-                    sf::Transform transform = Camera->getCamera()->getTransform();
-                    sf::Transform viewTransform = Camera->getCamera()->getViewTransform();
-                    transform.combine(viewTransform);
-
-                    sf::FloatRect tRect = transform.transformBoxToRect(Grid->PlotBoxBounds);
-                    float minSide = std::min((float)Grid->WindowRectangle.Width, (float)Grid->WindowRectangle.Height);
-                    if (minSide > 0)
-                    {
-                        float scaleRatio = (minSide - 5 * (float)Annotation->FontSize) / minSide * 2;
-                        float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
-                        Camera->ChangeScale(scaleFactor, scaleFactor, 1.0f);
-                    }
+                    float scaleRatio = (minSide - 5 * (float)Annotation->FontSize) / minSide * 2;
+                    float scaleFactor = scaleRatio / std::max(tRect.width, tRect.height);
+                    Camera->ChangeScale(scaleFactor, scaleFactor, 1.0f);
                 }
-                target->enableDepthTest(true);
-                target->setView(*Camera->getCamera());
-
-                Grid->ShowTopPlane(!(Camera->Elevation > 0));
-                Grid->ShowFrontPlane(!MathUtil::IsInRange(Camera->Azimuth, -90.0f, 90.0f));
-                Grid->ShowRightPlane(!MathUtil::IsInRange(Camera->Azimuth, -180.0f, 0.0f));
             }
-            else
-            {
-                target->setView(target->getDefaultView());
-                target->enableDepthTest(false);
-            }
+            target->enableDepthTest(true);
+            target->setView(*Camera->getCamera());
 
-            sf::Color backColor = ColorUtil::ColorFrom(BackgroundColor);
-            target->clear(backColor);
-            Grid->Draw(target, sf::RenderStates::Default);
-            if (is3DEnabled)
-            {
-                DrawMarkers(target);
-            }
-
-            *_renderState = sf::RenderStates::Default;
-            _renderState->transform *= _transform->getTransform();
+            Grid->ShowTopPlane(!(Camera->Elevation > 0));
+            Grid->ShowFrontPlane(!MathUtil::IsInRange(Camera->Azimuth, -90.0f, 90.0f));
+            Grid->ShowRightPlane(!MathUtil::IsInRange(Camera->Azimuth, -180.0f, 0.0f));
         }
-
-
-        void DrawMarkers(sf::RenderTarget* target)
+        else
         {
-            sf::Transform viewTransform = Camera->getCamera()->getViewTransform();
-            viewTransform.combine(_transform->getTransform());
-
-            Markers->Draw(target, sf::RenderStates::Default, viewTransform);
+            target->setView(target->getDefaultView());
+            target->enableDepthTest(false);
         }
 
-
-        bool CreateRenderTexture(int width, int height, bool is3DEnabled)
+        sf::Color backColor = ColorUtil::ColorFrom(BackgroundColor);
+        target->clear(backColor);
+        Grid->Draw(target, sf::RenderStates::Default);
+        if (is3DEnabled)
         {
-            bool res = false;
-            _renderTexture->setActive(false);
-            if (is3DEnabled)
-                res = _renderTexture->create(width, height, sf::ContextSettings{ 24,0,8 });
-            else
-                res = _renderTexture->create(width, height);
-
-            _renderTexture->setActive(true);
-            _renderTexture->setSmooth(true);
-
-            int majorVersion = 0;
-            glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-            GlMajorVersion = majorVersion;
-
-            _renderBuffer->resize(width * height);
-            return res;
+            DrawMarkers(target);
         }
 
-    private:
-        scoped_ptr<sf::RenderTexture> _renderTexture;
-        scoped_ptr<sf::RenderStates> _renderState;
-        scoped_ptr<std::vector<int>> _renderBuffer;
+        *_renderState = sf::RenderStates::Default;
+        _renderState->transform *= _transform->getTransform();
+    }
 
-        sf::Transformable* _transform;
-    };
+
+    void DrawMarkers(sf::RenderTarget* target)
+    {
+        sf::Transform viewTransform = Camera->getCamera()->getViewTransform();
+        viewTransform.combine(_transform->getTransform());
+
+        Markers->Draw(target, sf::RenderStates::Default, viewTransform);
+    }
+
+
+    bool CreateRenderTexture(int width, int height, bool is3DEnabled)
+    {
+        bool res = false;
+        _renderTexture->setActive(false);
+        if (is3DEnabled)
+            res = _renderTexture->create(width, height, sf::ContextSettings{ 24,0,8 });
+        else
+            res = _renderTexture->create(width, height);
+
+        _renderTexture->setActive(true);
+        _renderTexture->setSmooth(true);
+
+        int majorVersion = 0;
+        glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+        GlMajorVersion = majorVersion;
+
+        _renderBuffer->resize(width * height);
+        return res;
+    }
+
+private:
+    scoped_ptr<sf::RenderTexture> _renderTexture;
+    scoped_ptr<sf::RenderStates> _renderState;
+    scoped_ptr<std::vector<int>> _renderBuffer;
+
+    sf::Transformable* _transform;
+};
 } // namespace Xsa
 } // namespace Presentation
 } // namespace Graph

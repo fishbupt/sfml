@@ -53,6 +53,12 @@ namespace ChartExample
         }
 
 
+        protected override void OnClosed(EventArgs e)
+        {
+            _timer.Stop();
+            ScatterChart.Dispose();
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             _fps.Update();
