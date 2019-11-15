@@ -3,6 +3,7 @@
 #include <SFML/OpenGL.hpp>
 // note: put opengl headers before any other header files
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Window/Context.hpp>
 
 #include <Utils.hpp>
 #include <ScopedPtr.hpp>
@@ -210,7 +211,17 @@ public:
         return res;
     }
 
+    /// <summary>
+    /// This static method does library level initialization
+    /// As SFML use a shared OpenGL context to create other contexts after the first context was created
+    /// So call this method to create a shared OpenGL context
+    /// </summary>
+    static void Initialize()
+    {
+        sf::Context ctx;
+    }
 private:
+
     scoped_ptr<sf::RenderTexture> _renderTexture;
     scoped_ptr<sf::RenderStates> _renderState;
     scoped_ptr<std::vector<int>> _renderBuffer;
