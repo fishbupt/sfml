@@ -278,8 +278,10 @@ void Shape::updateTexCoords()
     {
         float xratio = m_insideBounds.width > 0 ? (m_vertices[i].position.x - m_insideBounds.left) / m_insideBounds.width : 0;
         float yratio = m_insideBounds.height > 0 ? (m_vertices[i].position.y - m_insideBounds.top) / m_insideBounds.height : 0;
+        #ifdef ENABLE_TEXTURE
         m_vertices[i].texCoords.x = m_textureRect.left + m_textureRect.width * xratio;
         m_vertices[i].texCoords.y = m_textureRect.top + m_textureRect.height * yratio;
+        #endif // ENABLE_TEXTURE
     }
 }
 

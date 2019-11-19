@@ -78,6 +78,7 @@ sfml_set_option(SFML_BUILD_WINDOW TRUE BOOL "TRUE to build SFML's Window module.
 sfml_set_option(SFML_BUILD_GRAPHICS TRUE BOOL "TRUE to build SFML's Graphics module.")
 sfml_set_option(SFML_BUILD_AUDIO FALSE BOOL "TRUE to build SFML's Audio module.")
 sfml_set_option(SFML_BUILD_NETWORK FALSE  BOOL "TRUE to build SFML's Network module.")
+sfml_set_option(SFML_ENABLE_TEXTURE FALSE BOOL "TRUE to build Vertex structure with texture support.")
 
 # add an option for building the API documentation
 sfml_set_option(SFML_BUILD_DOC FALSE BOOL "TRUE to generate the API documentation, FALSE to ignore it")
@@ -90,6 +91,9 @@ if(SFML_BUILD_WINDOW)
     sfml_set_option(SFML_OPENGL_ES ${OPENGL_ES} BOOL "TRUE to use an OpenGL ES implementation, FALSE to use a desktop OpenGL implementation")
 endif()
 
+if(SFML_ENABLE_TEXTURE)
+    add_definitions(-DENABLE_TEXTURE)
+endif()
 # add an option for building the test suite
 sfml_set_option(SFML_BUILD_TEST_SUITE FALSE BOOL "TRUE to build the SFML test suite, FALSE to ignore it")
 

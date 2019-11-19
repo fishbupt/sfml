@@ -277,7 +277,9 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
                 Vertex& vertex = m_cache.vertexCache[i];
                 vertex.position = states.transform * vertices[i].position;
                 vertex.color = vertices[i].color;
+                #ifdef ENABLE_TEXTURE
                 vertex.texCoords = vertices[i].texCoords;
+                #endif // ENABLE_TEXTURE
             }
         }
 
@@ -307,9 +309,12 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
 
                 glCheck(glVertexPointer(3, GL_FLOAT, sizeof(Vertex), data + offsetof(Vertex, position)));
                 glCheck(glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), data + offsetof(Vertex, color)));
+                #ifdef ENABLE_TEXTURE
                 if (enableTexCoordsArray)
                     glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
+                #endif // ENABLE_TEXTURE
             }
+            #ifdef ENABLE_TEXTURE
             else if (enableTexCoordsArray && !m_cache.texCoordsArrayEnabled)
             {
                 // If we enter this block, we are already using our internal vertex cache
@@ -317,6 +322,7 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
 
                 glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
             }
+            #endif // ENABLE_TEXTURE
             drawPrimitives(type, 0, vertexCount);
             // Update the cache
             m_cache.useVertexCache = useVertexCache;
@@ -324,12 +330,13 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
         }
         else
         {
-            Shader *shader = const_cast<Shader*>(m_currentNonLegacyShader);
-
+            Shader* shader = const_cast<Shader*>(m_currentNonLegacyShader);
 
             int vertexLocation = shader->getVertexAttributeLocation("sf_Vertex");
             int colorLocation = shader->getVertexAttributeLocation("sf_Color");
+            #ifdef ENABLE_TEXTURE
             int texCoordLocation = shader->getVertexAttributeLocation("sf_MultiTexCoord0");
+            #endif // ENABLE_TEXTURE
 
             const char* data = reinterpret_cast<const char*>(vertices);
 
@@ -342,14 +349,18 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
             if (colorLocation >= 0)
             {
                 glCheck(glEnableVertexAttribArrayARB(colorLocation));
-                glCheck(glVertexAttribPointerARB(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), data + offsetof(Vertex, color)));
+                glCheck(
+                    glVertexAttribPointerARB(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), data + offsetof(Vertex, color)));
             }
 
+            #ifdef ENABLE_TEXTURE
             if (texCoordLocation >= 0)
             {
                 glCheck(glEnableVertexAttribArrayARB(texCoordLocation));
-                glCheck(glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
+                glCheck(
+                    glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), data + offsetof(Vertex, texCoords)));
             }
+            #endif // ENABLE_TEXTURE
 
             // Draw the primitives
             drawPrimitives(type, 0, vertexCount);
@@ -360,12 +371,12 @@ void RenderTarget::draw(const Vertex* vertices, std::size_t vertexCount, Primiti
             if (colorLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(colorLocation));
 
+            #ifdef ENABLE_TEXTURE
             if (texCoordLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(texCoordLocation));
-
+            #endif // ENABLE_TEXTURE
         }
         cleanupDraw(states);
-
     }
 }
 
@@ -425,7 +436,9 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
 
             glCheck(glVertexPointer(3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, position))));
             glCheck(glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, color))));
+            #ifdef ENABLE_TEXTURE
             glCheck(glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, texCoords))));
+            #endif // ENABLE_TEXTURE
 
             drawPrimitives(vertexBuffer.getPrimitiveType(), firstVertex, vertexCount);
 
@@ -435,11 +448,10 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
         }
         else
         {
-            Shader *shader = const_cast<Shader*>(m_currentNonLegacyShader);
+            Shader* shader = const_cast<Shader*>(m_currentNonLegacyShader);
 
             bool newArray = true;
             bool needUpload = false;
-
 
             int vertexLocation = -1;
             int colorLocation = -1;
@@ -459,25 +471,32 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
             {
                 vertexLocation = shader->getVertexAttributeLocation("sf_Vertex");
                 colorLocation = shader->getVertexAttributeLocation("sf_Color");
+                #ifdef ENABLE_TEXTURE
                 texCoordLocation = shader->getVertexAttributeLocation("sf_MultiTexCoord0");
+                #endif // ENABLE_TEXTURE
 
                 if (vertexLocation >= 0)
                 {
                     glCheck(glEnableVertexAttribArrayARB(vertexLocation));
-                    glCheck(glVertexAttribPointerARB(vertexLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position))));
+                    glCheck(glVertexAttribPointerARB(vertexLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                                     reinterpret_cast<void*>(offsetof(Vertex, position))));
                 }
 
                 if (colorLocation >= 0)
                 {
                     glCheck(glEnableVertexAttribArrayARB(colorLocation));
-                    glCheck(glVertexAttribPointerARB(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color))));
+                    glCheck(glVertexAttribPointerARB(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),
+                                                     reinterpret_cast<void*>(offsetof(Vertex, color))));
                 }
 
+                #ifdef ENABLE_TEXTURE
                 if (texCoordLocation >= 0)
                 {
                     glCheck(glEnableVertexAttribArrayARB(texCoordLocation));
-                    glCheck(glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texCoords))));
+                    glCheck(glVertexAttribPointerARB(texCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                                                     reinterpret_cast<void*>(offsetof(Vertex, texCoords))));
                 }
+                #endif // ENABLE_TEXTURE
             }
 
             // Draw the primitives
@@ -491,7 +510,6 @@ void RenderTarget::draw(const VertexBuffer& vertexBuffer, std::size_t firstVerte
 
             if (texCoordLocation >= 0)
                 glCheck(glDisableVertexAttribArrayARB(texCoordLocation));
-
         }
         // Unbind vertex buffer
         applyVertexBuffer(nullptr);
@@ -700,7 +718,6 @@ void RenderTarget::applyCurrentView()
         shader->setUniform("sf_ProjectionMatrix", Glsl::Mat4(m_view->getTransform()));
         shader->setUniform("sf_ViewMatrix", Glsl::Mat4(m_view->getViewTransform()));
         shader->setUniform("sf_CheckBoundary", m_view->getCheckBoundary());
-           
     }
     else
     {
@@ -790,6 +807,7 @@ void RenderTarget::applyViewTransform()
 ////////////////////////////////////////////////////////////
 void RenderTarget::applyTexture(const Texture* texture)
 {
+    #ifdef ENABLE_TEXTURE
     if (m_defaultShader)
     {
         Shader* shader = m_currentNonLegacyShader ? const_cast<Shader*>(m_currentNonLegacyShader) : m_defaultShader.get();
@@ -825,6 +843,7 @@ void RenderTarget::applyTexture(const Texture* texture)
         Texture::bind(texture, Texture::Pixels);
     }
     m_cache.lastTextureId = texture ? texture->m_cacheId : 0;
+    #endif // ENABLE_TEXTURE
 }
 
 ////////////////////////////////////////////////////////////
@@ -862,44 +881,49 @@ void RenderTarget::setupNonLegacyPipeline(bool enableBoundaryCheck)
 
         std::stringstream vertexShaderSource;
         vertexShaderSource << "#version 130\n"
-            "\n"
-            "// Uniforms\n"
-            "uniform mat4 sf_ModelMatrix;\n"
-            "uniform mat4 sf_ViewMatrix;\n"
-            "uniform mat4 sf_ProjectionMatrix;\n"
-            "uniform mat4 sf_TextureMatrix;\n"
-            "uniform int sf_TextureEnabled;\n"
-            "uniform bool sf_CheckBoundary;\n"
-            "\n"
-            "// Vertex attributes\n"
-            "in vec3 sf_Vertex;\n"
-            "in vec4 sf_Color;\n"
-            "in vec2 sf_MultiTexCoord0;\n"
-            "\n"
-            "// Vertex shader outputs\n"
-            "out vec4 sf_FrontColor;\n"
-            "out vec2 sf_TexCoord0;\n"
-            "out vec3 sf_FragWorldPosition;\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-            "    // Vertex position\n"
-            "    gl_Position = sf_ProjectionMatrix * sf_ViewMatrix * sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
-            "\n"
-            "    // Vertex color\n"
-            "    sf_FrontColor = sf_Color;\n"
-            "    vec4 pos = sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n";
+                              "\n"
+                              "// Uniforms\n"
+                              "uniform mat4 sf_ModelMatrix;\n"
+                              "uniform mat4 sf_ViewMatrix;\n"
+                              "uniform mat4 sf_ProjectionMatrix;\n"
+            #ifdef ENABLE_TEXTURE
+                              "uniform mat4 sf_TextureMatrix;\n"
+                              "uniform int sf_TextureEnabled;\n"
+            #endif // ENABLE_TEXTURE
+                              "uniform bool sf_CheckBoundary;\n"
+                              "\n"
+                              "// Vertex attributes\n"
+                              "in vec3 sf_Vertex;\n"
+                              "in vec4 sf_Color;\n"
+            #ifdef ENABLE_TEXTURE
+                              "in vec2 sf_MultiTexCoord0;\n"
+            #endif // ENABLE_TEXTURE
+                              "\n"
+                              "// Vertex shader outputs\n"
+                              "out vec4 sf_FrontColor;\n"
+                              "out vec2 sf_TexCoord0;\n"
+                              "out vec3 sf_FragWorldPosition;\n"
+                              "\n"
+                              "void main()\n"
+                              "{\n"
+                              "    // Vertex position\n"
+                              "    gl_Position = sf_ProjectionMatrix * sf_ViewMatrix * sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n"
+                              "\n"
+                              "    // Vertex color\n"
+                              "    sf_FrontColor = sf_Color;\n"
+                              "    vec4 pos = sf_ModelMatrix * vec4(sf_Vertex, 1.0);\n";
         if (enableBoundaryCheck)
-            vertexShaderSource <<
-            "    if (sf_CheckBoundary && (pos.x > 1.0 || pos.x < -1.0 || pos.y > 1.0 || pos.y < -1.0 || pos.z > 1.0 || pos.z < -1.0))\n"
-            "        sf_FrontColor.a = 0.0;\n";
-        vertexShaderSource <<
-            "\n"
-            "    // Texture data\n"
-            "    if (sf_TextureEnabled == 1)\n"
-            "        sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
-            "\n"
-            "}\n";
+            vertexShaderSource << "    if (sf_CheckBoundary && (pos.x > 1.0 || pos.x < -1.0 || pos.y > 1.0 || pos.y < -1.0 || pos.z > 1.0 "
+                                  "|| pos.z < -1.0))\n"
+                                  "        sf_FrontColor.a = 0.0;\n";
+        vertexShaderSource << "\n"
+            #ifdef ENABLE_TEXTURE
+                              "    // Texture data\n"
+                              "    if (sf_TextureEnabled == 1)\n"
+                              "        sf_TexCoord0 = (sf_TextureMatrix * vec4(sf_MultiTexCoord0, 0.0, 1.0)).st;\n"
+            #endif // ENABLE_TEXTURE
+                              "\n"
+                              "}\n";
 
         std::stringstream fragmentShaderSource;
         fragmentShaderSource << "#version 130\n";
@@ -908,41 +932,43 @@ void RenderTarget::setupNonLegacyPipeline(bool enableBoundaryCheck)
             fragmentShaderSource << "#extension GL_ARB_uniform_buffer_object : enable\n";
 
         fragmentShaderSource << "\n"
-            "// Uniforms\n"
-            "uniform mat4 sf_ModelMatrix;\n"
-            "uniform sampler2D sf_Texture0;\n"
-            "uniform int sf_TextureEnabled;\n"
-            "\n";
+                                "// Uniforms\n"
+                                "uniform mat4 sf_ModelMatrix;\n"
+                                "uniform sampler2D sf_Texture0;\n"
+            #ifdef ENABLE_TEXTURE
+                                "uniform int sf_TextureEnabled;\n"
+            #endif // ENABLE_TEXTURE
+                                "\n";
 
         fragmentShaderSource << "\n"
-            "// Fragment attributes\n"
-            "in vec4 sf_FrontColor;\n"
-            "in vec2 sf_TexCoord0;\n"
-            "in vec3 sf_FragWorldPosition;\n"
-            "\n"
-            "// Fragment shader outputs\n"
-            "out vec4 sf_FragColor;\n"
-            "\n"
-            "vec4 computeTexture()\n"
-            "{\n"
-            "    if (sf_TextureEnabled == 0)\n"
-            "        return vec4(1.0, 1.0, 1.0, 1.0);\n"
-            "\n"
-            "    return texture2D(sf_Texture0, sf_TexCoord0);\n"
-            "}\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-            "    // Fragment color\n"
-            "    //vec4 color = sf_FrontColor * computeTexture() * computeLighting();\n"
-            "    //if(color.a == 0)\n";
+                                "// Fragment attributes\n"
+                                "in vec4 sf_FrontColor;\n"
+                                "in vec2 sf_TexCoord0;\n"
+                                "in vec3 sf_FragWorldPosition;\n"
+                                "\n"
+                                "// Fragment shader outputs\n"
+                                "out vec4 sf_FragColor;\n"
+                                "\n"
+            #ifdef ENABLE_TEXTURE
+                                "vec4 computeTexture()\n"
+                                "{\n"
+                                "    if (sf_TextureEnabled == 0)\n"
+                                "        return vec4(1.0, 1.0, 1.0, 1.0);\n"
+                                "\n"
+                                "    return texture2D(sf_Texture0, sf_TexCoord0);\n"
+                                "}\n"
+            #endif // ENABLE_TEXTURE
+                                "\n"
+                                "void main()\n"
+                                "{\n"
+                                "    // Fragment color\n"
+                                "    //vec4 color = sf_FrontColor * computeTexture() * computeLighting();\n"
+                                "    //if(color.a == 0)\n";
         if (enableBoundaryCheck)
-            fragmentShaderSource <<
-            "    if(sf_FrontColor.a == 0)\n"
-            "      discard;\n";
-        fragmentShaderSource <<
-            "    sf_FragColor = sf_FrontColor;\n"
-            "}\n";
+            fragmentShaderSource << "    if(sf_FrontColor.a == 0)\n"
+                                    "      discard;\n";
+        fragmentShaderSource << "    sf_FragColor = sf_FrontColor;\n"
+                                "}\n";
 
         if (!m_defaultShader->loadFromMemory(vertexShaderSource.str(), fragmentShaderSource.str()))
         {
@@ -1022,7 +1048,7 @@ void RenderTarget::drawPrimitives(PrimitiveType type, std::size_t firstVertex, s
     GLenum mode = modes[type];
 
     // Draw the primitives
-    static const size_t MAX_ELEMENTS_VERTICES = 655360;
+    static const size_t MAX_ELEMENTS_VERTICES = 65536; //32768;
     auto remainderCount = vertexCount;
     for (int i = 0; i < vertexCount; i += MAX_ELEMENTS_VERTICES)
     {

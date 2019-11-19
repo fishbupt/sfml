@@ -27,10 +27,12 @@ namespace Graph
         /// </summary>
         GlColor Color;
 
+        #ifdef ENABLE_TEXTURE
         /// <summary>
         /// Coordinates of the texture's pixel to map to the vertex
         /// </summary>
         Vector2f TexCoords;
+        #endif // ENABLE_TEXTURE
 
 
         /// <summary>
@@ -47,11 +49,13 @@ namespace Graph
         /// </summary>
         /// <param name="position">Vertex position</param>
         /// <param name="color">Vertex color</param>
-        Vertex(Vector3f% position, GlColor% color) :
-            Vertex(position, color, Vector2f(0.0f, 0.0f))
+        Vertex(Vector3f% position, GlColor% color) 
         {
+            Position = position;
+            Color = color;
         }
 
+        #ifdef ENABLE_TEXTURE
         /// <summary>
         /// Construct the vertex from it's position, color and texture coordinates
         /// </summary>
@@ -64,6 +68,7 @@ namespace Graph
             Color = color;
             TexCoords = texCoords;
         }
+        #endif // ENABLE_TEXTURE
 
 
         /// <summary>
@@ -72,7 +77,11 @@ namespace Graph
         /// <returns>String description of the object</returns>
         String^ ToString() override
         {
+            #ifdef ENABLE_TEXTURE
             return String::Format("[Vertex] Position({0}) Color({1}) TexCoords({2})", Position, Color, TexCoords);
+            #else
+            return String::Format("[Vertex] Position({0}) Color({1}))", Position, Color);
+            #endif // ENABLE_TEXTURE
         }
     };
 } // namespace Xsa

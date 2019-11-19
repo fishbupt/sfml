@@ -50,7 +50,7 @@ color    (theColor)
 {
 }
 
-
+#ifdef ENABLE_TEXTURE
 ////////////////////////////////////////////////////////////
 Vertex::Vertex(const Vector3f& thePosition, const Vector2f& theTexCoords) :
 position (thePosition),
@@ -67,6 +67,7 @@ color    (theColor),
 texCoords(theTexCoords)
 {
 }
+#endif // ENABLE_TEXTURE
 
 
 } // namespace sf

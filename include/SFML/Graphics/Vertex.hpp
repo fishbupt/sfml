@@ -71,6 +71,7 @@ public:
     ////////////////////////////////////////////////////////////
     Vertex(const Vector3f& thePosition, const Color& theColor);
 
+#   ifdef ENABLE_TEXTURE
     ////////////////////////////////////////////////////////////
     /// \brief Construct the vertex from its position and texture coordinates
     ///
@@ -91,13 +92,16 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Vertex(const Vector3f& thePosition, const Color& theColor, const Vector2f& theTexCoords);
+#   endif // ENABLE_TEXTURE
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
     Vector3f  position{ 0,0,0 };  ///< 3D position of the vertex
     Color     color{ 255,255,255 };     ///< Color of the vertex
+#    ifdef ENABLE_TEXTURE
     Vector2f  texCoords{ 0,0 }; ///< Coordinates of the texture's pixel to map to the vertex
+#    endif // ENABLE_TEXTURE
     //Vector3f  normal;    ///< Lighting normal
 };
 

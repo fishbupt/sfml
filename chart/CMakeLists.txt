@@ -14,6 +14,7 @@ set(SRC
     ${SRCROOT}/Marker.cpp
     ${SRCROOT}/Markers.cpp
     ${SRCROOT}/VertexArray.cpp
+    ${SRCROOT}/VertexBuffer.cpp
     ${SRCROOT}/RenderChart.cpp
     ${SRCROOT}/Transform.cpp
     ${SRCROOT}/Transformable.cpp
@@ -26,6 +27,7 @@ set(SRC
     ${INCROOT}/Utils.hpp
     ${INCROOT}/OrbitCamera.hpp
     ${INCROOT}/VertexArray.hpp
+    ${INCROOT}/VertexBuffer.hpp
     ${INCROOT}/Color.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Vector3.hpp
