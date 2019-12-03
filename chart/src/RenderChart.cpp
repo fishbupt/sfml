@@ -35,6 +35,8 @@ public:
 
     property int GlMajorVersion;
 
+    property float PointSize;
+
     property GridShape^ Grid;
 
     property Annotation^ Annotation;
@@ -94,7 +96,7 @@ public:
                 glLineWidth(1.0f);
             }
         }
-        glPointSize(3.0f);
+        glPointSize(PointSize);
 
         Draw(_renderTexture.get(), is3DEnabled);
 
